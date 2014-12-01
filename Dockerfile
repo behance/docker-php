@@ -27,9 +27,6 @@ RUN pecl install igbinary-1.2.1 && \
 # Enable write functionality for Apache
 RUN a2enmod rewrite
 
-# Provide test file @ symlinked location
-RUN echo "<h1>It Works!!!</h1>" > /var/www/html/index.html
-
 # Cleanup
 RUN apt-get autoclean && apt-get autoremove
 
