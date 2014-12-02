@@ -17,6 +17,7 @@ RUN apt-get update && \
         php5-mysqlnd=5.6.3+dfsg-1+deb.sury.org~trusty+1 \
         php5-curl=5.6.3+dfsg-1+deb.sury.org~trusty+1 \
         php5-gearman=1.1.2-1+deb.sury.org~trusty+2 \
+        php5-intl=5.6.3+dfsg-1+deb.sury.org~trusty+1 \
         apache2-dev=2.4.10-1+deb.sury.org~trusty+1 \
         git=1:1.9.1-1
 
