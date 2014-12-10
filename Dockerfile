@@ -1,6 +1,15 @@
 FROM ubuntu:14.04
 MAINTAINER Bryan Latten <latten@adobe.com>
 
+# Move downstream application to final resting placedock
+ONBUILD COPY ./ /app/
+
+# Remove existing docroot for Apache
+ONBUILD RUN rm -rf /var/www/html
+
+# Symlink existing docroot with downstream application docroot
+ONBUILD RUN ln -s /app/public /var/www/html
+
 # Ensure package list is up to date, add tool for PPA in the next step
 RUN apt-get update && apt-get install software-properties-common=0.92.37.2 -y
 
@@ -25,6 +34,9 @@ RUN pecl install igbinary-1.2.1 && \
 
 # Enable write functionality for Apache
 RUN a2enmod rewrite
+
+# Replace apache security file with local one
+COPY ./apache2/conf-available/security.conf /etc/apache2/conf-available/security.conf
 
 # Cleanup
 RUN apt-get autoclean && apt-get autoremove
