@@ -27,7 +27,9 @@ RUN DEBIAN_FRONTEND=noninteractive apt-get update && \
         php5-mysqlnd=5.6.4+dfsg-1+deb.sury.org~trusty+1 \
         php5-curl=5.6.4+dfsg-1+deb.sury.org~trusty+1 \
         php5-gearman=1.1.2-1+deb.sury.org~trusty+2 \
-        php5-intl=5.6.4+dfsg-1+deb.sury.org~trusty+1
+        php5-intl=5.6.4+dfsg-1+deb.sury.org~trusty+1 \
+        php5-xdebug=2.2.5-1+deb.sury.org~trusty+1 && \
+    php5dismod xdebug
 
 RUN pecl install igbinary-1.2.1 && \
     echo 'extension=igbinary.so' > /etc/php5/mods-available/igbinary.ini && \
