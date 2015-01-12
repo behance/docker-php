@@ -1,14 +1,5 @@
-FROM ubuntu:14.04
+FROM ubuntu:14.04.1
 MAINTAINER Bryan Latten <latten@adobe.com>
-
-# Move downstream application to final resting placedock
-ONBUILD COPY ./ /app/
-
-# Remove existing docroot for Apache
-ONBUILD RUN rm -rf /var/www/html
-
-# Symlink existing docroot with downstream application docroot
-ONBUILD RUN ln -s /app/public /var/www/html
 
 # Ensure package list is up to date, add tool for PPA in the next step
 RUN DEBIAN_FRONTEND=noninteractive apt-get update && \
@@ -43,7 +34,17 @@ COPY ./apache2/conf-available/security.conf /etc/apache2/conf-available/security
 RUN apt-get autoclean && apt-get autoremove
 
 ADD ./container/run.sh /run.sh
+
 RUN chmod 755 /run.sh
+
+##################################################################
+
+# Move downstream application to final resting place
+ONBUILD COPY ./ /app/
+
+# Remove existing docroot for Apache
+# Symlink existing docroot with downstream application docroot
+ONBUILD RUN rm -rf /var/www/html && ln -s /app/public /var/www/html
 
 EXPOSE 80
 CMD ["/bin/bash", "/run.sh"]
