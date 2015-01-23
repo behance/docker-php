@@ -35,12 +35,13 @@ RUN a2enmod rewrite
 # Replace apache security file with local one
 COPY ./apache2/conf-available/security.conf /etc/apache2/conf-available/security.conf
 
-# Cleanup
-RUN apt-get autoclean && apt-get autoremove
-
 ADD ./container/run.sh /run.sh
+ADD ./container/cleanup.sh /cleanup.sh
 
-RUN chmod 755 /run.sh
+RUN chmod 755 /run.sh && chmod 755 /cleanup.sh
+
+# Cleanup
+RUN /cleanup.sh
 
 ##################################################################
 
