@@ -6,7 +6,7 @@ ENV DEBIAN_FRONTEND noninteractive
 
 # Ensure package list is up to date, add tool for PPA in the next step
 RUN apt-get update && \
-    apt-get install software-properties-common=0.92.37.2 -y
+    apt-get install software-properties-common=0.92.36 -y
 
 # IMPORTANT: PPA has UTF-8 characters in it that will fail unless locale is generated
 RUN locale-gen en_US.UTF-8 && export LANG=en_US.UTF-8 && add-apt-repository ppa:ondrej/php5-5.6 -y
