@@ -3,6 +3,12 @@ MAINTAINER Bryan Latten <latten@adobe.com>
 
 ENV DEBIAN_FRONTEND noninteractive
 
+# Install pre-reqs, security updates
+RUN apt-get update && \
+    apt-get -yq install \
+        openssl=1.0.1f-1ubuntu2.8 \
+        ca-certificates=20141019ubuntu0.14.04.1 \
+        wget
 
 # Ensure package list is up to date, add tool for PPA in the next step
 RUN apt-get update && \
@@ -14,14 +20,14 @@ RUN locale-gen en_US.UTF-8 && export LANG=en_US.UTF-8 && add-apt-repository ppa:
 # Update package cache with new PPA, install language and modules
 RUN apt-get update && \
     apt-get -yq install \
-        php5=5.6.5+dfsg-1+deb.sury.org~trusty+1 \
-        php5-dev=5.6.5+dfsg-1+deb.sury.org~trusty+1 \
-        php5-memcache=3.0.8-5+deb.sury.org~trusty+1 \
-        php5-gd=5.6.5+dfsg-1+deb.sury.org~trusty+1 \
-        php5-mysqlnd=5.6.5+dfsg-1+deb.sury.org~trusty+1 \
-        php5-curl=5.6.5+dfsg-1+deb.sury.org~trusty+1 \
+        php5=5.6.6+dfsg-1+deb.sury.org~trusty+1 \
+        php5-dev=5.6.6+dfsg-1+deb.sury.org~trusty+1 \
+        php5-gd=5.6.6+dfsg-1+deb.sury.org~trusty+1 \
+        php5-mysqlnd=5.6.6+dfsg-1+deb.sury.org~trusty+1 \
+        php5-intl=5.6.6+dfsg-1+deb.sury.org~trusty+1 \
+        php5-curl=5.6.6+dfsg-1+deb.sury.org~trusty+1 \
         php5-gearman=1.1.2-1+deb.sury.org~trusty+2 \
-        php5-intl=5.6.5+dfsg-1+deb.sury.org~trusty+1 \
+        php5-memcache=3.0.8-5+deb.sury.org~trusty+1 \
         php5-xdebug=2.2.5-1+deb.sury.org~trusty+1 && \
     php5dismod xdebug
 
@@ -29,28 +35,39 @@ RUN pecl install igbinary-1.2.1 && \
     echo 'extension=igbinary.so' > /etc/php5/mods-available/igbinary.ini && \
     php5enmod igbinary
 
-# Enable write functionality for Apache
+# Enable apache rewrite module
 RUN a2enmod rewrite
 
-# Replace apache security file with local one
-COPY ./apache2/conf-available/security.conf /etc/apache2/conf-available/security.conf
+# Install New Relic monitoring tools
+# IMPORTANT: will not work without setting license key (nrsysmond-config --set license_key=YOUR_LICENSE_KEY)
+# @see https://docs.newrelic.com/docs/release-notes/agent-release-notes/php-release-notes/php-agent-418089
+#RUN sh -c 'echo deb http://apt.newrelic.com/debian/ newrelic non-free >> /etc/apt/sources.list.d/newrelic.list' && \
+#    wget -O- https://download.newrelic.com/548C16BF.gpg | apt-key add - && \
+#    apt-get update && \
+#    apt-get -yq install \
+#        newrelic-php5
 
-ADD ./container/run.sh /run.sh
-ADD ./container/cleanup.sh /cleanup.sh
+# Perform cleanup, ensure unnecessary packages are removed
+RUN apt-get -yq remove \
+    gcc \
+    php5-dev && \
+    apt-get autoclean -y && \
+    apt-get autoremove -y && \
+    rm -rf /tmp/* /var/tmp/* && \
+    rm -rf /var/lib/apt/lists/*
 
-RUN chmod 755 /run.sh && chmod 755 /cleanup.sh
+# Overlay the root filesystem from this repo
+COPY ./container/root /
 
-# Cleanup
-RUN /cleanup.sh
-
-##################################################################
+#####################################################################
 
 # Move downstream application to final resting place
 ONBUILD COPY ./ /app/
 
-# Remove existing docroot for Apache
-# Symlink existing docroot with downstream application docroot
+# IMPORTANT: assumes downstream app has `public` docroot directory
 ONBUILD RUN rm -rf /var/www/html && ln -s /app/public /var/www/html
+
+#####################################################################
 
 EXPOSE 80
 CMD ["/bin/bash", "/run.sh"]
