@@ -59,6 +59,9 @@ RUN apt-get -yq remove \
 # Overlay the root filesystem from this repo
 COPY ./container/root /
 
+# Disable the "default" Apache site, enable the Docker one
+RUN a2dissite 000-default && a2ensite 000-docker
+
 #####################################################################
 
 # Move downstream application to final resting place
