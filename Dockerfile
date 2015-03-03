@@ -20,6 +20,10 @@ RUN add-apt-repository ppa:git-core/ppa -y && \
     apt-get update -yq && \
     apt-get install -yq git=1:2.3.1-0ppa1~ubuntu14.04.1
 
+# singularity_runner
+RUN apt-get install build-essential ruby1.9.1-dev -y && \
+    gem install --no-rdoc --no-ri singularity_dsl --version 1.6.3
+
 # IMPORTANT: PPA has UTF-8 characters in it that will fail unless locale is generated
 RUN locale-gen en_US.UTF-8 && export LANG=en_US.UTF-8 && add-apt-repository ppa:ondrej/php5-5.6 -y
 
@@ -55,6 +59,7 @@ RUN a2enmod rewrite
 
 # Perform cleanup, ensure unnecessary packages are removed
 RUN apt-get -yq remove \
+    build-essential \
     gcc \
     php5-dev && \
     apt-get autoclean -y && \
