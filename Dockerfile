@@ -14,6 +14,12 @@ RUN apt-get update && \
 RUN apt-get update && \
     apt-get install software-properties-common=0.92.37.3 -y
 
+# Install git with security updates
+# http://article.gmane.org/gmane.linux.kernel/1853266
+RUN add-apt-repository ppa:git-core/ppa -y && \
+    apt-get update -yq && \
+    apt-get install -yq git=1:2.3.1-0ppa1~ubuntu14.04.1
+
 # IMPORTANT: PPA has UTF-8 characters in it that will fail unless locale is generated
 RUN locale-gen en_US.UTF-8 && export LANG=en_US.UTF-8 && add-apt-repository ppa:ondrej/php5-5.6 -y
 
