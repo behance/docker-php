@@ -3,7 +3,7 @@
 if [[ -f /root/.composer/config.json ]]
 then
   echo "Running `composer install`"
-  composer install
+  singularity_runner test
 else
   echo "Starting apache2"
   source /etc/apache2/envvars
