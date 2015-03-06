@@ -1,6 +1,6 @@
 #!/bin/bash
 
-if [[ -d /root/.composer ]]
+if [[ -f /root/.composer/config.json ]]
 then
   echo "Running `composer install`"
   composer install
