@@ -58,11 +58,7 @@ RUN a2enmod rewrite
 #        newrelic-php5
 
 # Perform cleanup, ensure unnecessary packages are removed
-RUN apt-get -yq remove \
-    build-essential \
-    gcc \
-    php5-dev && \
-    apt-get autoclean -y && \
+RUN apt-get autoclean -y && \
     apt-get autoremove -y && \
     rm -rf /tmp/* /var/tmp/* && \
     rm -rf /var/lib/apt/lists/*
