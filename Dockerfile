@@ -45,6 +45,10 @@ RUN pecl install igbinary-1.2.1 && \
     echo 'extension=igbinary.so' > /etc/php5/mods-available/igbinary.ini && \
     php5enmod igbinary
 
+RUN pecl install jsonc-1.3.7 && \
+    echo 'extension=json.so' > /etc/php5/mods-available/json.ini && \
+    php5endmod json
+
 # Enable apache rewrite module
 RUN a2enmod rewrite
 
