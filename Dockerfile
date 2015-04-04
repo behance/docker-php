@@ -18,7 +18,7 @@ RUN apt-get update && \
 # http://article.gmane.org/gmane.linux.kernel/1853266
 RUN add-apt-repository ppa:git-core/ppa -y && \
     apt-get update -yq && \
-    apt-get install -yq git=1:2.3.4-0ppa2~ubuntu14.04.1
+    apt-get install -yq git=1:2.3.5-0ppa1~ubuntu14.04.1
 
 # singularity_runner
 RUN apt-get install build-essential ruby1.9.1-dev -y && \
