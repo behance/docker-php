@@ -83,3 +83,5 @@ ONBUILD RUN rm -rf /var/www/html && ln -s /app/public /var/www/html
 
 EXPOSE 80
 CMD ["/bin/bash", "/run.sh"]
+RUN useradd -d /home/username -m -s /bin/bash behance
+USER behance
