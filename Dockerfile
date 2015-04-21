@@ -38,6 +38,7 @@ RUN apt-get update && \
         php5-curl=5.6.7+dfsg-1+deb.sury.org~trusty+1 \
         php5-gearman=1.1.2-1+deb.sury.org~trusty+2 \
         php5-memcache=3.0.8-5+deb.sury.org~trusty+1 \
+        php5-memcached=2.2.0-2+deb.sury.org~trusty+1 \
         php5-mcrypt=5.6.7+dfsg-1+deb.sury.org~trusty+1 \
         php5-json=1.3.6-1+deb.sury.org~trusty+2 \
         php5-xdebug=2.2.5-1+deb.sury.org~trusty+1 && \
@@ -46,6 +47,11 @@ RUN apt-get update && \
 RUN pecl install igbinary-1.2.1 && \
     echo 'extension=igbinary.so' > /etc/php5/mods-available/igbinary.ini && \
     php5enmod igbinary
+
+RUN printf "\n" | pecl install apcu-4.0.7 && \
+    echo 'extension=apcu.so' > /etc/php5/mods-available/apcu.ini && \
+    php5enmod apcu
+
 
 # Enable apache rewrite module
 RUN a2enmod rewrite
