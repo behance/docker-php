@@ -14,11 +14,11 @@ RUN apt-get update && \
 RUN apt-get update && \
     apt-get install software-properties-common=0.92.37.3 -y
 
-# Install git with security updates
+# Install latest git with security updates
 # http://article.gmane.org/gmane.linux.kernel/1853266
 RUN add-apt-repository ppa:git-core/ppa -y && \
     apt-get update -yq && \
-    apt-get install -yq git=1:2.3.5-0ppa1~ubuntu14.04.1
+    apt-get install -yq git
 
 # singularity_runner
 RUN apt-get install build-essential ruby1.9.1-dev -y && \
@@ -30,18 +30,18 @@ RUN locale-gen en_US.UTF-8 && export LANG=en_US.UTF-8 && add-apt-repository ppa:
 # Update package cache with new PPA, install language and modules
 RUN apt-get update && \
     apt-get -yq install \
-        php5=5.6.7+dfsg-1+deb.sury.org~trusty+1 \
-        php5-dev=5.6.7+dfsg-1+deb.sury.org~trusty+1 \
-        php5-gd=5.6.7+dfsg-1+deb.sury.org~trusty+1 \
-        php5-mysqlnd=5.6.7+dfsg-1+deb.sury.org~trusty+1 \
-        php5-intl=5.6.7+dfsg-1+deb.sury.org~trusty+1 \
-        php5-curl=5.6.7+dfsg-1+deb.sury.org~trusty+1 \
+        php5=5.6.8+dfsg-1+deb.sury.org~trusty+1 \
+        php5-dev=5.6.8+dfsg-1+deb.sury.org~trusty+1 \
+        php5-gd=5.6.8+dfsg-1+deb.sury.org~trusty+1 \
+        php5-mysqlnd=5.6.8+dfsg-1+deb.sury.org~trusty+1 \
+        php5-intl=5.6.8+dfsg-1+deb.sury.org~trusty+1 \
+        php5-curl=5.6.8+dfsg-1+deb.sury.org~trusty+1 \
         php5-gearman=1.1.2-1+deb.sury.org~trusty+2 \
         php5-memcache=3.0.8-5+deb.sury.org~trusty+1 \
         php5-memcached=2.2.0-2+deb.sury.org~trusty+1 \
-        php5-mcrypt=5.6.7+dfsg-1+deb.sury.org~trusty+1 \
+        php5-mcrypt=5.6.8+dfsg-1+deb.sury.org~trusty+1 \
         php5-json=1.3.6-1+deb.sury.org~trusty+2 \
-        php5-xdebug=2.2.5-1+deb.sury.org~trusty+1 && \
+        php5-xdebug && \
     php5dismod xdebug
 
 RUN pecl install igbinary-1.2.1 && \
