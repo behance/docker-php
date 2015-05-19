@@ -3,7 +3,7 @@
 if [[ -f /root/.composer/config.json ]]
 then
   echo "Running `composer install`"
-  composer install
+  singularity_runner test
 else
 
   # Adds docker environment variables where Apache would normally eat them by
