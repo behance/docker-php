@@ -30,16 +30,16 @@ RUN locale-gen en_US.UTF-8 && export LANG=en_US.UTF-8 && add-apt-repository ppa:
 # Update package cache with new PPA, install language and modules
 RUN apt-get update && \
     apt-get -yq install \
-        php5=5.6.8+dfsg-1+deb.sury.org~trusty+1 \
-        php5-dev=5.6.8+dfsg-1+deb.sury.org~trusty+1 \
-        php5-gd=5.6.8+dfsg-1+deb.sury.org~trusty+1 \
-        php5-mysqlnd=5.6.8+dfsg-1+deb.sury.org~trusty+1 \
-        php5-intl=5.6.8+dfsg-1+deb.sury.org~trusty+1 \
-        php5-curl=5.6.8+dfsg-1+deb.sury.org~trusty+1 \
+        php5=5.6.9+dfsg-1+deb.sury.org~trusty+2 \
+        php5-dev=5.6.9+dfsg-1+deb.sury.org~trusty+2 \
+        php5-gd=5.6.9+dfsg-1+deb.sury.org~trusty+2 \
+        php5-mysqlnd=5.6.9+dfsg-1+deb.sury.org~trusty+2 \
+        php5-intl=5.6.9+dfsg-1+deb.sury.org~trusty+2 \
+        php5-curl=5.6.9+dfsg-1+deb.sury.org~trusty+2 \
         php5-gearman=1.1.2-1+deb.sury.org~trusty+2 \
         php5-memcache=3.0.8-5+deb.sury.org~trusty+1 \
         php5-memcached=2.2.0-2+deb.sury.org~trusty+1 \
-        php5-mcrypt=5.6.8+dfsg-1+deb.sury.org~trusty+1 \
+        php5-mcrypt=5.6.9+dfsg-1+deb.sury.org~trusty+2 \
         php5-json=1.3.6-1+deb.sury.org~trusty+2 \
         php5-xdebug && \
     php5dismod xdebug
