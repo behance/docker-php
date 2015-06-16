@@ -6,7 +6,7 @@ ENV DEBIAN_FRONTEND noninteractive
 # Install pre-reqs, security updates
 RUN apt-get update && \
     apt-get -yq install \
-        openssl=1.0.1f-1ubuntu2.11 \
+        openssl=1.0.1f-1ubuntu2.15 \
         ca-certificates=20141019ubuntu0.14.04.1 \
         wget
 
