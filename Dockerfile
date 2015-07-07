@@ -87,5 +87,16 @@ ONBUILD RUN rm -rf /var/www/html && ln -s /app/public /var/www/html
 
 #####################################################################
 
+
+# Packages in this parent container are provided for ease of integration
+# in downstream (child) builds. Some dev-only packages need to be removed
+# for a production system (git/wget/gcc/etc)
+
+# TODO: script needs to be called AFTER downstream build is performed,
+#   ONBUILD instruction gets called BEFORE, so not useful
+# RUN /bin/bash /clean.sh
+
+
+
 EXPOSE 80
 CMD ["/bin/bash", "/run.sh"]
