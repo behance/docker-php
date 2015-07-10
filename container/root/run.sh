@@ -18,6 +18,15 @@ else
     echo $ENV >> $DEST_CONF
   done
 
+  if [[ $CFG_APP_DEBUG = 1 || $CFG_APP_DEBUG = '1' || $CFG_APP_DEBUG = 'true' ]]
+  then
+    echo 'Opcache set to WATCH for file changes'
+  else
+    echo 'Opcache set to PERFORMANCE'
+    echo 'opcache.revalidate_freq=0' >> /etc/php5/mods-available/opcache.ini
+    echo 'opcache.validate_timestamps=0' >> /etc/php5/mods-available/opcache.ini
+  fi
+
   echo 'Enabling Docker Config'
   a2enconf  docker-environment
 
