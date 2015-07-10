@@ -31,16 +31,16 @@ RUN locale-gen en_US.UTF-8 && export LANG=en_US.UTF-8 && add-apt-repository ppa:
 RUN apt-get update && \
     apt-get -yq install \
         php5=5.6.10+dfsg-1+deb.sury.org~trusty+1 \
-        php5-dev=5.6.10+dfsg-1+deb.sury.org~trusty+1 \
-        php5-gd=5.6.10+dfsg-1+deb.sury.org~trusty+1 \
-        php5-mysqlnd=5.6.10+dfsg-1+deb.sury.org~trusty+1 \
-        php5-intl=5.6.10+dfsg-1+deb.sury.org~trusty+1 \
-        php5-curl=5.6.10+dfsg-1+deb.sury.org~trusty+1 \
         php5-gearman=1.1.2-1+deb.sury.org~trusty+2 \
         php5-memcache=3.0.8-5+deb.sury.org~trusty+1 \
         php5-memcached=2.2.0-2+deb.sury.org~trusty+1 \
-        php5-mcrypt=5.6.10+dfsg-1+deb.sury.org~trusty+1 \
-        php5-json=1.3.6-1+deb.sury.org~trusty+2 \
+        php5-dev \
+        php5-gd \
+        php5-mysqlnd \
+        php5-intl \
+        php5-curl \
+        php5-mcrypt \
+        php5-json \
         php5-xdebug && \
     php5dismod xdebug
 
@@ -52,18 +52,8 @@ RUN printf "\n" | pecl install apcu-4.0.7 && \
     echo 'extension=apcu.so' > /etc/php5/mods-available/apcu.ini && \
     php5enmod apcu
 
-
 # Enable apache rewrite module
 RUN a2enmod rewrite
-
-# Install New Relic monitoring tools
-# IMPORTANT: will not work without setting license key (nrsysmond-config --set license_key=YOUR_LICENSE_KEY)
-# @see https://docs.newrelic.com/docs/release-notes/agent-release-notes/php-release-notes/php-agent-418089
-#RUN sh -c 'echo deb http://apt.newrelic.com/debian/ newrelic non-free >> /etc/apt/sources.list.d/newrelic.list' && \
-#    wget -O- https://download.newrelic.com/548C16BF.gpg | apt-key add - && \
-#    apt-get update && \
-#    apt-get -yq install \
-#        newrelic-php5
 
 # Perform cleanup, ensure unnecessary packages are removed
 RUN apt-get autoclean -y && \
