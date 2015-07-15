@@ -16,7 +16,7 @@ else
   echo 'Importing environment variables (prefixed by CFG_)'
   for p in $VARS
   do
-    ENV='env['${p/=/] = }
+    ENV='env['${p/=/] = \"}\"
     echo $ENV >> $DEST_CONF
   done
 
