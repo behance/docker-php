@@ -13,7 +13,7 @@ server {
 
   location / {
     # Check for file or folder first, otherwise rewrite to front controller
-    try_files $uri $uri/ /index.php;
+    try_files $uri $uri/ /index.php?$args;
   }
 
   # Default rewrite condition
