@@ -30,3 +30,6 @@ fastcgi_param   HTTPS                   $https;
 
 # PHP only, required if PHP was built with --enable-force-cgi-redirect
 fastcgi_param   REDIRECT_STATUS         200;
+
+# Permits passing otherwise disabled header fields to the client
+fastcgi_pass_header Authorization;
