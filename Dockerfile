@@ -21,9 +21,15 @@ RUN add-apt-repository ppa:git-core/ppa -y && \
     apt-get update -yq && \
     apt-get install -yq git
 
-# singularity_runner
+# Install singularity_runner
 RUN apt-get install build-essential ruby1.9.1-dev -y && \
     gem install --no-rdoc --no-ri singularity_dsl --version 1.6.3
+
+
+# Install latest nginx-stable
+RUN add-apt-repository ppa:nginx/stable -y && \
+    apt-get update -yq && \
+    apt-get install -yq nginx=1.8.0-1+trusty1
 
 # IMPORTANT: PPA has UTF-8 characters in it that will fail unless locale is generated
 RUN locale-gen en_US.UTF-8 && export LANG=en_US.UTF-8 && add-apt-repository ppa:ondrej/php5-5.6 -y
@@ -44,7 +50,6 @@ RUN apt-get update && \
         php5-mcrypt \
         php5-json \
         php5-xdebug \
-        nginx \
         nano && \
     php5dismod xdebug
 
@@ -55,6 +60,7 @@ RUN pecl install igbinary-1.2.1 && \
 RUN printf "\n" | pecl install apcu-4.0.7 && \
     echo 'extension=apcu.so' > /etc/php5/mods-available/apcu.ini && \
     php5enmod apcu
+
 
 # Perform cleanup, ensure unnecessary packages are removed
 RUN apt-get autoclean -y && \
