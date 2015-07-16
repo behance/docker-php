@@ -1,9 +1,8 @@
 #!/bin/bash
 
 # Perform cleanup, ensure unnecessary packages are removed
-apt-get remove -yq \
+apt-get remove --purge -yq \
     wget \
-    git \
     php5-dev \
     gcc && \
 apt-get autoclean -y && \
