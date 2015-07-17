@@ -42,15 +42,21 @@ else
 
   # Baseline "optimizations" before ApacheBench succeeded at concurrency of 150
   # TODO: base on current memory capacity + CPU cores
-  sed -i "s/pm.max_children = [0-9]\+/pm.max_children = 32/" /etc/php5/fpm/pool.d/www.conf
+  sed -i "s/pm.max_children = [0-9]\+/pm.max_children = 48/" /etc/php5/fpm/pool.d/www.conf
   sed -i "s/pm.start_servers = [0-9]\+/pm.start_servers = 16/" /etc/php5/fpm/pool.d/www.conf
   sed -i "s/pm.min_spare_servers = [0-9]\+/pm.min_spare_servers = 4/" /etc/php5/fpm/pool.d/www.conf
-  sed -i "s/pm.max_spare_servers = [0-9]\+/pm.max_spare_servers = 16/" /etc/php5/fpm/pool.d/www.conf
+  sed -i "s/pm.max_spare_servers = [0-9]\+/pm.max_spare_servers = 32/" /etc/php5/fpm/pool.d/www.conf
+
+  # Allow php5-fpm process to pick up stdout and stderr from worker processes
+  sed -i "s/;catch_workers_output/catch_workers_output/" /etc/php5/fpm/pool.d/www.conf
 
   echo 'Starting PHP-FPM (background)'
-  service php5-fpm start
+  # php5-fpm --nodaemonize 1> >(sed -u 's/WARNING: \[pool www\] child [0-9]* said into stdout: \"\(.*\)\"$/\1/' >/dev/stdout) \
+  #                        2> >(sed -u 's/WARNING: \[pool www\] child [0-9]* said into stderr: \"\(.*\)\"$/\1/' >/dev/stderr) &
+  php5-fpm --nodaemonize &
 
   echo "Starting Nginx (foreground)"
   exec /usr/sbin/nginx -g "daemon off;"
+
 
 fi
