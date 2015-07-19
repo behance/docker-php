@@ -55,16 +55,20 @@ else
   sed -i "s/pm.min_spare_servers = [0-9]\+/pm.min_spare_servers = 4/" /etc/php5/fpm/pool.d/www.conf
   sed -i "s/pm.max_spare_servers = [0-9]\+/pm.max_spare_servers = 32/" /etc/php5/fpm/pool.d/www.conf
 
-  # Allow php5-fpm process to pick up stdout and stderr from worker processes
+  # php5-fpm processes must pick up stdout/stderr from workers, will cause minor performance decrease (but is required)
   sed -i "s/;catch_workers_output/catch_workers_output/" /etc/php5/fpm/pool.d/www.conf
 
+
+  # 1. runs php5-fpm as foreground (-F)
+  # 2. forcing php5-fpm to log to stderr even if a non-terminal is attached (-O)
+  # 3. redirect stderr to stdout
+  # 4. filtering the garbage string that PHP-FPM for no-reason-at-all decided to wrap the message in,
+  # 5. reconnecting the stdout to current stdout
+  # 6. backgrounding that process
   echo 'Starting PHP-FPM (background)'
-  # php5-fpm --nodaemonize 1> >(sed -u 's/WARNING: \[pool www\] child [0-9]* said into stdout: \"\(.*\)\"$/\1/' >/dev/stdout) \
-  #                        2> >(sed -u 's/WARNING: \[pool www\] child [0-9]* said into stderr: \"\(.*\)\"$/\1/' >/dev/stderr) &
-  php5-fpm --nodaemonize &
+  php5-fpm -F -O 2>&1 | sed -u 's/WARNING: \[pool www\] child [0-9]* said into std[a-z]*: \"\(.*\)\"$/\1/' 1>&1 &
 
   echo "Starting Nginx (foreground)"
   exec /usr/sbin/nginx -g "daemon off;"
-
 
 fi
