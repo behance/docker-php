@@ -37,6 +37,23 @@ else
     echo 'opcache.validate_timestamps=0' >> /etc/php5/mods-available/opcache.ini
   fi
 
+  if [[ $SERVER_MAX_BODY_SIZE ]]
+  then
+    DEST_CONF_DEFAULT=/etc/nginx/sites-available/default
+    DEST_CONF_DEFAULT_TMP=$DEST_CONF_DEFAULT.tmp
+
+    # Create TMP config file, omitting the closing bracket
+    head -n -1 $DEST_CONF_DEFAULT > $DEST_CONF_DEFAULT_TMP
+
+    echo "Bumping client_max_body_size to $SERVER_MAX_BODY_SIZE"
+    echo "  client_max_body_size $SERVER_MAX_BODY_SIZE;" >> $DEST_CONF_DEFAULT_TMP
+
+    echo "}" >> $DEST_CONF_DEFAULT_TMP
+
+    # Move the updated config into place
+    mv $DEST_CONF_DEFAULT_TMP $DEST_CONF_DEFAULT
+  fi
+
   echo 'Setting sensible PHP defaults'
   php5enmod defaults
 
