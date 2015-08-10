@@ -26,3 +26,14 @@ Applications that leverage `bryanlatten/docker-php` in their Dockerfile are expe
 
 Development libraries are made available (php5-dev) for downstream app to use to add dependencies, such as PECL modules. Please run /clean.sh at the end of a child build to ensure these packages are removed before production.
 
+###Downstream Configuration
+---
+Several environment variables can be used to configure various PHP FPM paramaters, as well as a few Nginx configurations. By default, all `CFG_*` environment variables are ingested by the FPM process
+as such. These can be used to drive the configuration of the downstream PHP application in any way necessary, but there are a few environment variables that `bryanlatter/docker-php` will process along the way...
+
+Variable | Example | Description
+--- | --- | ---
+`CFG_*` | `CFG_DATABASE_USERNAME=root` | Ingested into `/etc/php5/fpm/pool.d/www.conf` for PHP to access as an environment variable
+`CFG_APP_DEBUG` | `CFG_APP_DEBUG=1` | Setting to `1` or `true` will cue the Opcache to watch for file changes as well as increase Nginx's default buffer sizes, suitable for Development Mode. Otherwise, headers are normal and the Opcache check is skipped for a performance boost.
+`SERVER_MAX_BODY_SIZE` | `SERVER_MAX_BODY_SIZE=4M` | Allows the downstream application to specify a non-default `client_max_body_size` configuration for the `server`-level directive in `/etc/nginx/sites-available/default` 
+
