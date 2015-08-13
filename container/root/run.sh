@@ -22,7 +22,6 @@ else
 
   if [[ $CFG_APP_DEBUG = 1 || $CFG_APP_DEBUG = '1' || $CFG_APP_DEBUG = 'true' ]]
   then
-    echo 'Opcache set to WATCH for file changes'
 
     FASTCGI_PARAM_FILE=/etc/nginx/fastcgi_params
     echo 'Increasing fastcgi buffer size for debug headers'
@@ -30,6 +29,9 @@ else
     echo "# Debug Buffer Sizes" >> $FASTCGI_PARAM_FILE
     echo "fastcgi_buffer_size 16k;" >> $FASTCGI_PARAM_FILE
     echo "fastcgi_buffers 4 16k;" >> $FASTCGI_PARAM_FILE
+
+    echo 'Opcache disabled'
+    php5dismod opcache
 
   else
     echo 'Opcache set to PERFORMANCE, NOT watching for file changes'
