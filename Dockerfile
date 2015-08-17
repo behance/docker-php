@@ -1,44 +1,21 @@
-FROM ubuntu:14.04.2
+FROM behance/docker-nginx:1.0.0
 MAINTAINER Bryan Latten <latten@adobe.com>
-
-# Define the location where downstream app should live, with a child public folder
-ENV HTTP_WEBROOT /app/public
-
-# Install pre-reqs, security updates
-RUN apt-get update && \
-    apt-get -yq install \
-        openssl=1.0.1f-1ubuntu2.15 \
-        ca-certificates=20141019ubuntu0.14.04.1 \
-        wget
-
-# Ensure package list is up to date, add tool for PPA in the next step
-RUN apt-get update && \
-    apt-get install software-properties-common=0.92.37.3 -y
-
-# Install latest git with security updates
-# http://article.gmane.org/gmane.linux.kernel/1853266
-RUN add-apt-repository ppa:git-core/ppa -y && \
-    apt-get update -yq && \
-    apt-get install -yq git
 
 # Install singularity_runner
 RUN apt-get install build-essential ruby1.9.1-dev -y && \
     gem install --no-rdoc --no-ri singularity_dsl --version 1.6.3
 
-
-# Install latest nginx-stable
-RUN add-apt-repository ppa:nginx/stable -y && \
+RUN locale-gen en_US.UTF-8 && export LANG=en_US.UTF-8 && \
+    add-apt-repository ppa:git-core/ppa -y && \
+    add-apt-repository ppa:ondrej/php5-5.6 -y && \
     apt-get update -yq && \
-    apt-get install -yq nginx=1.8.0-1+trusty1
-
-# IMPORTANT: PPA has UTF-8 characters in it that will fail unless locale is generated
-RUN locale-gen en_US.UTF-8 && export LANG=en_US.UTF-8 && add-apt-repository ppa:ondrej/php5-5.6 -y
+    apt-get install -yq git
 
 # Update package cache with new PPA, install language and modules
 RUN apt-get update && \
     apt-get -yq install \
-        php5=5.6.11+dfsg-1+deb.sury.org~trusty+1 \
-        php5-fpm=5.6.11+dfsg-1+deb.sury.org~trusty+1 \
+        php5=5.6.12+dfsg-1+deb.sury.org~trusty+1 \
+        php5-fpm=5.6.12+dfsg-1+deb.sury.org~trusty+1 \
         php5-gearman=1.1.2-1+deb.sury.org~trusty+2 \
         php5-memcache=3.0.8-5+deb.sury.org~trusty+1 \
         php5-memcached=2.2.0-2+deb.sury.org~trusty+1 \
