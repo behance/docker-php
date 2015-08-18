@@ -1,4 +1,4 @@
-FROM behance/docker-nginx:1.0.0
+FROM behance/docker-nginx:1.1.0
 MAINTAINER Bryan Latten <latten@adobe.com>
 
 # Install singularity_runner

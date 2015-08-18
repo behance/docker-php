@@ -5,7 +5,7 @@
 
 if [[ -f /root/.composer/config.json ]]
 then
-  echo "[composer] installing app dependencies"
+  echo "[install] app dependencies"
   composer install
-  exit 99  # Signals for container to stop
+  exit $SIGNAL_BUILD_STOP
 fi
