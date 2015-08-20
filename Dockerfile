@@ -1,15 +1,19 @@
 FROM behance/docker-nginx:1.1.1
 MAINTAINER Bryan Latten <latten@adobe.com>
 
-# Install singularity_runner
-RUN apt-get install build-essential ruby1.9.1-dev -y && \
-    gem install --no-rdoc --no-ri singularity_dsl --version 1.6.3
+# Install pre-reqs for the next steps
+RUN apt-get update && apt-get -yq install \
+        build-essential \
+        wget
 
+# Ensure additional software sources are configured, and prevents newrelic install from prompting for input
 RUN locale-gen en_US.UTF-8 && export LANG=en_US.UTF-8 && \
     add-apt-repository ppa:git-core/ppa -y && \
     add-apt-repository ppa:ondrej/php5-5.6 -y && \
-    apt-get update -yq && \
-    apt-get install -yq git
+    echo 'deb http://apt.newrelic.com/debian/ newrelic non-free' | sudo tee /etc/apt/sources.list.d/newrelic.list && \
+    wget -O- https://download.newrelic.com/548C16BF.gpg | sudo apt-key add - && \
+    echo newrelic-php5 newrelic-php5/application-name string "REPLACE_NEWRELIC_APP" | debconf-set-selections && \
+    echo newrelic-php5 newrelic-php5/license-key string "REPLACE_NEWRELIC_LICENSE" | debconf-set-selections;
 
 # Update package cache with new PPA, install language and modules
 RUN apt-get update && \
@@ -27,17 +31,25 @@ RUN apt-get update && \
         php5-mcrypt \
         php5-json \
         php5-xdebug \
-        nano && \
-    php5dismod xdebug
+        newrelic-php5 \
+        nano \
+        wget \
+        git \
+        && \
+    php5dismod xdebug && \
+    php5dismod newrelic
 
+# Build/install any extensions that aren't in trouble-free packaging
 RUN pecl install igbinary-1.2.1 && \
     echo 'extension=igbinary.so' > /etc/php5/mods-available/igbinary.ini && \
-    php5enmod igbinary
-
-RUN printf "\n" | pecl install apcu-4.0.7 && \
+    php5enmod igbinary && \
+    printf "\n" | pecl install apcu-4.0.7 && \
     echo 'extension=apcu.so' > /etc/php5/mods-available/apcu.ini && \
     php5enmod apcu
 
+# Prevent newrelic daemon from auto-spawning; uses newrelic run.d script to enable at runtime, when ENV variables are present
+# @see https://docs.newrelic.com/docs/agents/php-agent/advanced-installation/starting-php-daemon-advanced
+RUN sed -i "s/;newrelic.daemon.dont_launch = 0/newrelic.daemon.dont_launch = 3/" /etc/php5/mods-available/newrelic.ini
 
 # Perform cleanup, ensure unnecessary packages are removed
 RUN apt-get autoclean -y && \
