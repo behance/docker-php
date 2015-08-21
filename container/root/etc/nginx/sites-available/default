@@ -1,0 +1,41 @@
+# @see http://www.if-not-true-then-false.com/2011/nginx-and-php-fpm-configuration-and-optimizing-tips-and-tricks/
+# @see http://stackoverflow.com/questions/13981013/php-fpm-and-nginx-rewrite-causing-download
+# @see https://nealpoole.com/blog/2011/04/setting-up-php-fastcgi-and-nginx-dont-trust-the-tutorials-check-your-configuration/
+
+server {
+  listen 80;
+
+  server_tokens off; # Doesn't broadcast version level of server software
+  server_name web; # TODO: replace with environment variable
+  root /app/public;
+
+  index  index.html index.php;
+
+  # Must exist in order to be replaced by parent
+  client_max_body_size 1m;
+
+  location / {
+    # Check for file or folder first, otherwise rewrite to front controller
+    try_files $uri $uri/ /index.php?$args;
+  }
+
+  # Default rewrite condition
+  location ~ \.php$ {
+
+    # Security condition, @see http://wiki.nginx.org/Pitfalls
+    try_files $uri =404;
+
+    include /etc/nginx/fastcgi_params;
+
+    # IMPORTANT: PATH_INFO is set to empty string in this configuration
+    fastcgi_param SCRIPT_FILENAME $document_root$fastcgi_script_name;
+    fastcgi_pass unix:/var/run/php5-fpm.sock;
+  }
+
+  # Protect against accessing hidden files
+  location ~ /\. {
+    access_log off;
+    log_not_found off;
+    deny all;
+  }
+}
