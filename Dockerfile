@@ -1,4 +1,4 @@
-FROM behance/docker-nginx:1.1.1
+FROM behance/docker-nginx:1.2.0
 MAINTAINER Bryan Latten <latten@adobe.com>
 
 # Install pre-reqs for the next steps
@@ -32,7 +32,6 @@ RUN apt-get update && \
         php5-json \
         php5-xdebug \
         newrelic-php5 \
-        nano \
         wget \
         git \
         && \
