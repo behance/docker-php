@@ -2,6 +2,12 @@
 
 PHPFPM_CONF=/etc/php5/fpm/pool.d/www.conf
 
+if [[ $CONTAINER_ROLE != 'web' ]]
+then
+  echo '[php-fpm] non-web mode, bypassing run sequence'
+  exit
+fi
+
 echo '[php-fpm] setting sensible PHP defaults'
 php5enmod defaults
 
