@@ -1,4 +1,4 @@
-FROM behance/docker-nginx:1.2.0
+FROM behance/docker-nginx:1.2.1
 MAINTAINER Bryan Latten <latten@adobe.com>
 
 # Install pre-reqs for the next steps
