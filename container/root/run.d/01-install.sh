@@ -6,6 +6,6 @@
 if [[ -f /root/.composer/config.json ]]
 then
   echo "[install] app dependencies"
-  composer install
+  composer install --optimize-autoloader
   exit $SIGNAL_BUILD_STOP
 fi

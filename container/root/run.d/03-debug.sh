@@ -24,18 +24,33 @@ then
 
   FASTCGI_PARAM_FILE=/etc/nginx/fastcgi_params
   echo "[debug] increasing fastcgi buffer size for debug headers (headers: $FASTCGI_HEADER_SIZE; buffers: $FASTCGI_BUFFER_COUNT x $FASTCGI_BUFFER_SIZE)"
-  echo "" >> $FASTCGI_PARAM_FILE
-  echo "# Debug Buffer Sizes" >> $FASTCGI_PARAM_FILE
-  echo "fastcgi_buffer_size $FASTCGI_HEADER_SIZE;" >> $FASTCGI_PARAM_FILE
-  echo "fastcgi_buffers $FASTCGI_BUFFER_COUNT $FASTCGI_BUFFER_SIZE;" >> $FASTCGI_PARAM_FILE
-  echo "proxy_buffer_size $FASTCGI_HEADER_SIZE;" >> $FASTCGI_PARAM_FILE
-  echo "proxy_buffers $FASTCGI_BUFFER_COUNT $FASTCGI_BUFFER_SIZE;" >> $FASTCGI_PARAM_FILE
+
+  grep -q fastcgi_buffer_size $FASTCGI_PARAM_FILE
+
+  REPLACEMENT_NEEDED=$?
+
+  # IMPORTANT: to make this command idempotent, test for the presence of one of the keys first
+  if [[ $REPLACEMENT_NEEDED == 0 ]]
+  then
+    echo "[debug] replacing existing buffer values"
+    sed -i "s/fastcgi_buffer_size \(.*\)\+;/fastcgi_buffer_size ${FASTCGI_HEADER_SIZE};/" $FASTCGI_PARAM_FILE
+    sed -i "s/fastcgi_buffers \(.*\)\+;/fastcgi_buffers ${FASTCGI_BUFFER_COUNT} ${FASTCGI_BUFFER_SIZE};/" $FASTCGI_PARAM_FILE
+    sed -i "s/proxy_buffer_size \(.*\)\+;/proxy_buffer_size ${FASTCGI_HEADER_SIZE};/" $FASTCGI_PARAM_FILE
+    sed -i "s/proxy_buffers \(.*\)\+;/proxy_buffers ${FASTCGI_BUFFER_COUNT} ${FASTCGI_BUFFER_SIZE};/" $FASTCGI_PARAM_FILE
+  else
+    echo "[debug] adding new buffer values"
+    echo "" >> $FASTCGI_PARAM_FILE
+    echo "fastcgi_buffer_size $FASTCGI_HEADER_SIZE;" >> $FASTCGI_PARAM_FILE
+    echo "fastcgi_buffers $FASTCGI_BUFFER_COUNT $FASTCGI_BUFFER_SIZE;" >> $FASTCGI_PARAM_FILE
+    echo "proxy_buffer_size $FASTCGI_HEADER_SIZE;" >> $FASTCGI_PARAM_FILE
+    echo "proxy_buffers $FASTCGI_BUFFER_COUNT $FASTCGI_BUFFER_SIZE;" >> $FASTCGI_PARAM_FILE
+  fi
 
   echo '[debug] opcache disabled'
   php5dismod opcache
 
 else
   echo '[debug] Opcache set to PERFORMANCE, NOT watching for file changes'
-  echo 'opcache.revalidate_freq=0' >> /etc/php5/mods-available/opcache.ini
-  echo 'opcache.validate_timestamps=0' >> /etc/php5/mods-available/opcache.ini
+  sed -i 's/;opcache.revalidate_freq/opcache.revalidate_freq/' /etc/php5/mods-available/opcache.ini
+  sed -i 's/;opcache.validate_timestamps/opcache.validate_timestamps/' /etc/php5/mods-available/opcache.ini
 fi
