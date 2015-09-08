@@ -18,8 +18,8 @@ RUN locale-gen en_US.UTF-8 && export LANG=en_US.UTF-8 && \
 # Update package cache with new PPA, install language and modules
 RUN apt-get update && \
     apt-get -yq install \
-        php5=5.6.13+dfsg-1+deb.sury.org~trusty+1 \
-        php5-fpm=5.6.13+dfsg-1+deb.sury.org~trusty+1 \
+        php5=5.6.13+dfsg-1+deb.sury.org~trusty+3 \
+        php5-fpm=5.6.13+dfsg-1+deb.sury.org~trusty+3 \
         php5-gearman=1.1.2-1+deb.sury.org~trusty+2 \
         php5-memcache=3.0.8-5+deb.sury.org~trusty+1 \
         php5-memcached=2.2.0-2+deb.sury.org~trusty+1 \
