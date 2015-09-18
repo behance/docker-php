@@ -12,11 +12,13 @@ echo '[php-fpm] setting sensible PHP defaults'
 php5enmod defaults
 
 # Baseline "optimizations" before ApacheBench succeeded at concurrency of 150
-# TODO: base on current memory capacity + CPU cores
-sed -i "s/pm.max_children = [0-9]\+/pm.max_children = 48/" $PHPFPM_CONF
-sed -i "s/pm.start_servers = [0-9]\+/pm.start_servers = 16/" $PHPFPM_CONF
-sed -i "s/pm.min_spare_servers = [0-9]\+/pm.min_spare_servers = 4/" $PHPFPM_CONF
-sed -i "s/pm.max_spare_servers = [0-9]\+/pm.max_spare_servers = 32/" $PHPFPM_CONF
+# @see http://www.codestance.com/tutorials-archive/install-and-configure-php-fpm-on-nginx-385
+sed -i "s/pm.max_children = [0-9]\+/pm.max_children = 4096/" $PHPFPM_CONF
+sed -i "s/pm.start_servers = [0-9]\+/pm.start_servers = 20/" $PHPFPM_CONF
+sed -i "s/pm.min_spare_servers = [0-9]\+/pm.min_spare_servers = 5/" $PHPFPM_CONF
+sed -i "s/pm.max_spare_servers = [0-9]\+/pm.max_spare_servers = 128/" $PHPFPM_CONF
+
+sed -i "s/;pm.max_requests = [0-9]\+/pm.max_requests = 1024/" $PHPFPM_CONF
 
 # php5-fpm processes must pick up stdout/stderr from workers, will cause minor performance decrease (but is required)
 sed -i "s/;catch_workers_output/catch_workers_output/" $PHPFPM_CONF
