@@ -48,7 +48,9 @@ RUN pecl install igbinary-1.2.1 && \
 
 # Prevent newrelic daemon from auto-spawning; uses newrelic run.d script to enable at runtime, when ENV variables are present
 # @see https://docs.newrelic.com/docs/agents/php-agent/advanced-installation/starting-php-daemon-advanced
-RUN sed -i "s/;newrelic.daemon.dont_launch = 0/newrelic.daemon.dont_launch = 3/" /etc/php5/mods-available/newrelic.ini
+RUN sed -i "s/;newrelic.daemon.dont_launch = 0/newrelic.daemon.dont_launch = 3/" /etc/php5/mods-available/newrelic.ini && \
+    sed -i "s/listen = \(.*\)\+/listen = 127.0.0.1:9000/" /etc/php5/fpm/pool.d/www.conf
+# ^^ Configure php-fpm to use TCP rather than unix socket (for stability), fastcgi_pass is also set by /etc/nginx/sites-available/default
 
 # Perform cleanup, ensure unnecessary packages are removed
 RUN apt-get autoclean -y && \
