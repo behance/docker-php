@@ -22,12 +22,31 @@ server {
   # Default rewrite condition
   location ~ \.php$ {
 
+
     # Security condition, @see http://wiki.nginx.org/Pitfalls
     try_files $uri =404;
 
-    include /etc/nginx/fastcgi_params;
+    # @see http://justinsilver.com/technology/linux/502-bad-gateway-nginx-buddypress/
+    sendfile on;
+    tcp_nopush off;
+    keepalive_requests 0;
 
-    fastcgi_read_timeout 60;
+    proxy_buffer_size 128k;
+    proxy_buffers 4 256k;
+    proxy_busy_buffers_size 256k;
+
+    fastcgi_buffering   on;
+    fastcgi_buffer_size 16k;
+    fastcgi_buffers     16 16k;
+
+    fastcgi_read_timeout 60s;
+    fastcgi_send_timeout 60s;
+    fastcgi_connect_timeout 60s;
+
+    # @see http://stackoverflow.com/questions/29770818/error-in-nginxphp-fpm-with-keepalive-fastcgi-keep-conn-on
+    fastcgi_keep_conn off;
+
+    include /etc/nginx/fastcgi_params;
 
     # IMPORTANT: PATH_INFO is set to empty string in this configuration
     fastcgi_param SCRIPT_FILENAME $document_root$fastcgi_script_name;
