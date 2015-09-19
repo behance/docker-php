@@ -23,7 +23,6 @@ sed -i "s/;pm.max_requests = [0-9]\+/pm.max_requests = 1024/" $PHPFPM_CONF
 # php5-fpm processes must pick up stdout/stderr from workers, will cause minor performance decrease (but is required)
 sed -i "s/;catch_workers_output/catch_workers_output/" $PHPFPM_CONF
 
-
 # 1. runs php5-fpm as foreground (-F)
 # 2. forcing php5-fpm to log to stderr even if a non-terminal is attached (-O)
 # 3. redirect stderr to stdout
@@ -31,4 +30,11 @@ sed -i "s/;catch_workers_output/catch_workers_output/" $PHPFPM_CONF
 # 5. reconnecting the stdout to current stdout
 # 6. backgrounding that process
 echo '[php-fpm] starting (background)'
-php5-fpm -F -O 2>&1 | sed -u 's,.*: \"\(.*\)$,\1,'| sed -u 's,"$,,' 1>&1 &
+
+# TODO: temporarily leverage normal logfile + startup mechanism,
+#  to determine if logging redirection prevents segfaults from being surfaced
+service php5-fpm start
+tail -f /var/log/php5-fpm.log | sed -u 's,.*: \"\(.*\)$,\1,'| sed -u 's,"$,,' 1>&1 &
+
+# TODO: reenable
+# php5-fpm -F -O 2>&1 | sed -u 's,.*: \"\(.*\)$,\1,'| sed -u 's,"$,,' 1>&1 &
