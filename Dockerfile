@@ -81,3 +81,5 @@ ONBUILD COPY ./ /app/
 
 EXPOSE 80
 CMD ["/bin/bash", "/run.sh"]
+RUN useradd -d /home/username -m -s /bin/bash behance
+USER behance
