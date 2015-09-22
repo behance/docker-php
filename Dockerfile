@@ -20,6 +20,7 @@ RUN apt-get update && \
     apt-get -yq install \
         php5=5.6.13+dfsg-1+deb.sury.org~trusty+3 \
         php5-fpm=5.6.13+dfsg-1+deb.sury.org~trusty+3 \
+        php5-dbg=5.6.13+dfsg-1+deb.sury.org~trusty+3 \
         php5-gearman=1.1.2-1+deb.sury.org~trusty+2 \
         php5-memcache=3.0.8-5+deb.sury.org~trusty+1 \
         php5-memcached=2.2.0-2+deb.sury.org~trusty+1 \
@@ -32,7 +33,6 @@ RUN apt-get update && \
         php5-json \
         php5-xdebug \
         newrelic-php5 \
-        wget \
         git \
         && \
     php5dismod xdebug && \
@@ -49,8 +49,10 @@ RUN pecl install igbinary-1.2.1 && \
 # Prevent newrelic daemon from auto-spawning; uses newrelic run.d script to enable at runtime, when ENV variables are present
 # @see https://docs.newrelic.com/docs/agents/php-agent/advanced-installation/starting-php-daemon-advanced
 RUN sed -i "s/;newrelic.daemon.dont_launch = 0/newrelic.daemon.dont_launch = 3/" /etc/php5/mods-available/newrelic.ini && \
-    sed -i "s/listen = \(.*\)\+/listen = 127.0.0.1:9000/" /etc/php5/fpm/pool.d/www.conf
+    sed -i "s/listen = \(.*\)\+/listen = 127.0.0.1:9000/" /etc/php5/fpm/pool.d/www.conf && \
+    sed -i "s/chdir = \//chdir = \/app/" /etc/php5/fpm/pool.d/www.conf
 # ^^ Configure php-fpm to use TCP rather than unix socket (for stability), fastcgi_pass is also set by /etc/nginx/sites-available/default
+# ^ Set base directory for all php (/app)
 
 # Perform cleanup, ensure unnecessary packages are removed
 RUN apt-get autoclean -y && \
@@ -76,8 +78,3 @@ ONBUILD COPY ./ /app/
 # TODO: script needs to be called AFTER downstream build is performed,
 #   ONBUILD instruction gets called BEFORE, so not useful
 # RUN /bin/bash /clean.sh
-
-
-
-EXPOSE 80
-CMD ["/bin/bash", "/run.sh"]
