@@ -31,6 +31,7 @@ server {
     tcp_nopush off;
     keepalive_requests 0;
 
+    # these values must exist for seamless replacement in debug run.d script
     proxy_buffer_size 128k;
     proxy_buffers 4 256k;
     proxy_busy_buffers_size 256k;

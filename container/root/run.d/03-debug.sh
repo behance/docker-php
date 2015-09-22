@@ -7,6 +7,9 @@ then
   FASTCGI_BUFFER_COUNT=4
   FASTCGI_BUFFER_SIZE=16k
 
+  # IMPORTANT: avoids error "must be equal to or greater than the maximum of the value of 'proxy_buffer_size' and one of the 'proxy_buffers'"
+  FASTCGI_BUSY_BUFFER=4M
+
   if [[ $FPM_HEADER_SIZE ]]
   then
     FASTCGI_HEADER_SIZE=$FPM_HEADER_SIZE
@@ -22,29 +25,19 @@ then
     FASTCGI_BUFFER_SIZE=$FPM_BUFFER_SIZE
   fi
 
-  FASTCGI_PARAM_FILE=/etc/nginx/fastcgi_params
-  echo "[debug] increasing fastcgi buffer size for debug headers (headers: $FASTCGI_HEADER_SIZE; buffers: $FASTCGI_BUFFER_COUNT x $FASTCGI_BUFFER_SIZE)"
-
-  grep -q fastcgi_buffer_size $FASTCGI_PARAM_FILE
-
-  REPLACEMENT_NEEDED=$?
-
-  # IMPORTANT: to make this command idempotent, test for the presence of one of the keys first
-  if [[ $REPLACEMENT_NEEDED == 0 ]]
+  if [[ $FPM_BUSY_BUFFER ]]
   then
-    echo "[debug] replacing existing buffer values"
-    sed -i "s/fastcgi_buffer_size \(.*\)\+;/fastcgi_buffer_size ${FASTCGI_HEADER_SIZE};/" $FASTCGI_PARAM_FILE
-    sed -i "s/fastcgi_buffers \(.*\)\+;/fastcgi_buffers ${FASTCGI_BUFFER_COUNT} ${FASTCGI_BUFFER_SIZE};/" $FASTCGI_PARAM_FILE
-    sed -i "s/proxy_buffer_size \(.*\)\+;/proxy_buffer_size ${FASTCGI_HEADER_SIZE};/" $FASTCGI_PARAM_FILE
-    sed -i "s/proxy_buffers \(.*\)\+;/proxy_buffers ${FASTCGI_BUFFER_COUNT} ${FASTCGI_BUFFER_SIZE};/" $FASTCGI_PARAM_FILE
-  else
-    echo "[debug] adding new buffer values"
-    echo "" >> $FASTCGI_PARAM_FILE
-    echo "fastcgi_buffer_size $FASTCGI_HEADER_SIZE;" >> $FASTCGI_PARAM_FILE
-    echo "fastcgi_buffers $FASTCGI_BUFFER_COUNT $FASTCGI_BUFFER_SIZE;" >> $FASTCGI_PARAM_FILE
-    echo "proxy_buffer_size $FASTCGI_HEADER_SIZE;" >> $FASTCGI_PARAM_FILE
-    echo "proxy_buffers $FASTCGI_BUFFER_COUNT $FASTCGI_BUFFER_SIZE;" >> $FASTCGI_PARAM_FILE
+    FASTCGI_BUSY_BUFFER=$FPM_BUSY_BUFFER
   fi
+
+  NGINX_PARAM_FILE=/etc/nginx/sites-available/default
+
+  echo "[debug] settings values for debug headers (headers: $FASTCGI_HEADER_SIZE; buffers: $FASTCGI_BUFFER_COUNT x $FASTCGI_BUFFER_SIZE)"
+  sed -i "s/fastcgi_buffer_size \(.*\)\+;/fastcgi_buffer_size ${FASTCGI_HEADER_SIZE};/" $NGINX_PARAM_FILE
+  sed -i "s/fastcgi_buffers \(.*\)\+;/fastcgi_buffers ${FASTCGI_BUFFER_COUNT} ${FASTCGI_BUFFER_SIZE};/" $NGINX_PARAM_FILE
+  sed -i "s/proxy_buffer_size \(.*\)\+;/proxy_buffer_size ${FASTCGI_HEADER_SIZE};/" $NGINX_PARAM_FILE
+  sed -i "s/proxy_buffers \(.*\)\+;/proxy_buffers ${FASTCGI_BUFFER_COUNT} ${FASTCGI_BUFFER_SIZE};/" $NGINX_PARAM_FILE
+  sed -i "s/proxy_busy_buffers_size \(.*\)\+;/proxy_busy_buffers_size ${FASTCGI_BUSY_BUFFER};/" $NGINX_PARAM_FILE
 
   echo '[debug] opcache disabled'
   php5dismod opcache
