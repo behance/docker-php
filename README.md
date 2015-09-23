@@ -38,4 +38,8 @@ Variable | Example | Description
 `SERVER_MAX_BODY_SIZE` | `SERVER_MAX_BODY_SIZE=4M` | Allows the downstream application to specify a non-default `client_max_body_size` configuration for the `server`-level directive in `/etc/nginx/sites-available/default`
 `REPLACE_NEWRELIC_APP` | `REPLACE_NEWRELIC_APP=prod-server-abc` | Sets application name for newrelic
 `REPLACE_NEWRELIC_LICENSE` | `REPLACE_NEWRELIC_LICENSE=abcdefg` | Sets license for newrelic, when combined with above, will enable newrelic reporting
+`FPM_HEADER_SIZE` | `FPM_HEADER_SIZE=16k` | Sets header size that will be allowed from PHP-FPM
+`FPM_BUFFER_COUNT` | `FPM_BUFFER_COUNT=4` | Sets the number of buffers for PHP-FPM responses
+`FPM_BUFFER_SIZE` | `FPM_BUFFER_SIZE=16k` | Sets the size of buffers for PHP-FPM responses
+`FPM_BUSY_BUFFER` | `FPM_BUSY_BUFFER=16k` | Total size of buffer that can busy sending while not yet fully read. May need to be changed in coordination with buffer size + count
 
