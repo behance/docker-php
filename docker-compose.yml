@@ -1,0 +1,9 @@
+web:
+  build: .
+  ports:
+   - '80'
+  environment:
+    CFG_APP_DEBUG: 1
+    FPM_BUSY_BUFFER: 16K
+  volumes:
+   - ./container/root/app:/app
