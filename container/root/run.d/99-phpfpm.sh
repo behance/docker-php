@@ -30,11 +30,4 @@ sed -i "s/;catch_workers_output/catch_workers_output/" $PHPFPM_CONF
 # 5. reconnecting the stdout to current stdout
 # 6. backgrounding that process
 echo '[php-fpm] starting (background)'
-
-# TODO: temporarily leverage normal logfile + startup mechanism,
-#  to determine if logging redirection prevents segfaults from being surfaced
-service php5-fpm start
-tail -f /var/log/php5-fpm.log | sed -u 's,.*: \"\(.*\)$,\1,'| sed -u 's,"$,,' 1>&1 &
-
-# TODO: reenable
-# php5-fpm -F -O 2>&1 | sed -u 's,.*: \"\(.*\)$,\1,'| sed -u 's,"$,,' 1>&1 &
+php5-fpm -F -O 2>&1 | sed -u 's,.*: \"\(.*\)$,\1,'| sed -u 's,"$,,' 1>&1 &
