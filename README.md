@@ -1,7 +1,7 @@
 docker-php
 ==========
 
-Provides basic building blocks for PHP web applications
+Provides basic building blocks for PHP web applications, available on Docker Hub: https://hub.docker.com/r/bryanlatten/docker-php/
 
 ###Includes
 ---
