@@ -62,6 +62,9 @@ RUN apt-get autoclean -y && \
 # Overlay the root filesystem from this repo
 COPY ./container/root /
 
+# Set sensible defaults
+RUN php5enmod defaults
+
 #####################################################################
 
 # Move downstream application to final resting place
