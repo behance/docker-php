@@ -8,9 +8,6 @@ then
   exit
 fi
 
-echo '[php-fpm] setting sensible PHP defaults'
-php5enmod defaults
-
 # Baseline "optimizations" before ApacheBench succeeded at concurrency of 150
 # @see http://www.codestance.com/tutorials-archive/install-and-configure-php-fpm-on-nginx-385
 sed -i "s/pm.max_children = [0-9]\+/pm.max_children = 4096/" $PHPFPM_CONF
