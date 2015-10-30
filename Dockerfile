@@ -1,6 +1,9 @@
 FROM behance/docker-nginx:1.2.4
 MAINTAINER Bryan Latten <latten@adobe.com>
 
+# Set TERM to suppress warning messages.
+ENV TERM=xterm-256color
+
 # Install pre-reqs for the next steps
 RUN apt-get update && apt-get -yq install \
         build-essential \
