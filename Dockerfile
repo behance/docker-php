@@ -19,10 +19,11 @@ RUN locale-gen en_US.UTF-8 && export LANG=en_US.UTF-8 && \
     echo newrelic-php5 newrelic-php5/license-key string "REPLACE_NEWRELIC_LICENSE" | debconf-set-selections;
 
 # Update package cache with new PPA, install language and modules
+# NOTE: patch versions are run unlocked for PHP, since new majors are a totally separate PPA
 RUN apt-get update && \
     apt-get -yq install \
-        php5=5.6.14+dfsg-1+deb.sury.org~trusty+1 \
-        php5-fpm=5.6.14+dfsg-1+deb.sury.org~trusty+1 \
+        php5 \
+        php5-fpm \
         php5-gearman=1.1.2-1+deb.sury.org~trusty+2 \
         php5-memcache=3.0.8-5+deb.sury.org~trusty+1 \
         php5-memcached=2.2.0-2+deb.sury.org~trusty+1 \
