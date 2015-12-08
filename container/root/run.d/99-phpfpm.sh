@@ -17,6 +17,9 @@ sed -i "s/pm.max_spare_servers = [0-9]\+/pm.max_spare_servers = 128/" $PHPFPM_CO
 
 sed -i "s/;pm.max_requests = [0-9]\+/pm.max_requests = 1024/" $PHPFPM_CONF
 
+# Ensure environment variables aren't cleaned, will make it into FPM  workers
+sed -i "s/;clear_env/clear_env/" $PHPFPM_CONF
+
 # php5-fpm processes must pick up stdout/stderr from workers, will cause minor performance decrease (but is required)
 sed -i "s/;catch_workers_output/catch_workers_output/" $PHPFPM_CONF
 
