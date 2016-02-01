@@ -49,6 +49,16 @@ RUN pecl install igbinary-1.2.1 && \
     echo 'extension=apcu.so' > /etc/php5/mods-available/apcu.ini && \
     php5enmod apcu
 
+# Build pimple extension, but don't enable by default
+RUN cd /root && \
+    git clone https://github.com/silexphp/pimple && \
+    cd pimple/ext/pimple && \
+    phpize && \
+    ./configure && \
+    make && \
+    make install && \
+    echo "extension=pimple.so" > /etc/php5/mods-available/pimple.ini
+
 # Prevent newrelic daemon from auto-spawning; uses newrelic run.d script to enable at runtime, when ENV variables are present
 # @see https://docs.newrelic.com/docs/agents/php-agent/advanced-installation/starting-php-daemon-advanced
 RUN sed -i "s/;newrelic.daemon.dont_launch = 0/newrelic.daemon.dont_launch = 3/" /etc/php5/mods-available/newrelic.ini && \
