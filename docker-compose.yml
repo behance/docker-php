@@ -1,9 +1,12 @@
 web:
   build: .
   ports:
-   - '80'
+   - '8080:80'
   environment:
     CFG_APP_DEBUG: 1
-    FPM_BUSY_BUFFER: 16K
+    SERVER_LOG_MINIMAL: 1
+    PHP_MEMORY_LIMIT: 256M
+    PHP_MAX_EXECUTION_TIME: 61
+    PHP_UPLOAD_MAX_FILESIZE: 100M
   volumes:
    - ./container/root/app:/app

@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/sh
 
 # As part of the "Two Phase" build, the first phase typically runs with composer keys mounted,
 # allowing the dependencies to be installed, the result of which is committed

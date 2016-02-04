@@ -1,6 +1,4 @@
-#!/bin/bash
-
-PHPFPM_CONF=/etc/php5/fpm/pool.d/www.conf
+#!/bin/sh
 
 if [[ $CONTAINER_ROLE != 'web' ]]
 then
@@ -8,26 +6,30 @@ then
   exit
 fi
 
-# Baseline "optimizations" before ApacheBench succeeded at concurrency of 150
-# @see http://www.codestance.com/tutorials-archive/install-and-configure-php-fpm-on-nginx-385
-sed -i "s/pm.max_children = [0-9]\+/pm.max_children = 4096/" $PHPFPM_CONF
-sed -i "s/pm.start_servers = [0-9]\+/pm.start_servers = 20/" $PHPFPM_CONF
-sed -i "s/pm.min_spare_servers = [0-9]\+/pm.min_spare_servers = 5/" $PHPFPM_CONF
-sed -i "s/pm.max_spare_servers = [0-9]\+/pm.max_spare_servers = 128/" $PHPFPM_CONF
+if [[ $PHP_MEMORY_LIMIT ]]
+then
+  echo "[php] setting memory_limit ${PHP_MEMORY_LIMIT}"
+  sed -i "s/memory_limit = .*/memory_limit = ${PHP_MEMORY_LIMIT}/" $CONF_PHPINI
+fi
 
-sed -i "s/;pm.max_requests = [0-9]\+/pm.max_requests = 1024/" $PHPFPM_CONF
+if [[ $PHP_MAX_EXECUTION_TIME ]]
+then
+  echo "[php] setting max_execution_time ${PHP_MAX_EXECUTION_TIME}"
+  sed -i "s/max_execution_time = .*/max_execution_time = ${PHP_MAX_EXECUTION_TIME}/" $CONF_PHPINI
+fi
 
-# Ensure environment variables aren't cleaned, will make it into FPM  workers
-sed -i "s/;clear_env/clear_env/" $PHPFPM_CONF
+if [[ $PHP_UPLOAD_MAX_FILESIZE ]]
+then
+  echo "[php] setting max_upload_filesize to ${PHP_UPLOAD_MAX_FILESIZE}"
+  sed -i "s/upload_max_filesize = .*/upload_max_filesize = ${PHP_UPLOAD_MAX_FILESIZE}/" $CONF_PHPINI
+  sed -i "s/post_max_size = .*/post_max_size = ${PHP_UPLOAD_MAX_FILESIZE}/" $CONF_PHPINI
+fi
 
-# php5-fpm processes must pick up stdout/stderr from workers, will cause minor performance decrease (but is required)
-sed -i "s/;catch_workers_output/catch_workers_output/" $PHPFPM_CONF
-
-# 1. runs php5-fpm as foreground (-F)
-# 2. forcing php5-fpm to log to stderr even if a non-terminal is attached (-O)
+# 1. runs php-fpm as foreground (-F)
+# 2. forcing php-fpm to log to stdout even if a non-terminal is attached (-O)
 # 3. redirect stderr to stdout
 # 4. filtering the garbage string that PHP-FPM for no-reason-at-all decided to wrap the message in,
 # 5. reconnecting the stdout to current stdout
-# 6. backgrounding that process
+# 6. backgrounding that process chain
 echo '[php-fpm] starting (background)'
-php5-fpm -F -O 2>&1 | sed -u 's,.*: \"\(.*\)$,\1,'| sed -u 's,"$,,' 1>&1 &
+php-fpm -F -O 2>&1 | sed -u 's,.*: \"\(.*\)$,\1,'| sed -u 's,"$,,' 1>&1 &
