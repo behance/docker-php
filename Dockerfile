@@ -1,13 +1,24 @@
-FROM behance/docker-nginx:1.2.4
+FROM behance/docker-nginx:3.0
 MAINTAINER Bryan Latten <latten@adobe.com>
 
 # Set TERM to suppress warning messages.
-ENV TERM=xterm-256color
+ENV CONF_PHPFPM=/etc/php5/fpm/php-fpm.conf \
+    CONF_PHPINI=/etc/php5/php.ini \
+    CONF_PHPMODS=/etc/php5/mods-available \
+    CONF_FPMPOOL=/etc/php5/fpm/pool.d/www.conf \
+    CONF_FPMOVERRIDES=/etc/php5/fpm/conf.d/overrides.user.ini \
+    APP_ROOT=/app
 
-# Install pre-reqs for the next steps
-RUN apt-get update && apt-get -yq install \
+# Ensure the latest base packages are up to date (don't require a parent rebuild)
+RUN apt-get update && \
+    apt-get upgrade -yqq && \
+    apt-get install -yqq \
+        git \
+        wget \
+        curl \
         build-essential \
-        wget
+    && \
+    rm -rf /var/lib/apt/lists/*
 
 # Ensure additional software sources are configured, and prevents newrelic install from prompting for input
 RUN locale-gen en_US.UTF-8 && export LANG=en_US.UTF-8 && \
@@ -18,10 +29,12 @@ RUN locale-gen en_US.UTF-8 && export LANG=en_US.UTF-8 && \
     echo newrelic-php5 newrelic-php5/application-name string "REPLACE_NEWRELIC_APP" | debconf-set-selections && \
     echo newrelic-php5 newrelic-php5/license-key string "REPLACE_NEWRELIC_LICENSE" | debconf-set-selections;
 
-# Update package cache with new PPA, install language and modules
-# NOTE: patch versions are run unlocked for PHP, since new majors are a totally separate PPA
+# Ensure cleanup script is available for the next command
+ADD ./container/root/clean.sh /clean.sh
+
+# Add PHP and support packages
 RUN apt-get update && \
-    apt-get -yq install \
+    apt-get -yqq install \
         php5 \
         php5-fpm \
         php5-gearman=1.1.2-1+deb.sury.org~trusty+2 \
@@ -36,61 +49,52 @@ RUN apt-get update && \
         php5-json \
         php5-xdebug \
         newrelic-php5 \
-        git \
         && \
     php5dismod xdebug && \
-    php5dismod newrelic
-
-# Build/install any extensions that aren't in trouble-free packaging
-RUN pecl install igbinary-1.2.1 && \
-    echo 'extension=igbinary.so' > /etc/php5/mods-available/igbinary.ini && \
+    php5dismod newrelic && \
+    \
+    # Add Guzzle feature flag to newrelic APM \
+    echo "newrelic.feature_flag = guzzle" >> $CONF_PHPMODS/newrelic.ini && \
+    # Build/install any extensions that aren't in trouble-free packaging \
+    pecl install igbinary-1.2.1 && \
+    echo 'extension=igbinary.so' > $CONF_PHPMODS/igbinary.ini && \
     php5enmod igbinary && \
     printf "\n" | pecl install apcu-4.0.7 && \
-    echo 'extension=apcu.so' > /etc/php5/mods-available/apcu.ini && \
-    php5enmod apcu
+    echo 'extension=apcu.so' > $CONF_PHPMODS/apcu.ini && \
+    php5enmod apcu && \
+    # Ensure development/compile libs are removed \
+    curl -sS https://getcomposer.org/installer | php && \
+    mv composer.phar /usr/local/bin/composer && \
+    ./clean.sh
 
-# Build pimple extension, but don't enable by default
-RUN cd /root && \
-    git clone https://github.com/silexphp/pimple && \
-    cd pimple/ext/pimple && \
-    phpize && \
-    ./configure && \
-    make && \
-    make install && \
-    echo "extension=pimple.so" > /etc/php5/mods-available/pimple.ini
-
-# Prevent newrelic daemon from auto-spawning; uses newrelic run.d script to enable at runtime, when ENV variables are present
 # @see https://docs.newrelic.com/docs/agents/php-agent/advanced-installation/starting-php-daemon-advanced
-RUN sed -i "s/;newrelic.daemon.dont_launch = 0/newrelic.daemon.dont_launch = 3/" /etc/php5/mods-available/newrelic.ini && \
-    sed -i "s/listen = \(.*\)\+/listen = 127.0.0.1:9000/" /etc/php5/fpm/pool.d/www.conf && \
-    sed -i "s/chdir = \//chdir = \/app/" /etc/php5/fpm/pool.d/www.conf
-# ^^ Configure php-fpm to use TCP rather than unix socket (for stability), fastcgi_pass is also set by /etc/nginx/sites-available/default
-# ^ Set base directory for all php (/app)
+# - Prevent newrelic daemon from auto-spawning; uses newrelic run.d script to enable at runtime, when ENV variables are present
+# - Configure php-fpm to use TCP rather than unix socket (for stability), fastcgi_pass is also set by /etc/nginx/sites-available/default
+# - Set base directory for all php (/app), difficult to use APP_PATH as a replacement, otherwise / breaks command
+# - Baseline "optimizations" before benchmarking succeeded at concurrency of 150
+# @see http://www.codestance.com/tutorials-archive/install-and-configure-php-fpm-on-nginx-385
+# - Ensure environment variables aren't cleaned, will make it into FPM  workers
+# - php-fpm processes must pick up stdout/stderr from workers, will cause minor performance decrease (but is required)
+# - Disable systemd integration, it is not present nor responsible for running service
+# - Enforce ACL that only 127.0.0.1 may connect
+# - Allow FPM to pick up extra configuration in fpm.d folder
 
-# Perform cleanup, ensure unnecessary packages are removed
-RUN apt-get autoclean -y && \
-    apt-get autoremove -y && \
-    rm -rf /tmp/* /var/tmp/* && \
-    rm -rf /var/lib/apt/lists/*
+# TODO: allow ENV specification of performance management at runtime (in run.d startup script)
 
-# Overlay the root filesystem from this repo
+RUN sed -i "s/listen = .*/listen = 127.0.0.1:9000/" $CONF_FPMPOOL && \
+    sed -i "s/;chdir = .*/chdir = \/app/" $CONF_FPMPOOL && \
+    sed -i "s/pm.max_children = .*/pm.max_children = 4096/" $CONF_FPMPOOL && \
+    sed -i "s/pm.start_servers = .*/pm.start_servers = 20/" $CONF_FPMPOOL && \
+    sed -i "s/;pm.max_requests = .*/pm.max_requests = 1024/" $CONF_FPMPOOL && \
+    sed -i "s/pm.min_spare_servers = .*/pm.min_spare_servers = 5/" $CONF_FPMPOOL && \
+    sed -i "s/pm.max_spare_servers = .*/pm.max_spare_servers = 128/" $CONF_FPMPOOL && \
+    sed -i "s/;clear_env/clear_env/" $CONF_FPMPOOL && \
+    sed -i "s/;catch_workers_output/catch_workers_output/" $CONF_FPMPOOL && \
+    sed -i "s/error_log = .*/error_log = \/dev\/stdout/" $CONF_PHPFPM && \
+    sed -i "s/;listen.allowed_clients/listen.allowed_clients/" $CONF_PHPFPM
+
+# # Overlay the root filesystem from this repo
 COPY ./container/root /
 
-# Set sensible defaults
-RUN php5enmod defaults
-
-#####################################################################
-
-# Move downstream application to final resting place
-ONBUILD COPY ./ /app/
-
-#####################################################################
-
-
-# Packages in this parent container are provided for ease of integration
-# in downstream (child) builds. Some dev-only packages need to be removed
-# for a production system (git/wget/gcc/etc)
-
-# TODO: script needs to be called AFTER downstream build is performed,
-#   ONBUILD instruction gets called BEFORE, so not useful
-# RUN /bin/bash /clean.sh
+# Override default ini values for both CLI + FPM
+RUN php5enmod overrides

@@ -22,5 +22,6 @@ apt-get remove --purge -yq \
     && \
 apt-get autoclean -y && \
 apt-get autoremove -y && \
-rm -rf /var/lib/{apt,dpkg,cache,log}/ && \
+rm -rf /var/lib/{cache,log}/ && \
+rm -rf /var/lib/apt/lists/ && \
 rm -rf /tmp/* /var/tmp/*

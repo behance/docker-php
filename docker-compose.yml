@@ -4,6 +4,12 @@ web:
    - '80'
   environment:
     CFG_APP_DEBUG: 1
-    FPM_BUSY_BUFFER: 16K
+    SERVER_LOG_MINIMAL: 1
+    PHP_FPM_MEMORY_LIMIT: 256M
+    PHP_FPM_MAX_EXECUTION_TIME: 61
+    PHP_FPM_UPLOAD_MAX_FILESIZE: 100M
+    SERVER_APP_NAME: docker-test
+    REPLACE_NEWRELIC_APP: abcdefg
+    REPLACE_NEWRELIC_LICENSE: hijklmno
   volumes:
    - ./container/root/app:/app
