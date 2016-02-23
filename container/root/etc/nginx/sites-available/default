@@ -11,9 +11,6 @@ server {
 
   index  index.html index.php;
 
-  # Must exist in order to be replaced by parent
-  client_max_body_size 1m;
-
   location / {
     # Check for file or folder first, otherwise rewrite to front controller
     try_files $uri $uri/ /index.php?$args;

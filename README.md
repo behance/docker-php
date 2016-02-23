@@ -17,13 +17,13 @@ Provides basic building blocks for PHP web applications, available on Docker Hub
   - fpm
   - gd
   - iconv
-  - ~gearman~
-  - ~igbinary~
+  - gearman
+  - igbinary
   - intl
   - json
   - mcrypt
   - mysql
-  - ~memcache~
+  - memcache
   - mysqlnd
   - pdo
   - pdo_mysql
@@ -41,7 +41,7 @@ Provides basic building blocks for PHP web applications, available on Docker Hub
   - xmlreader
   - zip
   - zlib
-  - ~Xdebug (disabled by default)~
+  - ~xdebug~ (disabled by default)
 
 ###Expectations
 ---
@@ -63,7 +63,7 @@ Variable | Example | Description
 `SERVER_MAX_BODY_SIZE` | `SERVER_MAX_BODY_SIZE=4M` | Allows the downstream application to specify a non-default `client_max_body_size` configuration for the `server`-level directive in `/etc/nginx/sites-available/default`
 `REPLACE_NEWRELIC_APP` | `REPLACE_NEWRELIC_APP=prod-server-abc` | Sets application name for newrelic
 `REPLACE_NEWRELIC_LICENSE` | `REPLACE_NEWRELIC_LICENSE=abcdefg` | Sets license for newrelic, when combined with above, will enable newrelic reporting
-`PHP_MEMORY_LIMIT` | `PHP_MEMORY_LIMIT=256M` | Sets memory limit for FPM instances of PHP
-`PHP_MAX_EXECUTION_TIME` | `PHP_MAX_EXECUTION_TIME=60` | Sets time limit for FPM workers
-`PHP_UPLOAD_MAX_FILESIZE` | `PHP_UPLOAD_MAX_FILESIZE=100M` | Sets both upload_max_filesize and post_max_size
+`PHP_FPM_MEMORY_LIMIT` | `PHP_FPM_MEMORY_LIMIT=256M` | Sets memory limit for FPM instances of PHP
+`PHP_FPM_MAX_EXECUTION_TIME` | `PHP_FPM_MAX_EXECUTION_TIME=60` | Sets time limit for FPM workers
+`PHP_FPM_UPLOAD_MAX_FILESIZE` | `PHP_FPM_UPLOAD_MAX_FILESIZE=100M` | Sets both upload_max_filesize and post_max_size
 
