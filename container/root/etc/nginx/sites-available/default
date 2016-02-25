@@ -9,6 +9,9 @@ server {
   server_name web; # TODO: replace with environment variable
   root /app/public;
 
+  # Replace with env variable SERVER_MAX_BODY_SIZE
+  client_max_body_size 1m;
+
   index  index.html index.php;
 
   location / {
