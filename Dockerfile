@@ -2,25 +2,25 @@ FROM behance/docker-nginx:5.0
 MAINTAINER Bryan Latten <latten@adobe.com>
 
 # Set TERM to suppress warning messages.
-ENV CONF_PHPFPM=/etc/php5/fpm/php-fpm.conf \
-    CONF_PHPINI=/etc/php5/php.ini \
-    CONF_PHPMODS=/etc/php5/mods-available \
-    CONF_FPMPOOL=/etc/php5/fpm/pool.d/www.conf \
-    CONF_FPMOVERRIDES=/etc/php5/fpm/conf.d/overrides.user.ini \
+ENV CONF_PHPFPM=/etc/php/7.0/fpm/php-fpm.conf \
+    CONF_PHPMODS=/etc/php/7.0/mods-available \
+    CONF_FPMPOOL=/etc/php/7.0/fpm/pool.d/www.conf \
+    CONF_FPMOVERRIDES=/etc/php/7.0/fpm/conf.d/overrides.user.ini \
     APP_ROOT=/app
 
 # Ensure the latest base packages are up to date (don't require a parent rebuild)
-RUN apt-get update && \
+RUN apt-get update -q && \
     apt-get upgrade -yqq && \
     apt-get install -yqq \
         git \
+        curl \
         wget \
         curl \
         software-properties-common \
     && \
     locale-gen en_US.UTF-8 && export LANG=en_US.UTF-8 && \
     add-apt-repository ppa:git-core/ppa -y && \
-    add-apt-repository ppa:ondrej/php5-5.6 -y && \
+    add-apt-repository ppa:ondrej/php -y && \
     echo 'deb http://apt.newrelic.com/debian/ newrelic non-free' | sudo tee /etc/apt/sources.list.d/newrelic.list && \
     wget -O- https://download.newrelic.com/548C16BF.gpg | sudo apt-key add - && \
     # Prevent newrelic install from prompting for input \
@@ -34,34 +34,32 @@ RUN apt-get update && \
 # Ensure cleanup script is available for the next command
 ADD ./container/root/clean.sh /clean.sh
 
-# Add PHP and support packages
-RUN apt-get update && \
+# Add PHP and support packages \
+RUN apt-get update -q && \
     apt-get -yqq install \
-        php5 \
-        php5-fpm \
-        php5-gearman=1.1.2-1+deb.sury.org~trusty+2 \
-        php5-memcache=3.0.8-5+deb.sury.org~trusty+1 \
-        php5-memcached=2.2.0-2+deb.sury.org~trusty+1 \
-        php5-apcu \
-        php5-dev \
-        php5-gd \
-        php5-mysqlnd \
-        php5-intl \
-        php5-curl \
-        php5-mcrypt \
-        php5-json \
-        php5-xdebug \
+        php7.0 \
+        php7.0-fpm \
+        php7.0-mysql \
+        php7.0-xml \
+        php7.0-curl \
+        php7.0-gd \
+        php7.0-intl \
+        php7.0-json \
+        php7.0-mbstring \
+        php7.0-mcrypt \
+        php7.0-zip \
+        php-apcu \
+        php-gearman \
+        php-igbinary \
+        php-memcache \
+        php-memcached \
+        php-xdebug \
         newrelic-php5 \
-        && \
-    php5dismod xdebug && \
-    php5dismod newrelic && \
-    \
+    && \
+    phpdismod xdebug && \
+    phpdismod newrelic && \
     # Add Guzzle feature flag to newrelic APM \
     echo "newrelic.feature_flag = guzzle" >> $CONF_PHPMODS/newrelic.ini && \
-    # Build/install any extensions that aren't in trouble-free packaging \
-    pecl install igbinary-1.2.1 && \
-    echo 'extension=igbinary.so' > $CONF_PHPMODS/igbinary.ini && \
-    php5enmod igbinary && \
     # Ensure development/compile libs are removed \
     curl -sS https://getcomposer.org/installer | php && \
     mv composer.phar /usr/local/bin/composer && \
@@ -75,7 +73,7 @@ RUN apt-get update && \
 # - php-fpm processes must pick up stdout/stderr from workers, will cause minor performance decrease (but is required)
 # - Disable systemd integration, it is not present nor responsible for running service
 # - Enforce ACL that only 127.0.0.1 may connect
-# - Allow FPM to pick up extra configuration in fpm.d folder
+# - Allow FPM to pick up extra configuration in fpm/conf.d folder
 
 # TODO: allow ENV specification of performance management at runtime (in run.d startup script)
 
@@ -97,10 +95,10 @@ RUN sed -i "s/listen = .*/listen = 127.0.0.1:9000/" $CONF_FPMPOOL && \
     mkdir /var/run/php/ && \
     chown -R $NOT_ROOT_USER:$NOT_ROOT_USER /var/run/php /var/run/lock /var/log/newrelic
 
-# # Overlay the root filesystem from this repo
+# Overlay the root filesystem from this repo
 COPY ./container/root /
 
 # Override default ini values for both CLI + FPM
-RUN php5enmod overrides && \
+RUN phpenmod overrides && \
     # Set nginx to listen on defined port \
     sed -i "s/listen [0-9]*;/listen ${CONTAINER_PORT};/" $CONF_NGINX_SITE

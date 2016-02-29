@@ -3,7 +3,7 @@
 # @see https://nealpoole.com/blog/2011/04/setting-up-php-fastcgi-and-nginx-dont-trust-the-tutorials-check-your-configuration/
 
 server {
-  listen 80;
+  listen 8080;
 
   server_tokens off; # Doesn't broadcast version level of server software
   server_name web; # TODO: replace with environment variable
