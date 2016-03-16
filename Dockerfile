@@ -1,4 +1,4 @@
-FROM behance/docker-nginx:3.0
+FROM behance/docker-nginx:4.0
 MAINTAINER Bryan Latten <latten@adobe.com>
 
 # Set TERM to suppress warning messages.
@@ -16,18 +16,20 @@ RUN apt-get update && \
         git \
         wget \
         curl \
-        build-essential \
+        software-properties-common \
     && \
-    rm -rf /var/lib/apt/lists/*
-
-# Ensure additional software sources are configured, and prevents newrelic install from prompting for input
-RUN locale-gen en_US.UTF-8 && export LANG=en_US.UTF-8 && \
+    locale-gen en_US.UTF-8 && export LANG=en_US.UTF-8 && \
     add-apt-repository ppa:git-core/ppa -y && \
     add-apt-repository ppa:ondrej/php5-5.6 -y && \
     echo 'deb http://apt.newrelic.com/debian/ newrelic non-free' | sudo tee /etc/apt/sources.list.d/newrelic.list && \
     wget -O- https://download.newrelic.com/548C16BF.gpg | sudo apt-key add - && \
+    # Prevent newrelic install from prompting for input \
     echo newrelic-php5 newrelic-php5/application-name string "REPLACE_NEWRELIC_APP" | debconf-set-selections && \
-    echo newrelic-php5 newrelic-php5/license-key string "REPLACE_NEWRELIC_LICENSE" | debconf-set-selections;
+    echo newrelic-php5 newrelic-php5/license-key string "REPLACE_NEWRELIC_LICENSE" | debconf-set-selections && \
+    apt-get remove --purge -yq \
+        software-properties-common \
+    && \
+    rm -rf /var/lib/apt/lists/*
 
 # Ensure cleanup script is available for the next command
 ADD ./container/root/clean.sh /clean.sh
@@ -40,6 +42,7 @@ RUN apt-get update && \
         php5-gearman=1.1.2-1+deb.sury.org~trusty+2 \
         php5-memcache=3.0.8-5+deb.sury.org~trusty+1 \
         php5-memcached=2.2.0-2+deb.sury.org~trusty+1 \
+        php5-apcu \
         php5-dev \
         php5-gd \
         php5-mysqlnd \
@@ -59,16 +62,11 @@ RUN apt-get update && \
     pecl install igbinary-1.2.1 && \
     echo 'extension=igbinary.so' > $CONF_PHPMODS/igbinary.ini && \
     php5enmod igbinary && \
-    printf "\n" | pecl install apcu-4.0.7 && \
-    echo 'extension=apcu.so' > $CONF_PHPMODS/apcu.ini && \
-    php5enmod apcu && \
     # Ensure development/compile libs are removed \
     curl -sS https://getcomposer.org/installer | php && \
     mv composer.phar /usr/local/bin/composer && \
-    ./clean.sh
+    /bin/bash /clean.sh
 
-# @see https://docs.newrelic.com/docs/agents/php-agent/advanced-installation/starting-php-daemon-advanced
-# - Prevent newrelic daemon from auto-spawning; uses newrelic run.d script to enable at runtime, when ENV variables are present
 # - Configure php-fpm to use TCP rather than unix socket (for stability), fastcgi_pass is also set by /etc/nginx/sites-available/default
 # - Set base directory for all php (/app), difficult to use APP_PATH as a replacement, otherwise / breaks command
 # - Baseline "optimizations" before benchmarking succeeded at concurrency of 150
@@ -91,7 +89,13 @@ RUN sed -i "s/listen = .*/listen = 127.0.0.1:9000/" $CONF_FPMPOOL && \
     sed -i "s/;clear_env/clear_env/" $CONF_FPMPOOL && \
     sed -i "s/;catch_workers_output/catch_workers_output/" $CONF_FPMPOOL && \
     sed -i "s/error_log = .*/error_log = \/dev\/stdout/" $CONF_PHPFPM && \
-    sed -i "s/;listen.allowed_clients/listen.allowed_clients/" $CONF_PHPFPM
+    sed -i "s/;listen.allowed_clients/listen.allowed_clients/" $CONF_PHPFPM && \
+    # Since PHP-FPM will be run without root privileges, comment these lines to prevent any startup warnings \
+    sed -i "s/^user =/;user =/" $CONF_FPMPOOL && \
+    sed -i "s/^group =/;group =/" $CONF_FPMPOOL && \
+    # Required for php-fpm to place .sock file into, fails otherwise \
+    mkdir /var/run/php/ && \
+    chown -R $NOT_ROOT_USER:$NOT_ROOT_USER /var/run/php /var/run/lock /var/log/newrelic
 
 # # Overlay the root filesystem from this repo
 COPY ./container/root /
