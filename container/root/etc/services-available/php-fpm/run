@@ -1,0 +1,3 @@
+#!/usr/bin/with-contenv bash
+
+sudo -E -u www-data -- sh -c "php5-fpm -F -O 2>&1 | sed -u 's,.*: \"\(.*\)$,\1,'| sed -u 's,\"$,,' 1>&1"

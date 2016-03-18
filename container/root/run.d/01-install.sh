@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# As part of the "Two Phase" build, the first phase typically runs with composer keys mounted,
+# As part of the "Two Phase" build, the first phase artifact is run with secrets (including composer keys) mounted,
 # allowing the dependencies to be installed, the result of which is committed
 
 # TODO: convert to optionally run during build with netcat/docker-bridge trick
