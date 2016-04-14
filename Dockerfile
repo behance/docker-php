@@ -1,4 +1,4 @@
-FROM behance/docker-nginx:4.0
+FROM behance/docker-nginx:4.1
 MAINTAINER Bryan Latten <latten@adobe.com>
 
 # Set TERM to suppress warning messages.
