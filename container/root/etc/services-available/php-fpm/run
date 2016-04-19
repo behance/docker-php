@@ -1,3 +1,32 @@
-#!/usr/bin/with-contenv bash
+#!/usr/bin/execlineb -P
+#
+# @see https://github.com/just-containers/s6-overlay/issues/41#issuecomment-99366363
+#
+# PHP-FPM, like Nginx, uses SIGQUIT to gracefully stop serving traffic.
 
-sudo -E -u www-data -- sh -c "php5-fpm -F -O 2>&1 | sed -u 's,.*: \"\(.*\)$,\1,'| sed -u 's,\"$,,' 1>&1"
+trap
+{
+  term
+  {
+    foreground
+    {
+      backtick -i -n NGINXPID { cat /tmp/.nginx/nginx.pid }
+    }
+    import -u NGINXPID ifthenelse { $NGINXPID }
+    {
+      foreground
+      {
+        echo [sigterm-phpfpm] waiting for nginx to exit
+      }
+      wait { $NGINXPID } import -u ! kill -s SIGQUIT ${!}
+    }
+    foreground
+    {
+      import -u ! kill -s SIGQUIT ${!}
+    }
+  }
+}
+
+# PHP-FPM needs to have stdout/stderr filtered for the extra "cruft" it appends.
+# Due to the complexity of this script (it didn't work with S6's pipeline), it is now moved to its own separate script
+s6-setuidgid www-data with-contenv ./.command
