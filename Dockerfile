@@ -1,4 +1,4 @@
-FROM behance/docker-nginx:4.1
+FROM behance/docker-nginx:5.0
 MAINTAINER Bryan Latten <latten@adobe.com>
 
 # Set TERM to suppress warning messages.
@@ -7,6 +7,7 @@ ENV CONF_PHPFPM=/etc/php5/fpm/php-fpm.conf \
     CONF_PHPMODS=/etc/php5/mods-available \
     CONF_FPMPOOL=/etc/php5/fpm/pool.d/www.conf \
     CONF_FPMOVERRIDES=/etc/php5/fpm/conf.d/overrides.user.ini \
+    SERVER_PORT=8080 \
     APP_ROOT=/app
 
 # Ensure the latest base packages are up to date (don't require a parent rebuild)
