@@ -7,7 +7,6 @@ ENV CONF_PHPFPM=/etc/php5/fpm/php-fpm.conf \
     CONF_PHPMODS=/etc/php5/mods-available \
     CONF_FPMPOOL=/etc/php5/fpm/pool.d/www.conf \
     CONF_FPMOVERRIDES=/etc/php5/fpm/conf.d/overrides.user.ini \
-    SERVER_PORT=8080 \
     APP_ROOT=/app
 
 # Ensure the latest base packages are up to date (don't require a parent rebuild)
@@ -102,4 +101,6 @@ RUN sed -i "s/listen = .*/listen = 127.0.0.1:9000/" $CONF_FPMPOOL && \
 COPY ./container/root /
 
 # Override default ini values for both CLI + FPM
-RUN php5enmod overrides
+RUN php5enmod overrides && \
+    # Set nginx to listen on defined port \
+    sed -i "s/listen [0-9]*;/listen ${CONTAINER_PORT};/" $CONF_NGINX_SITE

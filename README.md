@@ -51,6 +51,10 @@ Applications that leverage `bryanlatten/docker-php` as their container parent ar
 Inside the copied directory, there must be a directory named `public` -- this will be automatically assigned as the webroot for the web server, which expects
 a front controller called `index.php`.
 
+
+NOTE: Nginx is exposed and bound to an unprivileged port, `8080`
+
+
 ###Downstream Configuration
 ---
 Several environment variables can be used to configure various PHP FPM paramaters, as well as a few Nginx configurations.
