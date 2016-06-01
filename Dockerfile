@@ -1,4 +1,4 @@
-FROM behance/docker-nginx:4.1
+FROM behance/docker-nginx:5.0
 MAINTAINER Bryan Latten <latten@adobe.com>
 
 # Set TERM to suppress warning messages.
@@ -101,4 +101,6 @@ RUN sed -i "s/listen = .*/listen = 127.0.0.1:9000/" $CONF_FPMPOOL && \
 COPY ./container/root /
 
 # Override default ini values for both CLI + FPM
-RUN php5enmod overrides
+RUN php5enmod overrides && \
+    # Set nginx to listen on defined port \
+    sed -i "s/listen [0-9]*;/listen ${CONTAINER_PORT};/" $CONF_NGINX_SITE

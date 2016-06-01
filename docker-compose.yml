@@ -1,7 +1,7 @@
 web:
   build: .
   ports:
-   - '8080:80'
+   - '8080:8080'
   environment:
     CFG_APP_DEBUG: 1
     SERVER_LOG_MINIMAL: 1
