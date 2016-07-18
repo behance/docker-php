@@ -28,6 +28,9 @@ fastcgi_param   SERVER_NAME             $server_name;
 
 fastcgi_param   HTTPS                   $https;
 
+# Clear out header used in httpoxy attack @see https://httpoxy.org/
+fastcgi_param   HTTP_PROXY              "";
+
 # PHP only, required if PHP was built with --enable-force-cgi-redirect
 fastcgi_param   REDIRECT_STATUS         200;
 
