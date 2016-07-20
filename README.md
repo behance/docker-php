@@ -3,12 +3,14 @@ docker-php
 
 Provides basic building blocks for PHP web applications, available on Docker Hub: https://hub.docker.com/r/bryanlatten/docker-php/
 
+Ubuntu used by default, Alpine builds also available tagged as `-alpine`
+
 ###Includes
 ---
 - Nginx
 - PHP/PHP-FPM (7.0)
 - Extra PHP Modules:
-  - apcu
+  - apcu**
   - bz2
   - ctype
   - curl
@@ -17,13 +19,13 @@ Provides basic building blocks for PHP web applications, available on Docker Hub
   - fpm
   - gd
   - iconv
-  - gearman
-  - igbinary
+  - gearman*
+  - igbinary*
   - intl
   - json
   - mcrypt
   - mysql
-  - memcache
+  - memcache*
   - memcached
   - mysqlnd
   - newrelic
@@ -44,6 +46,9 @@ Provides basic building blocks for PHP web applications, available on Docker Hub
   - zip
   - zlib
   - ~xdebug~ (disabled by default)
+
+* - not available on Alpine variant
+** - backwards compatible library not available on Alpine variant
 
 ###Expectations
 ---
