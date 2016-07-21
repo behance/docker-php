@@ -6,7 +6,7 @@ Provides basic building blocks for PHP web applications, available on Docker Hub
 ###Includes
 ---
 - Nginx
-- PHP/PHP-FPM (5.6)
+- PHP/PHP-FPM (7.0)
 - Extra PHP Modules:
   - apcu
   - bz2
@@ -24,7 +24,9 @@ Provides basic building blocks for PHP web applications, available on Docker Hub
   - mcrypt
   - mysql
   - memcache
+  - memcached
   - mysqlnd
+  - newrelic
   - pdo
   - pdo_mysql
   - opcache

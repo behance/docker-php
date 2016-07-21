@@ -6,7 +6,7 @@
 # Perform cleanup, ensure unnecessary packages are removed
 apt-get remove --purge -yq \
     wget \
-    php5-dev \
+    php7.0-dev \
     gcc \
     libgcc-4.8-dev \
     cpp-4.8 \
