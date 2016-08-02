@@ -7,5 +7,5 @@ then
   echo "[newrelic] enabling APM metrics for ${REPLACE_NEWRELIC_APP}"
   sed -i "s/newrelic.appname = .*/newrelic.appname = \"${REPLACE_NEWRELIC_APP}\"/" $CONF_NEWRELIC
   sed -i "s/newrelic.license = .*/newrelic.license = \"${REPLACE_NEWRELIC_LICENSE}\"/" $CONF_NEWRELIC
-  phpenmod newrelic
+  sed -i 's/;extension\s\?=/extension =/' $CONF_PHPMODS/newrelic.ini
 fi

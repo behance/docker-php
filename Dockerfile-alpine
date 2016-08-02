@@ -1,0 +1,129 @@
+FROM behance/docker-nginx:5.0-alpine
+MAINTAINER Bryan Latten <latten@adobe.com>
+
+# Set TERM to suppress warning messages.
+ENV CONF_PHPFPM=/etc/php7/php-fpm.conf \
+    CONF_PHPMODS=/etc/php7/conf.d \
+    CONF_FPMPOOL=/etc/php7/php-fpm.d/www.conf \
+    CONF_FPMOVERRIDES=/etc/php/7.0/fpm/conf.d/overrides.user.ini \
+    APP_ROOT=/app \
+    NEWRELIC_VERSION=6.4.0.163
+
+RUN echo '@edge http://dl-cdn.alpinelinux.org/alpine/edge/testing' >> /etc/apk/repositories && \
+    apk update && \
+    apk add --no-cache \
+      git \
+      curl \
+      wget \
+      curl \
+      php7@edge \
+      php7-fpm@edge \
+      php7-apcu@edge \
+      php7-common@edge \
+      php7-ctype@edge \
+      php7-curl@edge \
+      php7-dom@edge \
+      php7-calendar@edge \
+      php7-exif@edge \
+      php7-ftp@edge \
+      php7-gd@edge \
+      php7-gettext@edge \
+      php7-iconv@edge \
+      php7-intl@edge \
+      php7-json@edge \
+      php7-mcrypt@edge \
+      php7-mbstring@edge \
+      php7-msgpack@edge \
+      php7-memcached@edge \
+      php7-mysqli@edge \
+      php7-mysqlnd@edge \
+      php7-opcache@edge \
+      php7-openssl@edge \
+      php7-pcntl@edge \
+      php7-pdo@edge \
+      php7-pdo_mysql@edge \
+      php7-phar@edge \
+      php7-posix@edge \
+      # php7-readline@edge \ -- doesn't seem to be working \
+      php7-session@edge \
+      php7-sockets@edge \
+      php7-sysvmsg@edge \
+      php7-sysvsem@edge \
+      php7-sysvshm@edge \
+      php7-shmop@edge \
+      php7-xdebug@edge \
+      php7-xml@edge \
+      php7-xmlreader@edge \
+      php7-xsl@edge \
+      php7-zip@edge \
+      php7-zlib@edge \
+    && \
+    # Alpine + Ubuntu use different versioned names --> now standardized \
+    ln -s /usr/bin/php7 /usr/bin/php && \
+    ln -s /usr/sbin/php-fpm7 /usr/sbin/php-fpm7.0 && \
+    # Disable xdebug by default \
+    sed -i 's/zend_extension\s\?=/;zend_extension =/' $CONF_PHPMODS/xdebug.ini
+
+# Install Alpine-compatible NewRelic, seed with variables to be replaced, add Guzzle feature flag
+# Requires PHP to already be installed
+ADD https://download.newrelic.com/php_agent/archive/${NEWRELIC_VERSION}/newrelic-php5-${NEWRELIC_VERSION}-linux-musl.tar.gz /root/
+RUN cd /root && \
+    gzip -dc newrelic-php5-${NEWRELIC_VERSION}-linux-musl.tar.gz | tar xf - && \
+    rm newrelic-php5-${NEWRELIC_VERSION}-linux-musl.tar.gz && \
+    cd newrelic-php5-${NEWRELIC_VERSION}-linux-musl && \
+    echo "\n" | ./newrelic-install install && \
+    chown root:root /root/newrelic-php5-${NEWRELIC_VERSION}-linux-musl/agent/x64/newrelic-20151012.so && \
+    cp /root/newrelic-php5-${NEWRELIC_VERSION}-linux-musl/agent/x64/newrelic-20151012.so /usr/lib/php7/modules/newrelic.so && \
+    sed -i "s/newrelic.appname\s\?= .*/newrelic.appname = \"REPLACE_NEWRELIC_APP\"/" $CONF_PHPMODS/newrelic.ini && \
+    sed -i "s/newrelic.license\s\?= .*/newrelic.license = \"REPLACE_NEWRELIC_LICENSE\"/" $CONF_PHPMODS/newrelic.ini && \
+    sed -i 's/extension\s\?=/;extension =/' $CONF_PHPMODS/newrelic.ini && \
+    echo "newrelic.feature_flag = guzzle" >> $CONF_PHPMODS/newrelic.ini && \
+    # Fix permissions on extracted folder \
+    chown -R $NOT_ROOT_USER:$NOT_ROOT_USER *
+
+RUN curl -sS https://getcomposer.org/installer | php && \
+    mv composer.phar /usr/local/bin/composer
+
+#        php-apcu \
+#        php-gearman \
+#        php-igbinary \
+#        php-memcache \
+
+#########################################################################################################################################
+# - Configure php-fpm to use TCP rather than unix socket (for stability), fastcgi_pass is also set by /etc/nginx/sites-available/default
+# - Set base directory for all php (/app), difficult to use APP_PATH as a replacement, otherwise / breaks command
+# - Baseline "optimizations" before benchmarking succeeded at concurrency of 150
+# @see http://www.codestance.com/tutorials-archive/install-and-configure-php-fpm-on-nginx-385
+# - Ensure environment variables aren't cleaned, will make it into FPM  workers
+# - php-fpm processes must pick up stdout/stderr from workers, will cause minor performance decrease (but is required)
+# - Disable systemd integration, it is not present nor responsible for running service
+# - Enforce ACL that only 127.0.0.1 may connect
+# - Allow FPM to pick up extra configuration in fpm/conf.d folder
+#
+## TODO: allow ENV specification of performance management at runtime (in run.d startup script)
+#########################################################################################################################################
+
+RUN sed -i "s/listen = .*/listen = 127.0.0.1:9000/" $CONF_FPMPOOL && \
+    sed -i "s/;chdir = .*/chdir = \/app/" $CONF_FPMPOOL && \
+    sed -i "s/pm.max_children = .*/pm.max_children = 4096/" $CONF_FPMPOOL && \
+    sed -i "s/pm.start_servers = .*/pm.start_servers = 20/" $CONF_FPMPOOL && \
+    sed -i "s/;pm.max_requests = .*/pm.max_requests = 1024/" $CONF_FPMPOOL && \
+    sed -i "s/pm.min_spare_servers = .*/pm.min_spare_servers = 5/" $CONF_FPMPOOL && \
+    sed -i "s/pm.max_spare_servers = .*/pm.max_spare_servers = 128/" $CONF_FPMPOOL && \
+    sed -i "s/;clear_env/clear_env/" $CONF_FPMPOOL && \
+    sed -i "s/;catch_workers_output/catch_workers_output/" $CONF_FPMPOOL && \
+    sed -i "s/;\?error_log = .*/error_log = \/dev\/stdout/" $CONF_PHPFPM && \
+    sed -i "s/;listen.allowed_clients/listen.allowed_clients/" $CONF_PHPFPM && \
+    # Since PHP-FPM will be run without root privileges, comment these lines to prevent any startup warnings \
+    sed -i "s/^user =/;user =/" $CONF_FPMPOOL && \
+    sed -i "s/^group =/;group =/" $CONF_FPMPOOL && \
+    # Required for php-fpm to place .sock file into, fails otherwise \
+    mkdir -p /var/run/php/ /var/log/php7/newrelic && \
+    chown -R $NOT_ROOT_USER:$NOT_ROOT_USER /var/run/php /var/log/newrelic
+
+# Overlay the root filesystem from this repo
+COPY ./container/root /
+
+# Make additional hacks to migrate files from Ubuntu to Alpine folder structure
+RUN cp /etc/php/7.0/mods-available/* $CONF_PHPMODS && \
+    rm $CONF_PHPMODS/00_opcache.ini

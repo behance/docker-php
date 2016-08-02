@@ -14,4 +14,12 @@ then
     ln -s /etc/services-available/php-fpm /etc/services.d/php-fpm
   fi
 
+  # HACK: symlink only leveraged by Alpine (where folder exists)
+  # For web services, add FPM-specific overrides to the conf folder
+  if [ ! -f /etc/php7/conf.d/overrides.user.ini ] && [ -d /etc/php7/conf.d ]
+  then
+    echo '[run] adding FPM-specific overrides: Alpine-only'
+    ln -s $CONF_FPMOVERRIDES /etc/php7/conf.d/overrides.user.ini
+  fi
+
 fi
