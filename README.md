@@ -3,52 +3,59 @@ docker-php
 
 Provides basic building blocks for PHP web applications, available on Docker Hub: https://hub.docker.com/r/bryanlatten/docker-php/
 
-Ubuntu used by default, Alpine builds also available tagged as `-alpine`
+Three variants are available:
+Default: Ubuntu-based, PHP 7.0
+Slim: Alpine-based, PHP 7.0, tagged as `-alpine`
+Beta: Ubuntu-based, PHP 7.1, tagged as `-beta`
 
 ###Includes
 ---
 - Nginx
 - PHP/PHP-FPM (7.0)
 - Extra PHP Modules:
-  - apcu**
-  - bz2
+  - apcu**^
+  - bz2^
   - ctype
   - curl
   - dom
   - exif
   - fpm
   - gd
-  - iconv
   - gearman*
-  - igbinary*
+  - iconv
+  - igbinary*^
   - intl
   - json
+  - mbstring
   - mcrypt
-  - mysql
-  - memcache*
-  - memcached
+  - memcache*^
+  - memcached^
+  - mysqli
   - mysqlnd
-  - newrelic
+  - newrelic (disabled, activated by env variables)
+  - opcache (can be disabled with debug env variable)
+  - openssl
+  - pcntl
   - pdo
   - pdo_mysql
-  - opcache
-  - openssl
   - phar
-  - pcntl
   - posix
-  - sockets
   - shmop
+  - SimpleXML
+  - sockets
+  - sysvmsg
   - sysvsem
   - sysvshm
-  - sysvmsg
   - xml
   - xmlreader
+  - xmlwriter
   - zip
   - zlib
-  - ~xdebug~ (disabled by default)
+  - xdebug (disabled by default)
 
 * - not available on Alpine variant
 ** - backwards compatible library not available on Alpine variant
+^ - not available on beta tag
 
 ###Expectations
 ---
