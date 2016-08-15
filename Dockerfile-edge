@@ -47,6 +47,7 @@ RUN apt-get update -q && \
         php7.1-json \
         php7.1-mbstring \
         php7.1-mcrypt \
+        php7.1-pgsql \
         php7.1-zip \
         php-apcu \
         php-gearman \
@@ -56,6 +57,7 @@ RUN apt-get update -q && \
         php-xdebug \
         newrelic-php5 \
     && \
+    phpdismod pdo_pgsql && \
     phpdismod xdebug && \
     phpdismod newrelic && \
     # Add Guzzle feature flag to newrelic APM \
