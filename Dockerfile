@@ -6,7 +6,12 @@ ENV CONF_PHPFPM=/etc/php/7.0/fpm/php-fpm.conf \
     CONF_PHPMODS=/etc/php/7.0/mods-available \
     CONF_FPMPOOL=/etc/php/7.0/fpm/pool.d/www.conf \
     CONF_FPMOVERRIDES=/etc/php/7.0/fpm/conf.d/overrides.user.ini \
-    APP_ROOT=/app
+    APP_ROOT=/app \
+    PHP_FPM_MAX_CHILDREN=4096 \
+    PHP_FPM_START_SERVERS=20 \
+    PHP_FPM_MAX_REQUESTS=1024 \
+    PHP_FPM_MIN_SPARE_SERVERS=5 \
+    PHP_FPM_MAX_SPARE_SERVERS=128
 
 # Ensure the latest base packages are up to date (don't require a parent rebuild)
 RUN apt-get update -q && \
@@ -84,11 +89,11 @@ RUN apt-get update -q && \
 
 RUN sed -i "s/listen = .*/listen = 127.0.0.1:9000/" $CONF_FPMPOOL && \
     sed -i "s/;chdir = .*/chdir = \/app/" $CONF_FPMPOOL && \
-    sed -i "s/pm.max_children = .*/pm.max_children = 4096/" $CONF_FPMPOOL && \
-    sed -i "s/pm.start_servers = .*/pm.start_servers = 20/" $CONF_FPMPOOL && \
-    sed -i "s/;pm.max_requests = .*/pm.max_requests = 1024/" $CONF_FPMPOOL && \
-    sed -i "s/pm.min_spare_servers = .*/pm.min_spare_servers = 5/" $CONF_FPMPOOL && \
-    sed -i "s/pm.max_spare_servers = .*/pm.max_spare_servers = 128/" $CONF_FPMPOOL && \
+    sed -i "s/pm.max_children = .*/pm.max_children = \${PHP_FPM_MAX_CHILDREN}/" $CONF_FPMPOOL && \
+    sed -i "s/pm.start_servers = .*/pm.start_servers = \${PHP_FPM_START_SERVERS}/" $CONF_FPMPOOL && \
+    sed -i "s/;pm.max_requests = .*/pm.max_requests = \${PHP_FPM_MAX_REQUESTS}/" $CONF_FPMPOOL && \
+    sed -i "s/pm.min_spare_servers = .*/pm.min_spare_servers = \${PHP_FPM_MIN_SPARE_SERVERS}/" $CONF_FPMPOOL && \
+    sed -i "s/pm.max_spare_servers = .*/pm.max_spare_servers = \${PHP_FPM_MAX_SPARE_SERVERS}/" $CONF_FPMPOOL && \
     sed -i "s/;clear_env/clear_env/" $CONF_FPMPOOL && \
     sed -i "s/;catch_workers_output/catch_workers_output/" $CONF_FPMPOOL && \
     sed -i "s/error_log = .*/error_log = \/dev\/stdout/" $CONF_PHPFPM && \
