@@ -4,15 +4,19 @@ docker-php
 Provides basic building blocks for PHP web applications, available on Docker Hub: https://hub.docker.com/r/bryanlatten/docker-php/
 
 Three variants are available:
-Default: Ubuntu-based, PHP 7.0
-Slim: Alpine-based, PHP 7.0, tagged as `-alpine`
-Beta: Ubuntu-based, PHP 7.1, tagged as `-beta`
+- (default) Ubuntu-based, PHP 7.0  
+- (slim) Alpine-based, PHP 7.0, tagged as `-alpine`  
+- (beta) Ubuntu-based, PHP 7.1, tagged as `-beta`  
 
 ###Includes
 ---
 - Nginx
 - PHP/PHP-FPM (7.0)
 - Extra PHP Modules:
+
+`*` - not available on Alpine variant  
+`**` - backwards compatible library not available on Alpine variant  
+`^` - not available on beta tag
   - apcu**^
   - bz2^
   - ctype
@@ -53,9 +57,6 @@ Beta: Ubuntu-based, PHP 7.1, tagged as `-beta`
   - zlib
   - xdebug (disabled by default)
 
-* - not available on Alpine variant
-** - backwards compatible library not available on Alpine variant
-^ - not available on beta tag
 
 ###Expectations
 ---
