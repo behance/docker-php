@@ -1,4 +1,5 @@
 [![Build Status](https://travis-ci.org/bryanlatten/docker-php.svg?branch=master)](https://travis-ci.org/bryanlatten/docker-php)
+[![Docker Pulls](https://img.shields.io/docker/pulls/bryanlatten/docker-php.svg?maxAge=2592000)]()
 
 docker-php
 ==========
