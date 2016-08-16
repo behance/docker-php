@@ -16,7 +16,7 @@ Three variants are available:
 
 `*` - not available on Alpine variant  
 `**` - backwards compatible library not available on Alpine variant  
-`^` - not available on beta tag
+`^` - not available on beta tag  
 `~` - disabled by default
   - apcu**^
   - bz2^
