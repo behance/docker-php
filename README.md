@@ -17,7 +17,7 @@ Three variants are available:
 `*` - not available on Alpine variant  
 `**` - backwards compatible library not available on Alpine variant  
 `^` - not available on beta tag  
-`~` - disabled by default
+`~` - disabled by default (use `phpenmod` to enable on Ubuntu-based variants, uncomment .ini file otherwise)
   - apcu**^
   - bz2^
   - ctype
@@ -47,6 +47,7 @@ Three variants are available:
   - pgsql~
   - phar
   - posix
+  - redis~
   - shmop
   - SimpleXML
   - sockets
