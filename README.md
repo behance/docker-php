@@ -17,6 +17,7 @@ Three variants are available:
 `*` - not available on Alpine variant  
 `**` - backwards compatible library not available on Alpine variant  
 `^` - not available on beta tag
+`~` - disabled by default
   - apcu**^
   - bz2^
   - ctype
@@ -36,12 +37,14 @@ Three variants are available:
   - memcached^
   - mysqli
   - mysqlnd
-  - newrelic (disabled, activated by env variables)
+  - newrelic~ (activates with env variables)
   - opcache (can be disabled with debug env variable)
   - openssl
   - pcntl
   - pdo
   - pdo_mysql
+  - pdo_pgsql~
+  - pgsql~
   - phar
   - posix
   - shmop
@@ -55,7 +58,7 @@ Three variants are available:
   - xmlwriter
   - zip
   - zlib
-  - xdebug (disabled by default)
+  - xdebug~
 
 
 ###Expectations
