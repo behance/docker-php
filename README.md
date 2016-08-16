@@ -1,3 +1,5 @@
+[![Build Status](https://travis-ci.org/bryanlatten/docker-php.svg?branch=master)](https://travis-ci.org/bryanlatten/docker-php)
+
 docker-php
 ==========
 
