@@ -39,6 +39,7 @@ RUN echo '@edge http://dl-cdn.alpinelinux.org/alpine/edge/testing' >> /etc/apk/r
       php7-mysqlnd@edge \
       php7-opcache@edge \
       php7-openssl@edge \
+      php7-pdo_pgsql@edge \
       php7-pcntl@edge \
       php7-pdo@edge \
       php7-pdo_mysql@edge \
@@ -62,7 +63,9 @@ RUN echo '@edge http://dl-cdn.alpinelinux.org/alpine/edge/testing' >> /etc/apk/r
     ln -s /usr/bin/php7 /usr/bin/php && \
     ln -s /usr/sbin/php-fpm7 /usr/sbin/php-fpm7.0 && \
     # Disable xdebug by default \
-    sed -i 's/zend_extension\s\?=/;zend_extension =/' $CONF_PHPMODS/xdebug.ini
+    sed -i 's/zend_extension\s\?=/;zend_extension =/' $CONF_PHPMODS/xdebug.ini && \
+    # Disable postgres by default \
+    sed -i 's/extension\s\?=/;extension =/' $CONF_PHPMODS/00_pdo_pgsql.ini
 
 # Install Alpine-compatible NewRelic, seed with variables to be replaced, add Guzzle feature flag
 # Requires PHP to already be installed
