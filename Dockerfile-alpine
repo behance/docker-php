@@ -47,6 +47,7 @@ RUN echo '@edge http://dl-cdn.alpinelinux.org/alpine/edge/testing' >> /etc/apk/r
       php7-phar@edge \
       php7-posix@edge \
       # php7-readline@edge \ -- doesn't seem to be working \
+      php7-redis@edge \
       php7-session@edge \
       php7-sockets@edge \
       php7-sysvmsg@edge \
@@ -67,7 +68,8 @@ RUN echo '@edge http://dl-cdn.alpinelinux.org/alpine/edge/testing' >> /etc/apk/r
     sed -i 's/zend_extension\s\?=/;zend_extension =/' $CONF_PHPMODS/xdebug.ini && \
     # Disable postgres by default \
     sed -i 's/extension\s\?=/;extension =/' $CONF_PHPMODS/00_pdo_pgsql.ini && \
-    sed -i 's/extension\s\?=/;extension =/' $CONF_PHPMODS/00_pgsql.ini
+    sed -i 's/extension\s\?=/;extension =/' $CONF_PHPMODS/00_pgsql.ini && \
+    sed -i 's/extension\s\?=/;extension =/' $CONF_PHPMODS/20_redis.ini
 
 # Install Alpine-compatible NewRelic, seed with variables to be replaced, add Guzzle feature flag
 # Requires PHP to already be installed

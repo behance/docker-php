@@ -54,12 +54,14 @@ RUN apt-get update -q && \
         php-igbinary \
         php-memcache \
         php-memcached \
+        php-redis \
         php-xdebug \
         newrelic-php5 \
     && \
     phpdismod newrelic && \
     phpdismod pdo_pgsql && \
     phpdismod pgsql && \
+    phpdismod redis && \
     phpdismod xdebug && \
     # Add Guzzle feature flag to newrelic APM \
     echo "newrelic.feature_flag = guzzle" >> $CONF_PHPMODS/newrelic.ini && \
