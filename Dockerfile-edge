@@ -57,9 +57,10 @@ RUN apt-get update -q && \
         php-xdebug \
         newrelic-php5 \
     && \
-    phpdismod pdo_pgsql && \
-    phpdismod xdebug && \
     phpdismod newrelic && \
+    phpdismod pdo_pgsql && \
+    phpdismod pgsql && \
+    phpdismod xdebug && \
     # Add Guzzle feature flag to newrelic APM \
     echo "newrelic.feature_flag = guzzle" >> $CONF_PHPMODS/newrelic.ini && \
     # Ensure development/compile libs are removed \
