@@ -1,4 +1,4 @@
-FROM behance/docker-nginx:5.0
+FROM behance/docker-nginx:5.1
 MAINTAINER Bryan Latten <latten@adobe.com>
 
 # Set TERM to suppress warning messages.
@@ -107,3 +107,6 @@ COPY ./container/root /
 RUN phpenmod overrides && \
     # Set nginx to listen on defined port \
     sed -i "s/listen [0-9]*;/listen ${CONTAINER_PORT};/" $CONF_NGINX_SITE
+
+RUN goss -g goss.ubuntu.yaml validate
+

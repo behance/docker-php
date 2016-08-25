@@ -1,0 +1,24 @@
+group:
+  www-data:
+    exists: true
+command:
+  php -m:
+    exit-status: 0
+    stderr: []
+  php -v:
+    exit-status: 0
+    stderr: []
+  php-fpm7.0 -m:
+    exit-status: 0
+    stderr: []
+  php-fpm7.0 -v:
+    exit-status: 0
+    stderr: []
+  php -r 'echo PHP_MAJOR_VERSION;':
+    exit-status: 0
+    stdout: [7]
+    stderr: []
+  php -r 'echo PHP_MINOR_VERSION;':
+    exit-status: 0
+    stdout: [0]
+    stderr: []

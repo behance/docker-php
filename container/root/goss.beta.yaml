@@ -1,0 +1,53 @@
+# Note: base cannot be used because versions are different
+# gossfile:
+#   goss.base.yaml: {}
+group:
+  www-data:
+    exists: true
+command:
+  php -m:
+    exit-status: 0
+    stderr: []
+  php -v:
+    exit-status: 0
+    stderr: []
+  php-fpm7.0 -m:
+    exit-status: 0
+    stderr: []
+  php-fpm7.0 -v:
+    exit-status: 0
+    stderr: []
+  php -r 'echo PHP_MAJOR_VERSION;':
+    exit-status: 0
+    stdout: [7]
+    stderr: []
+  php -r 'echo PHP_MINOR_VERSION;':
+    exit-status: 0
+    stdout: [1]
+    stderr: []
+
+package:
+  php7.1:
+    installed: true
+  php7.1-cli:
+    installed: true
+  php7.1-curl:
+    installed: true
+  php7.1-fpm:
+    installed: true
+  php7.1-gd:
+    installed: true
+  php7.1-intl:
+    installed: true
+  php7.1-json:
+    installed: true
+  php7.1-mbstring:
+    installed: true
+  php7.1-mysql:
+    installed: true
+  php7.1-opcache:
+    installed: true
+  php7.1-xml:
+    installed: true
+  php7.1-zip:
+    installed: true
