@@ -1,0 +1,28 @@
+gossfile:
+  goss.base.yaml: {}
+
+package:
+  php7.0:
+    installed: true
+  php7.0-cli:
+    installed: true
+  php7.0-curl:
+    installed: true
+  php7.0-fpm:
+    installed: true
+  php7.0-gd:
+    installed: true
+  php7.0-intl:
+    installed: true
+  php7.0-json:
+    installed: true
+  php7.0-mbstring:
+    installed: true
+  php7.0-mysql:
+    installed: true
+  php7.0-opcache:
+    installed: true
+  php7.0-xml:
+    installed: true
+  php7.0-zip:
+    installed: true

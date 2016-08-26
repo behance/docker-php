@@ -1,0 +1,86 @@
+gossfile:
+  goss.base.yaml: {}
+
+package:
+  php7:
+    installed: true
+  php7-apcu:
+    installed: true
+  php7-calendar:
+    installed: true
+  php7-common:
+    installed: true
+  php7-ctype:
+    installed: true
+  php7-curl:
+    installed: true
+  php7-dom:
+    installed: true
+  php7-exif:
+    installed: true
+  php7-ftp:
+    installed: true
+  php7-gd:
+    installed: true
+  php7-gettext:
+    installed: true
+  php7-iconv:
+    installed: true
+  php7-intl:
+    installed: true
+  php7-json:
+    installed: true
+  php7-mcrypt:
+    installed: true
+  php7-mbstring:
+    installed: true
+  php7-msgpack:
+    installed: true
+  php7-memcached:
+    installed: true
+  php7-mysqli:
+    installed: true
+  php7-mysqlnd:
+    installed: true
+  php7-opcache:
+    installed: true
+  php7-pdo_pgsql:
+    installed: true
+  php7-pgsql:
+    installed: true
+  php7-pcntl:
+    installed: true
+  php7-pdo:
+    installed: true
+  php7-mysqli:
+    installed: true
+  php7-phar:
+    installed: true
+  php7-posix:
+    installed: true
+  php7-redis:
+    installed: true
+  php7-session:
+    installed: true
+  php7-sockets:
+    installed: true
+  php7-sysvmsg:
+    installed: true
+  php7-sysvsem:
+    installed: true
+  php7-sysvshm:
+    installed: true
+  php7-shmop:
+    installed: true
+  php7-xdebug:
+    installed: true
+  php7-xml:
+    installed: true
+  php7-xmlreader:
+    installed: true
+  php7-xsl:
+    installed: true
+  php7-zip:
+    installed: true
+  php7-zlib:
+    installed: true

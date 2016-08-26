@@ -1,4 +1,4 @@
-FROM behance/docker-nginx:5.0-alpine
+FROM behance/docker-nginx:5.1-alpine
 MAINTAINER Bryan Latten <latten@adobe.com>
 
 # Set TERM to suppress warning messages.
@@ -15,15 +15,14 @@ RUN echo '@edge http://dl-cdn.alpinelinux.org/alpine/edge/testing' >> /etc/apk/r
       git \
       curl \
       wget \
-      curl \
       php7@edge \
       php7-fpm@edge \
       php7-apcu@edge \
+      php7-calendar@edge \
       php7-common@edge \
       php7-ctype@edge \
       php7-curl@edge \
       php7-dom@edge \
-      php7-calendar@edge \
       php7-exif@edge \
       php7-ftp@edge \
       php7-gd@edge \
@@ -73,8 +72,8 @@ RUN echo '@edge http://dl-cdn.alpinelinux.org/alpine/edge/testing' >> /etc/apk/r
 
 # Install Alpine-compatible NewRelic, seed with variables to be replaced, add Guzzle feature flag
 # Requires PHP to already be installed
-ADD https://download.newrelic.com/php_agent/archive/${NEWRELIC_VERSION}/newrelic-php5-${NEWRELIC_VERSION}-linux-musl.tar.gz /root/
-RUN cd /root && \
+RUN curl -L https://download.newrelic.com/php_agent/archive/${NEWRELIC_VERSION}/newrelic-php5-${NEWRELIC_VERSION}-linux-musl.tar.gz -o /root/newrelic-php5-${NEWRELIC_VERSION}-linux-musl.tar.gz && \
+    cd /root && \
     gzip -dc newrelic-php5-${NEWRELIC_VERSION}-linux-musl.tar.gz | tar xf - && \
     rm newrelic-php5-${NEWRELIC_VERSION}-linux-musl.tar.gz && \
     cd newrelic-php5-${NEWRELIC_VERSION}-linux-musl && \
@@ -134,3 +133,5 @@ COPY ./container/root /
 # Make additional hacks to migrate files from Ubuntu to Alpine folder structure
 RUN cp /etc/php/7.0/mods-available/* $CONF_PHPMODS && \
     rm $CONF_PHPMODS/00_opcache.ini
+
+RUN goss -g goss.alpine.yaml validate
