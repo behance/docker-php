@@ -10,55 +10,56 @@ ENV CONF_PHPFPM=/etc/php7/php-fpm.conf \
     NEWRELIC_VERSION=6.4.0.163
 
 RUN echo '@edge http://dl-cdn.alpinelinux.org/alpine/edge/testing' >> /etc/apk/repositories && \
+    echo '@community http://dl-cdn.alpinelinux.org/alpine/edge/community' >> /etc/apk/repositories && \
     apk update && \
     apk add --no-cache \
       git \
       curl \
       wget \
-      php7@edge \
-      php7-fpm@edge \
+      php7@community \
+      php7-fpm@community \
       php7-apcu@edge \
-      php7-calendar@edge \
-      php7-common@edge \
-      php7-ctype@edge \
-      php7-curl@edge \
-      php7-dom@edge \
-      php7-exif@edge \
-      php7-ftp@edge \
-      php7-gd@edge \
-      php7-gettext@edge \
-      php7-iconv@edge \
-      php7-intl@edge \
-      php7-json@edge \
-      php7-mcrypt@edge \
-      php7-mbstring@edge \
+      php7-calendar@community \
+      php7-common@community \
+      php7-ctype@community \
+      php7-curl@community \
+      php7-dom@community \
+      php7-exif@community \
+      php7-ftp@community \
+      php7-gd@community \
+      php7-gettext@community \
+      php7-iconv@community \
+      php7-intl@community \
+      php7-json@community \
+      php7-mcrypt@community \
+      php7-mbstring@community \
       php7-msgpack@edge \
-      php7-memcached@edge \
-      php7-mysqli@edge \
-      php7-mysqlnd@edge \
-      php7-opcache@edge \
-      php7-openssl@edge \
-      php7-pdo_pgsql@edge \
-      php7-pgsql@edge \
-      php7-pcntl@edge \
-      php7-pdo@edge \
-      php7-pdo_mysql@edge \
-      php7-phar@edge \
-      php7-posix@edge \
-      # php7-readline@edge \ -- doesn't seem to be working \
+      # php7-memcached@community \ --- currently only built for arm arch
+      php7-mysqli@community \
+      php7-mysqlnd@community \
+      php7-opcache@community \
+      php7-openssl@community \
+      php7-pdo_pgsql@community \
+      php7-pgsql@community \
+      php7-pcntl@community \
+      php7-pdo@community \
+      php7-pdo_mysql@community \
+      php7-phar@community \
+      php7-posix@community \
+      # php7-readline@community \  --- not currently working on PHP 7
       php7-redis@edge \
-      php7-session@edge \
-      php7-sockets@edge \
-      php7-sysvmsg@edge \
-      php7-sysvsem@edge \
-      php7-sysvshm@edge \
-      php7-shmop@edge \
+      php7-session@community \
+      php7-sockets@community \
+      php7-sysvmsg@community \
+      php7-sysvsem@community \
+      php7-sysvshm@community \
+      php7-shmop@community \
       php7-xdebug@edge \
-      php7-xml@edge \
-      php7-xmlreader@edge \
-      php7-xsl@edge \
-      php7-zip@edge \
-      php7-zlib@edge \
+      php7-xml@community \
+      php7-xmlreader@community \
+      php7-xsl@community \
+      php7-zip@community \
+      php7-zlib@community \
     && \
     # Alpine + Ubuntu use different versioned names --> now standardized \
     ln -s /usr/bin/php7 /usr/bin/php && \

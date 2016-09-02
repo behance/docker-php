@@ -36,8 +36,8 @@ package:
     installed: true
   php7-msgpack:
     installed: true
-  php7-memcached:
-    installed: true
+  # php7-memcached:
+  #   installed: true
   php7-mysqli:
     installed: true
   php7-mysqlnd:
