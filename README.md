@@ -92,4 +92,10 @@ Variable | Example | Description
 `PHP_FPM_MEMORY_LIMIT` | `PHP_FPM_MEMORY_LIMIT=256M` | Sets memory limit for FPM instances of PHP
 `PHP_FPM_MAX_EXECUTION_TIME` | `PHP_FPM_MAX_EXECUTION_TIME=60` | Sets time limit for FPM workers
 `PHP_FPM_UPLOAD_MAX_FILESIZE` | `PHP_FPM_UPLOAD_MAX_FILESIZE=100M` | Sets both upload_max_filesize and post_max_size
+`PHP_FPM_MAX_CHILDREN` | `PHP_FPM_MAX_CHILDREN=15` | [docs](http://php.net/manual/en/install.fpm.configuration.php)
+`PHP_FPM_START_SERVERS` | `PHP_FPM_START_SERVERS=128` | [docs](http://php.net/manual/en/install.fpm.configuration.php)
+`PHP_FPM_MAX_REQUESTS` | `PHP_FPM_MAX_REQUESTS=1000` | [docs](http://php.net/manual/en/install.fpm.configuration.php) How many requests an individual FPM worker will process before recycling
+`PHP_FPM_MIN_SPARE_SERVERS` | `PHP_FPM_MIN_SPARE_SERVERS=5` | [docs](http://php.net/manual/en/install.fpm.configuration.php) 
+`PHP_FPM_MAX_SPARE_SERVERS` | `PHP_FPM_MAX_SPARE_SERVERS=100` | [docs](http://php.net/manual/en/install.fpm.configuration.php)
+
 
