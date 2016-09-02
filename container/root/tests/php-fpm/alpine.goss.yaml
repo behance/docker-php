@@ -1,5 +1,5 @@
 gossfile:
-  goss.base.yaml: {}
+  base.goss.yaml: {}
 
 package:
   php7:

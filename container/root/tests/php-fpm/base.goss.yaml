@@ -1,3 +1,6 @@
+gossfile:
+  ../../goss.nginx.yaml: {}
+
 group:
   www-data:
     exists: true

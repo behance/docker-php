@@ -1,6 +1,6 @@
 # Note: base cannot be used because versions are different
 # gossfile:
-#   goss.base.yaml: {}
+#   base.goss.yaml: {}
 group:
   www-data:
     exists: true
