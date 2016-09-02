@@ -108,5 +108,6 @@ RUN phpenmod overrides && \
     # Set nginx to listen on defined port \
     sed -i "s/listen [0-9]*;/listen ${CONTAINER_PORT};/" $CONF_NGINX_SITE
 
-RUN goss -g goss.ubuntu.yaml validate
+RUN goss -g /tests/php-fpm/ubuntu.goss.yaml validate && \
+    /tmp/aufs_hack.sh
 

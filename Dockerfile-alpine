@@ -135,4 +135,5 @@ COPY ./container/root /
 RUN cp /etc/php/7.0/mods-available/* $CONF_PHPMODS && \
     rm $CONF_PHPMODS/00_opcache.ini
 
-RUN goss -g goss.alpine.yaml validate
+RUN goss -g /tests/php-fpm/alpine.goss.yaml validate && \
+    /tmp/aufs_hack.sh

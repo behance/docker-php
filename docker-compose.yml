@@ -15,8 +15,8 @@ ubuntu:
     S6_KILL_GRACETIME: 1
   volumes:
    - ./container/root/app:/app
-   - ./container/root/goss.base.yaml:/goss.base.yaml
-   - ./container/root/goss.ubuntu.yaml:/goss.ubuntu.yaml
+   - ./container/root/tests/php-fpm/base.goss.yaml:/tests/php-fpm/base.goss.yaml
+   - ./container/root/tests/php-fpm/ubuntu.goss.yaml:/tests/php-fpm/ubuntu.goss.yaml
 alpine:
   build: .
   dockerfile: Dockerfile-alpine
@@ -35,8 +35,8 @@ alpine:
     S6_KILL_GRACETIME: 1
   volumes:
    - ./container/root/app:/app
-   - ./container/root/goss.base.yaml:/goss.base.yaml
-   - ./container/root/goss.alpine.yaml:/goss.alpine.yaml
+   - ./container/root/tests/php-fpm/base.goss.yaml:/tests/php-fpm/base.goss.yaml
+   - ./container/root/tests/php-fpm/alpine.goss.yaml:/tests/php-fpm/alpine.goss.yaml
 edge:
   build: .
   dockerfile: Dockerfile-edge
@@ -55,5 +55,5 @@ edge:
     S6_KILL_GRACETIME: 1
   volumes:
    - ./container/root/app:/app
-   - ./container/root/goss.base.yaml:/goss.base.yaml
-   - ./container/root/goss.beta.yaml:/goss.beta.yaml
+   - ./container/root/tests/php-fpm/base.goss.yaml:/tests/php-fpm/base.goss.yaml
+   - ./container/root/tests/php-fpm/beta.goss.yaml:/tests/php-fpm/beta.goss.yaml
