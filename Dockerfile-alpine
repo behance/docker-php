@@ -1,4 +1,4 @@
-FROM behance/docker-nginx:5.1-alpine
+FROM behance/docker-nginx:6.0-alpine
 MAINTAINER Bryan Latten <latten@adobe.com>
 
 # Set TERM to suppress warning messages.
@@ -141,4 +141,4 @@ RUN cp /etc/php/7.0/mods-available/* $CONF_PHPMODS && \
     rm $CONF_PHPMODS/00_opcache.ini
 
 RUN goss -g /tests/php-fpm/alpine.goss.yaml validate && \
-    /tmp/aufs_hack.sh
+    /aufs_hack.sh

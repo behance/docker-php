@@ -7,24 +7,24 @@ group:
 command:
   php -m:
     exit-status: 0
-    stderr: []
+    stderr: ['!/./']
   php -v:
     exit-status: 0
-    stderr: []
+    stderr: ['!/./']
   php-fpm7.0 -m:
     exit-status: 0
-    stderr: []
+    stderr: ['!/./']
   php-fpm7.0 -v:
     exit-status: 0
-    stderr: []
+    stderr: ['!/./']
   php -r 'echo PHP_MAJOR_VERSION;':
     exit-status: 0
     stdout: [7]
-    stderr: []
+    stderr: ['!/./']
   php -r 'echo PHP_MINOR_VERSION;':
     exit-status: 0
     stdout: [1]
-    stderr: []
+    stderr: ['!/./']
 
 package:
   php7.1:

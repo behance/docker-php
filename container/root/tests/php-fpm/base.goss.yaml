@@ -1,5 +1,5 @@
 gossfile:
-  ../../goss.nginx.yaml: {}
+  ../nginx/base.goss.yaml: {}
 
 group:
   www-data:
@@ -7,21 +7,21 @@ group:
 command:
   php -m:
     exit-status: 0
-    stderr: []
+    stderr: ['!/./']
   php -v:
     exit-status: 0
-    stderr: []
+    stderr: ['!/./']
   php-fpm7.0 -m:
     exit-status: 0
-    stderr: []
+    stderr: ['!/./']
   php-fpm7.0 -v:
     exit-status: 0
-    stderr: []
+    stderr: ['!/./']
   php -r 'echo PHP_MAJOR_VERSION;':
     exit-status: 0
     stdout: [7]
-    stderr: []
+    stderr: ['!/./']
   php -r 'echo PHP_MINOR_VERSION;':
     exit-status: 0
     stdout: [0]
-    stderr: []
+    stderr: ['!/./']
