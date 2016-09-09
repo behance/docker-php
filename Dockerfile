@@ -1,4 +1,4 @@
-FROM behance/docker-nginx:5.1
+FROM behance/docker-nginx:6.0
 MAINTAINER Bryan Latten <latten@adobe.com>
 
 # Set TERM to suppress warning messages.
@@ -13,6 +13,9 @@ ENV CONF_PHPFPM=/etc/php/7.0/fpm/php-fpm.conf \
     PHP_FPM_MIN_SPARE_SERVERS=5 \
     PHP_FPM_MAX_SPARE_SERVERS=128
 
+# Ensure cleanup script is available for the next command
+ADD ./container/root/clean.sh /clean.sh
+
 # Ensure the latest base packages are up to date (don't require a parent rebuild)
 RUN apt-get update -q && \
     apt-get upgrade -yqq && \
@@ -20,24 +23,23 @@ RUN apt-get update -q && \
         git \
         curl \
         wget \
-        curl \
         software-properties-common \
     && \
     locale-gen en_US.UTF-8 && export LANG=en_US.UTF-8 && \
     add-apt-repository ppa:git-core/ppa -y && \
     add-apt-repository ppa:ondrej/php -y && \
-    echo 'deb http://apt.newrelic.com/debian/ newrelic non-free' | sudo tee /etc/apt/sources.list.d/newrelic.list && \
-    wget -O- https://download.newrelic.com/548C16BF.gpg | sudo apt-key add - && \
+    echo 'deb http://apt.newrelic.com/debian/ newrelic non-free' | tee /etc/apt/sources.list.d/newrelic.list && \
+    wget -O- https://download.newrelic.com/548C16BF.gpg | apt-key add - && \
     # Prevent newrelic install from prompting for input \
     echo newrelic-php5 newrelic-php5/application-name string "REPLACE_NEWRELIC_APP" | debconf-set-selections && \
     echo newrelic-php5 newrelic-php5/license-key string "REPLACE_NEWRELIC_LICENSE" | debconf-set-selections && \
+    # Perform cleanup \
     apt-get remove --purge -yq \
+        patch \
         software-properties-common \
+        wget \
     && \
-    rm -rf /var/lib/apt/lists/*
-
-# Ensure cleanup script is available for the next command
-ADD ./container/root/clean.sh /clean.sh
+    /clean.sh
 
 # Add PHP and support packages \
 RUN apt-get update -q && \
@@ -73,7 +75,7 @@ RUN apt-get update -q && \
     # Ensure development/compile libs are removed \
     curl -sS https://getcomposer.org/installer | php && \
     mv composer.phar /usr/local/bin/composer && \
-    /bin/bash /clean.sh
+    /clean.sh
 
 # - Configure php-fpm to use TCP rather than unix socket (for stability), fastcgi_pass is also set by /etc/nginx/sites-available/default
 # - Set base directory for all php (/app), difficult to use APP_PATH as a replacement, otherwise / breaks command
@@ -114,5 +116,5 @@ RUN phpenmod overrides && \
     sed -i "s/listen [0-9]*;/listen ${CONTAINER_PORT};/" $CONF_NGINX_SITE
 
 RUN goss -g /tests/php-fpm/ubuntu.goss.yaml validate && \
-    /tmp/aufs_hack.sh
+    /aufs_hack.sh
 
