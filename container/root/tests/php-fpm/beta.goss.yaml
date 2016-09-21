@@ -51,3 +51,5 @@ package:
     installed: true
   php7.1-zip:
     installed: true
+  php-yaml:
+    installed: true
