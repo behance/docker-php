@@ -46,5 +46,7 @@ package:
     installed: true
   php-redis:
     installed: true
+  php-yaml:
+    installed: true
   php-xdebug:
     installed: true

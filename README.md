@@ -57,12 +57,14 @@ Three variants are available:
   - sysvmsg
   - sysvsem
   - sysvshm
+  - xdebug~
   - xml
   - xmlreader
   - xmlwriter
+  - yaml*~ 
   - zip
   - zlib
-  - xdebug~
+
 
 
 ###Expectations
@@ -84,7 +86,7 @@ as such. These can be used to drive the configuration of the downstream PHP appl
 
 Variable | Example | Description
 --- | --- | ---
-`CFG_*` | `CFG_DATABASE_USERNAME=root` | PHP has access as an environment variable
+`*` | `DATABASE_HOST=master.rds.aws.com` | PHP has access to environment variables by default
 `CFG_APP_DEBUG` | `CFG_APP_DEBUG=1` | Setting to `1` or `true` will cue the Opcache to watch for file changes. Otherwise, the Opcache check is skipped for a performance boost.
 `SERVER_MAX_BODY_SIZE` | `SERVER_MAX_BODY_SIZE=4M` | Allows the downstream application to specify a non-default `client_max_body_size` configuration for the `server`-level directive in `/etc/nginx/sites-available/default`
 `REPLACE_NEWRELIC_APP` | `REPLACE_NEWRELIC_APP=prod-server-abc` | Sets application name for newrelic
