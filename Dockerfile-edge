@@ -123,7 +123,10 @@ RUN cp /etc/php/7.0/mods-available/* $CONF_PHPMODS && \
     # Override default ini values for both CLI + FPM \
     phpenmod overrides && \
     # Set nginx to listen on defined port \
-    sed -i "s/listen [0-9]*;/listen ${CONTAINER_PORT};/" $CONF_NGINX_SITE
+    sed -i "s/listen [0-9]*;/listen ${CONTAINER_PORT};/" $CONF_NGINX_SITE && \
+    # Enable NewRelic via Ubuntu symlinks, but disable in file. Cross-variant startup script uncomments with env vars.
+    phpenmod newrelic && \
+    sed -i 's/extension\s\?=/;extension =/' $CONF_PHPMODS/newrelic.ini
 
 RUN goss -g /tests/php-fpm/beta.goss.yaml validate && \
     /aufs_hack.sh
