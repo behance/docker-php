@@ -12,7 +12,7 @@ ENV CONF_PHPFPM=/etc/php7/php-fpm.conf \
     PHP_FPM_MAX_REQUESTS=1024 \
     PHP_FPM_MIN_SPARE_SERVERS=5 \
     PHP_FPM_MAX_SPARE_SERVERS=128 \
-    NEWRELIC_VERSION=6.4.0.163
+    NEWRELIC_VERSION=6.7.0.174
 
 RUN echo '@edge http://dl-cdn.alpinelinux.org/alpine/edge/testing' >> /etc/apk/repositories && \
     echo '@community http://dl-cdn.alpinelinux.org/alpine/edge/community' >> /etc/apk/repositories && \
@@ -76,7 +76,7 @@ RUN echo '@edge http://dl-cdn.alpinelinux.org/alpine/edge/testing' >> /etc/apk/r
     sed -i 's/extension\s\?=/;extension =/' $CONF_PHPMODS/00_pgsql.ini && \
     sed -i 's/extension\s\?=/;extension =/' $CONF_PHPMODS/20_redis.ini
 
-# Install Alpine-compatible NewRelic, seed with variables to be replaced, add Guzzle feature flag
+# Install Alpine-compatible NewRelic, seed with variables to be replaced
 # Requires PHP to already be installed
 RUN curl -L https://download.newrelic.com/php_agent/archive/${NEWRELIC_VERSION}/newrelic-php5-${NEWRELIC_VERSION}-linux-musl.tar.gz -o /root/newrelic-php5-${NEWRELIC_VERSION}-linux-musl.tar.gz && \
     cd /root && \
@@ -86,10 +86,6 @@ RUN curl -L https://download.newrelic.com/php_agent/archive/${NEWRELIC_VERSION}/
     echo "\n" | ./newrelic-install install && \
     chown root:root /root/newrelic-php5-${NEWRELIC_VERSION}-linux-musl/agent/x64/newrelic-20151012.so && \
     cp /root/newrelic-php5-${NEWRELIC_VERSION}-linux-musl/agent/x64/newrelic-20151012.so /usr/lib/php7/modules/newrelic.so && \
-    sed -i "s/newrelic.appname\s\?= .*/newrelic.appname = \"REPLACE_NEWRELIC_APP\"/" $CONF_PHPMODS/newrelic.ini && \
-    sed -i "s/newrelic.license\s\?= .*/newrelic.license = \"REPLACE_NEWRELIC_LICENSE\"/" $CONF_PHPMODS/newrelic.ini && \
-    sed -i 's/extension\s\?=/;extension =/' $CONF_PHPMODS/newrelic.ini && \
-    echo "newrelic.feature_flag = guzzle" >> $CONF_PHPMODS/newrelic.ini && \
     # Fix permissions on extracted folder \
     chown -R $NOT_ROOT_USER:$NOT_ROOT_USER *
 
@@ -129,6 +125,14 @@ RUN sed -i "s/listen = .*/listen = 127.0.0.1:9000/" $CONF_FPMPOOL && \
     # Since PHP-FPM will be run without root privileges, comment these lines to prevent any startup warnings \
     sed -i "s/^user =/;user =/" $CONF_FPMPOOL && \
     sed -i "s/^group =/;group =/" $CONF_FPMPOOL && \
+    # Allow NewRelic to be partially configured by environment variables, set sane defaults \
+    sed -i "s/newrelic.appname = .*/newrelic.appname = \"\${REPLACE_NEWRELIC_APP}\"/" $CONF_PHPMODS/newrelic.ini && \
+    sed -i "s/newrelic.license = .*/newrelic.license = \"\${REPLACE_NEWRELIC_LICENSE}\"/" $CONF_PHPMODS/newrelic.ini && \
+    sed -i "s/newrelic.logfile = .*/newrelic.logfile = \"\/dev\/stdout\"/" $CONF_PHPMODS/newrelic.ini && \
+    sed -i "s/newrelic.daemon.logfile = .*/newrelic.daemon.logfile = \"\/dev\/stdout\"/" $CONF_PHPMODS/newrelic.ini && \
+    sed -i "s/;newrelic.loglevel = .*/newrelic.loglevel = \"warning\"/" $CONF_PHPMODS/newrelic.ini && \
+    sed -i "s/;newrelic.daemon.loglevel = .*/newrelic.daemon.loglevel = \"warning\"/" $CONF_PHPMODS/newrelic.ini && \
+    sed -i 's/extension\s\?=/;extension =/' $CONF_PHPMODS/newrelic.ini && \
     # Required for php-fpm to place .sock file into, fails otherwise \
     mkdir -p /var/run/php/ /var/log/php7/newrelic && \
     chown -R $NOT_ROOT_USER:$NOT_ROOT_USER /var/run/php /var/log/newrelic
