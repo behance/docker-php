@@ -67,6 +67,7 @@ RUN apt-get update -q && \
         php-yaml \
         newrelic-php5=${NEWRELIC_VERSION} \
     && \
+    phpdismod memcached && \
     phpdismod pdo_pgsql && \
     phpdismod pgsql && \
     phpdismod redis && \

@@ -67,11 +67,13 @@ RUN apt-get update -q && \
         php-yaml \
         newrelic-php5=${NEWRELIC_VERSION} \
     && \
+    phpdismod memcached && \
     phpdismod pdo_pgsql && \
     phpdismod pgsql && \
     phpdismod redis && \
     phpdismod yaml && \
     phpdismod xdebug && \
+
     curl -sS https://getcomposer.org/installer | php && \
     mv composer.phar /usr/local/bin/composer && \
     /clean.sh
@@ -122,7 +124,11 @@ RUN phpenmod overrides && \
     sed -i "s/listen [0-9]*;/listen ${CONTAINER_PORT};/" $CONF_NGINX_SITE && \
     # Enable NewRelic via Ubuntu symlinks, but disable via extension command in file. Allows cross-variant startup scripts to function.
     phpenmod newrelic && \
-    sed -i 's/extension\s\?=/;extension =/' $CONF_PHPMODS/newrelic.ini
+    sed -i 's/extension\s\?=/;extension =/' $CONF_PHPMODS/newrelic.ini && \
+    # Set sane defaults for memcache extension \
+    sed -i "s/;\s*memcache.chunk_size=.*/memcache.chunk_size=32768/" $CONF_PHPMODS/memcache.ini && \
+    sed -i "s/;\s*memcache.hash_strategy=.*/memcache.hash_strategy=\"consistent\"/" $CONF_PHPMODS/memcache.ini && \
+    sed -i "s/;\s*memcache.protocol=.*/memcache.protocol=binary/" $CONF_PHPMODS/memcache.ini
 
 RUN goss -g /tests/php-fpm/ubuntu.goss.yaml validate && \
     /aufs_hack.sh
