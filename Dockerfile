@@ -122,7 +122,9 @@ RUN phpenmod overrides && \
     sed -i "s/listen [0-9]*;/listen ${CONTAINER_PORT};/" $CONF_NGINX_SITE && \
     # Enable NewRelic via Ubuntu symlinks, but disable via extension command in file. Allows cross-variant startup scripts to function.
     phpenmod newrelic && \
-    sed -i 's/extension\s\?=/;extension =/' $CONF_PHPMODS/newrelic.ini
+    sed -i 's/extension\s\?=/;extension =/' $CONF_PHPMODS/newrelic.ini && \
+    # Enable status page at "/__status"
+    sed -i 's/;pm.status_path = .*/pm.status_path = \/__status/' $CONF_FPMPOOL
 
 RUN goss -g /tests/php-fpm/ubuntu.goss.yaml validate && \
     /aufs_hack.sh
