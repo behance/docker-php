@@ -142,7 +142,9 @@ COPY ./container/root /
 
 # Make additional hacks to migrate files from Ubuntu to Alpine folder structure
 RUN cp /etc/php/7.0/mods-available/* $CONF_PHPMODS && \
-    rm $CONF_PHPMODS/00_opcache.ini
+    rm $CONF_PHPMODS/00_opcache.ini && \
+    # Enable status page at "/__status"
+    sed -i 's/;pm.status_path = .*/pm.status_path = \/__status/' $CONF_FPMPOOL
 
 RUN goss -g /tests/php-fpm/alpine.goss.yaml validate && \
     /aufs_hack.sh

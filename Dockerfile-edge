@@ -130,7 +130,9 @@ RUN cp /etc/php/7.0/mods-available/* $CONF_PHPMODS && \
     sed -i "s/listen [0-9]*;/listen ${CONTAINER_PORT};/" $CONF_NGINX_SITE && \
     # Enable NewRelic via Ubuntu symlinks, but disable in file. Cross-variant startup script uncomments with env vars.
     phpenmod newrelic && \
-    sed -i 's/extension\s\?=/;extension =/' $CONF_PHPMODS/newrelic.ini
+    sed -i 's/extension\s\?=/;extension =/' $CONF_PHPMODS/newrelic.ini && \
+    # Enable status page at "/__status"
+    sed -i 's/;pm.status_path = .*/pm.status_path = \/__status/' $CONF_FPMPOOL
 
 RUN goss -g /tests/php-fpm/beta.goss.yaml validate && \
     /aufs_hack.sh

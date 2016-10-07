@@ -44,6 +44,15 @@ server {
     fastcgi_pass 127.0.0.1:9000;
   }
 
+  # Allow locally-accessible (only) FPM status page
+  location ~ ^/__status$ {
+    access_log off;
+    allow 127.0.0.1;
+    deny all;
+    include fastcgi_params;
+    fastcgi_pass 127.0.0.1:9000;
+  }
+
   # Protect against accessing hidden files
   location ~ /\. {
     access_log off;
