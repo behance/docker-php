@@ -12,6 +12,9 @@ ENV CONF_PHPFPM=/etc/php/7.1/fpm/php-fpm.conf \
     PHP_FPM_MAX_REQUESTS=1024 \
     PHP_FPM_MIN_SPARE_SERVERS=5 \
     PHP_FPM_MAX_SPARE_SERVERS=128 \
+    PHP_FPM_MEMORY_LIMIT=256M \
+    PHP_FPM_MAX_EXECUTION_TIME=60 \
+    PHP_FPM_UPLOAD_MAX_FILESIZE=1M \
     NEWRELIC_VERSION=6.7.0.174
 
 # Ensure cleanup script is available for the next command
@@ -113,6 +116,8 @@ RUN sed -i "s/listen = .*/listen = 127.0.0.1:9000/" $CONF_FPMPOOL && \
     sed -i "s/newrelic.daemon.logfile = .*/newrelic.daemon.logfile = \"\/dev\/stdout\"/" $CONF_PHPMODS/newrelic.ini && \
     sed -i "s/;newrelic.loglevel = .*/newrelic.loglevel = \"warning\"/" $CONF_PHPMODS/newrelic.ini && \
     sed -i "s/;newrelic.daemon.loglevel = .*/newrelic.daemon.loglevel = \"warning\"/" $CONF_PHPMODS/newrelic.ini && \
+    # Match FPM timeout directive with .ini max execution time
+    sed -i "s/;*request_terminate_timeout = .*/request_terminate_timeout = \${PHP_FPM_MAX_EXECUTION_TIME}/" $CONF_FPMPOOL && \
     # Required for php-fpm to place .sock file into, fails otherwise \
     mkdir /var/run/php/ && \
     chown -R $NOT_ROOT_USER:$NOT_ROOT_USER /var/run/php /var/run/lock /var/log/newrelic

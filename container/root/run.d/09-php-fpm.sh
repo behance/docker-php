@@ -21,5 +21,6 @@ then
     echo '[run] adding FPM-specific overrides: Alpine-only'
     ln -s $CONF_FPMOVERRIDES /etc/php7/conf.d/overrides.user.ini
   fi
-
+else
+  echo '[run] non-web mode, bypassing FPM startup'
 fi
