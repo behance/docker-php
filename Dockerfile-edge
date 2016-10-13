@@ -49,25 +49,26 @@ RUN apt-get update -q && \
 RUN apt-get update -q && \
     apt-get -yqq install \
         php7.1 \
-        php7.1-fpm \
-        php7.1-mysql \
-        php7.1-xml \
+        php7.1-apcu \
+        php7.1-bz2 \
         php7.1-curl \
+        php7.1-fpm \
         php7.1-gd \
+        php7.1-igbinary \
         php7.1-intl \
         php7.1-json \
         php7.1-mbstring \
         php7.1-mcrypt \
+        php7.1-mysql \
         php7.1-pgsql \
+        php7.1-gearman \
+        php7.1-memcache \
+        php7.1-memcached \
+        php7.1-xml \
+        php7.1-yaml \
         php7.1-zip \
-        php-apcu \
-        php-gearman \
-        php-igbinary \
-        php-memcache \
-        php-memcached \
         php-redis \
         php-xdebug \
-        php-yaml \
         newrelic-php5=${NEWRELIC_VERSION} \
     && \
     phpdismod pdo_pgsql && \

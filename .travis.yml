@@ -15,4 +15,4 @@ before_install:
 script:
 - docker-compose build ubuntu
 - docker-compose build edge
-- docker-compose build alpine
+- docker-compose build legacy

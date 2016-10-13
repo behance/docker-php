@@ -10,34 +10,37 @@ Three variants are available:
 - (default) Ubuntu-based, PHP 7.0  
 - (slim) Alpine-based, PHP 7.0, tagged as `-alpine`  
 - (beta) Ubuntu-based, PHP 7.1, tagged as `-beta`  
+- (legacy) Ubuntu-based, PHP 5.6, tagged as `-legacy`  
 
 ###Includes
 ---
 - Nginx
-- PHP/PHP-FPM (7.0)
+- PHP/PHP-FPM (7.0, 7.1, 5.6)
 - Extra PHP Modules:
 
-`*` - not available on Alpine variant  
-`**` - backwards compatible library not available on Alpine variant  
-`^` - not available on beta tag  
-`~` - disabled by default (use `phpenmod` to enable on Ubuntu-based variants, uncomment .ini file otherwise)
-  - apcu**^
-  - bz2^
+`*`  - not available on Alpine variant  
+`^`  - not available on Beta tag  
+`~`  - disabled by default (use `phpenmod` to enable on Ubuntu-based variants, uncomment .ini file otherwise)
+  - apc*^ (only visible for backwards compatibility) 
+  - apcu^
+  - calendar
+  - bz2
   - ctype
   - curl
+  - date
   - dom
   - exif
   - fpm
   - gd
   - gearman*
   - iconv
-  - igbinary*^
+  - igbinary*
   - intl
   - json
   - mbstring
   - mcrypt
   - memcache*^
-  - memcached*^
+  - memcached*
   - mysqli
   - mysqlnd
   - newrelic~ (activates with env variables)
@@ -61,7 +64,7 @@ Three variants are available:
   - xml
   - xmlreader
   - xmlwriter
-  - yaml*~ 
+  - yaml*~
   - zip
   - zlib
 
@@ -97,7 +100,7 @@ Variable | Example | Description
 `PHP_FPM_MAX_CHILDREN` | `PHP_FPM_MAX_CHILDREN=15` | [docs](http://php.net/manual/en/install.fpm.configuration.php)
 `PHP_FPM_START_SERVERS` | `PHP_FPM_START_SERVERS=128` | [docs](http://php.net/manual/en/install.fpm.configuration.php)
 `PHP_FPM_MAX_REQUESTS` | `PHP_FPM_MAX_REQUESTS=1000` | [docs](http://php.net/manual/en/install.fpm.configuration.php) How many requests an individual FPM worker will process before recycling
-`PHP_FPM_MIN_SPARE_SERVERS` | `PHP_FPM_MIN_SPARE_SERVERS=5` | [docs](http://php.net/manual/en/install.fpm.configuration.php) 
+`PHP_FPM_MIN_SPARE_SERVERS` | `PHP_FPM_MIN_SPARE_SERVERS=5` | [docs](http://php.net/manual/en/install.fpm.configuration.php)
 `PHP_FPM_MAX_SPARE_SERVERS` | `PHP_FPM_MAX_SPARE_SERVERS=100` | [docs](http://php.net/manual/en/install.fpm.configuration.php)
 
 

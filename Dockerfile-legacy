@@ -2,10 +2,10 @@ FROM behance/docker-nginx:6.1
 MAINTAINER Bryan Latten <latten@adobe.com>
 
 # Set TERM to suppress warning messages.
-ENV CONF_PHPFPM=/etc/php/7.0/fpm/php-fpm.conf \
-    CONF_PHPMODS=/etc/php/7.0/mods-available \
-    CONF_FPMPOOL=/etc/php/7.0/fpm/pool.d/www.conf \
-    CONF_FPMOVERRIDES=/etc/php/7.0/fpm/conf.d/overrides.user.ini \
+ENV CONF_PHPFPM=/etc/php/5.6/fpm/php-fpm.conf \
+    CONF_PHPMODS=/etc/php/5.6/mods-available \
+    CONF_FPMPOOL=/etc/php/5.6/fpm/pool.d/www.conf \
+    CONF_FPMOVERRIDES=/etc/php/5.6/fpm/conf.d/overrides.user.ini \
     APP_ROOT=/app \
     PHP_FPM_MAX_CHILDREN=4096 \
     PHP_FPM_START_SERVERS=20 \
@@ -48,27 +48,27 @@ RUN apt-get update -q && \
 # Add PHP and support packages \
 RUN apt-get update -q && \
     apt-get -yqq install \
-        php7.0 \
-        php7.0-apcu \
-        php7.0-bz2 \
-        php7.0-curl \
-        php7.0-fpm \
-        php7.0-gd \
-        php7.0-gearman \
-        php7.0-igbinary \
-        php7.0-intl \
-        php7.0-json \
-        php7.0-mbstring \
-        php7.0-mcrypt \
-        php7.0-pgsql \
-        php7.0-memcache \
-        php7.0-memcached \
-        php7.0-mysql \
-        php7.0-redis \
-        php7.0-xdebug \
-        php7.0-xml \
-        php7.0-yaml \
-        php7.0-zip \
+        php5.6 \
+        php5.6-apcu \
+        php5.6-bz2 \
+        php5.6-curl \
+        php5.6-fpm \
+        php5.6-gd \
+        php5.6-igbinary \
+        php5.6-intl \
+        php5.6-json \
+        php5.6-mbstring \
+        php5.6-mcrypt \
+        php5.6-mysql \
+        php5.6-pgsql \
+        php5.6-gearman \
+        php5.6-memcache \
+        php5.6-memcached \
+        php5.6-redis \
+        php5.6-xdebug \
+        php5.6-xml \
+        php5.6-yaml \
+        php5.6-zip \
         newrelic-php5=${NEWRELIC_VERSION} \
         newrelic-php5-common=${NEWRELIC_VERSION} \
         newrelic-daemon=${NEWRELIC_VERSION} \
@@ -82,6 +82,13 @@ RUN apt-get update -q && \
     mv composer.phar /usr/local/bin/composer && \
     /clean.sh
 
+# Temporary Hack: unsupported PHP extensions are dumping old PHP pre-reqs into the mix
+# Even marking them to never install doesn't work. Removing for now, until all extensions are supported
+RUN apt-get remove --purge -yq \
+        php5.5 \
+        php7.0 \
+        php7.1
+
 # - Configure php-fpm to use TCP rather than unix socket (for stability), fastcgi_pass is also set by /etc/nginx/sites-available/default
 # - Set base directory for all php (/app), difficult to use APP_PATH as a replacement, otherwise / breaks command
 # - Baseline "optimizations" before benchmarking succeeded at concurrency of 150
@@ -91,8 +98,6 @@ RUN apt-get update -q && \
 # - Disable systemd integration, it is not present nor responsible for running service
 # - Enforce ACL that only 127.0.0.1 may connect
 # - Allow FPM to pick up extra configuration in fpm/conf.d folder
-
-# TODO: allow ENV specification of performance management at runtime (in run.d startup script)
 
 RUN sed -i "s/listen = .*/listen = 127.0.0.1:9000/" $CONF_FPMPOOL && \
     sed -i "s/;chdir = .*/chdir = \/app/" $CONF_FPMPOOL && \
@@ -124,16 +129,20 @@ RUN sed -i "s/listen = .*/listen = 127.0.0.1:9000/" $CONF_FPMPOOL && \
 # Overlay the root filesystem from this repo
 COPY ./container/root /
 
-# Override default ini values for both CLI + FPM
-RUN phpenmod overrides && \
+# Make additional hacks to migrate files/config from 7.0 --> 5.6 folder
+RUN cp /etc/php/7.0/mods-available/* $CONF_PHPMODS && \
+    cp /etc/php/7.0/fpm/conf.d/overrides.user.ini $CONF_FPMOVERRIDES && \
+    # Hack: share startup scripts with php 7.0 version by symlinking \
+    ln -s /usr/sbin/php-fpm5.6 /usr/sbin/php-fpm7.0 && \
+    # Override default ini values for both CLI + FPM \
+    phpenmod overrides && \
     # Set nginx to listen on defined port \
     sed -i "s/listen [0-9]*;/listen ${CONTAINER_PORT};/" $CONF_NGINX_SITE && \
-    # Enable NewRelic via Ubuntu symlinks, but disable via extension command in file. Allows cross-variant startup scripts to function.
+    # Enable NewRelic via Ubuntu symlinks, but disable in file. Cross-variant startup script uncomments with env vars.
     phpenmod newrelic && \
     sed -i 's/extension\s\?=/;extension =/' $CONF_PHPMODS/newrelic.ini && \
     # Enable status page at "/__status"
     sed -i 's/;pm.status_path = .*/pm.status_path = \/__status/' $CONF_FPMPOOL
 
-RUN goss -g /tests/php-fpm/ubuntu.goss.yaml validate && \
+RUN goss -g /tests/php-fpm/legacy.goss.yaml validate && \
     /aufs_hack.sh
-
