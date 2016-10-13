@@ -1,0 +1,55 @@
+# Note: base cannot be used because versions are different
+# gossfile:
+#   base.goss.yaml: {}
+group:
+  www-data:
+    exists: true
+command:
+  php -m:
+    exit-status: 0
+    stderr: ['!/./']
+  php -v:
+    exit-status: 0
+    stderr: ['!/./']
+  php-fpm7.0 -m:
+    exit-status: 0
+    stderr: ['!/./']
+  php-fpm7.0 -v:
+    exit-status: 0
+    stderr: ['!/./']
+  php -r 'echo PHP_MAJOR_VERSION;':
+    exit-status: 0
+    stdout: [5]
+    stderr: ['!/./']
+  php -r 'echo PHP_MINOR_VERSION;':
+    exit-status: 0
+    stdout: [6]
+    stderr: ['!/./']
+
+package:
+  php5.6:
+    installed: true
+  php5.6-cli:
+    installed: true
+  php5.6-curl:
+    installed: true
+  php5.6-fpm:
+    installed: true
+  php5.6-gd:
+    installed: true
+  php5.6-intl:
+    installed: true
+  php5.6-json:
+    installed: true
+  php5.6-mbstring:
+    installed: true
+  php5.6-mysql:
+    installed: true
+  php5.6-opcache:
+    installed: true
+  php5.6-xml:
+    installed: true
+  php5.6-zip:
+    installed: true
+  php-yaml:
+    installed: true
