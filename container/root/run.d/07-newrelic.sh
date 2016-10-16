@@ -1,5 +1,6 @@
-#!/usr/bin/with-contenv bash
+#!/bin/bash
 
+# When both App ID and license are provided, automatically enable extension
 if [ $REPLACE_NEWRELIC_APP ] && [ $REPLACE_NEWRELIC_LICENSE ]
 then
   echo "[newrelic] enabling APM metrics for ${REPLACE_NEWRELIC_APP}"
