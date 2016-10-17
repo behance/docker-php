@@ -105,9 +105,9 @@ Variable | Example | Default | Description
 `*` | `DATABASE_HOST=master.rds.aws.com` | - | PHP has access to environment variables by default
 `CFG_APP_DEBUG` | `CFG_APP_DEBUG=1` | 1 | Set to `1` or `true` will cue the Opcache to watch for file changes. Set to 0 for *production mode*, which provides a sizeable performance boost, though manually updating a file will not be seen unless the opcache is reset.
 `SERVER_MAX_BODY_SIZE` | `SERVER_MAX_BODY_SIZE=4M` | 1M | Allows the downstream application to specify a non-default `client_max_body_size` configuration for the `server`-level directive in `/etc/nginx/sites-available/default`
-`SERVER_FASTCGI_BUFFERS` | `SERVER_FASTCGI_BUFFERS=‘256 16k’` | [docs](http://nginx.org/en/docs/http/ngx_http_fastcgi_module.html#fastcgi_buffers), [tweaking](https://gist.github.com/magnetikonline/11312172#determine-actual-fastcgi-response-sizes)
-`SERVER_FASTCGI_BUFFER_SIZE` | `SERVER_FASTCGI_BUFFER_SIZE=‘128k’` | [docs](http://nginx.org/en/docs/http/ngx_http_fastcgi_module.html#fastcgi_buffers_size), [tweaking](https://gist.github.com/magnetikonline/11312172#determine-actual-fastcgi-response-sizes)
-`SERVER_FASTCGI_BUSY_BUFFERS_SIZE` | `SERVER_FASTCGI_BUSY_BUFFERS_SIZE=‘256k’` | [docs](http://nginx.org/en/docs/http/ngx_http_fastcgi_module.html#fastcgi_busy_buffers_size)
+`SERVER_FASTCGI_BUFFERS` | `SERVER_FASTCGI_BUFFERS=‘512 32k’` | 256 16k | [docs](http://nginx.org/en/docs/http/ngx_http_fastcgi_module.html#fastcgi_buffers), [tweaking](https://gist.github.com/magnetikonline/11312172#determine-actual-fastcgi-response-sizes)
+`SERVER_FASTCGI_BUFFER_SIZE` | `SERVER_FASTCGI_BUFFER_SIZE=‘256k’` | 128k | [docs](http://nginx.org/en/docs/http/ngx_http_fastcgi_module.html#fastcgi_buffers_size), [tweaking](https://gist.github.com/magnetikonline/11312172#determine-actual-fastcgi-response-sizes)
+`SERVER_FASTCGI_BUSY_BUFFERS_SIZE` | `SERVER_FASTCGI_BUSY_BUFFERS_SIZE=‘1024k’` | 256k [docs](http://nginx.org/en/docs/http/ngx_http_fastcgi_module.html#fastcgi_busy_buffers_size)
 `REPLACE_NEWRELIC_APP` | `REPLACE_NEWRELIC_APP=prod-server-abc` | - | Sets application name for newrelic
 `REPLACE_NEWRELIC_LICENSE` | `REPLACE_NEWRELIC_LICENSE=abcdefg` | - | Sets license for newrelic, when combined with above, will enable newrelic reporting
 `PHP_FPM_MEMORY_LIMIT` | `PHP_FPM_MEMORY_LIMIT=256M` | 192MB | Sets memory limit for FPM instances of PHP
