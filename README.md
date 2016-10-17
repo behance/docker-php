@@ -4,7 +4,9 @@
 docker-php
 ==========
 
-Provides basic building blocks for PHP web applications, available on Docker Hub: https://hub.docker.com/r/bryanlatten/docker-php/
+Provides basic building blocks for PHP web applications, available on [Docker Hub](https://hub.docker.com/r/bryanlatten/docker-php/)  
+Add’s PHP-FPM, mods, and specific backend configuration to Behance’s [docker-nginx](https://github.com/behance/docker-nginx)
+
 
 Three variants are available:
 - (default) Ubuntu-based, PHP 7.0  
@@ -16,6 +18,8 @@ Three variants are available:
 ---
 - Nginx
 - PHP/PHP-FPM (7.0, 7.1, 5.6)
+- S6: for PID 1 zombie reaping, startup coordination, shutdown signal transferal
+- Goss: for serverspec-like testing. Run `goss -g /tests/php-fpm/{variant_name}.goss.yaml` to validate any configuration updates
 - Extra PHP Modules:
 
 `*`  - not available on Alpine variant  
@@ -44,7 +48,7 @@ Three variants are available:
   - mysqli
   - mysqlnd
   - newrelic~ (activates with env variables)
-  - opcache (can be disabled with debug env variable)
+  - opcache
   - openssl
   - pcntl
   - pdo
@@ -78,8 +82,9 @@ Applications that leverage `bryanlatten/docker-php` as their container parent ar
 Inside the copied directory, there must be a directory named `public` -- this will be automatically assigned as the webroot for the web server, which expects
 a front controller called `index.php`.
 
+Production Mode: an immutable container (without file updates) should set `CFG_APP_DEBUG=0` for max PHP performance  
 
-NOTE: Nginx is exposed and bound to an unprivileged port, `8080`
+NOTE: Nginx is exposed and bound to an unprivileged port, `8080`  
 
 ####Monitoring
 --- 
@@ -92,20 +97,23 @@ NOTE: Nginx is exposed and bound to an unprivileged port, `8080`
 Several environment variables can be used to configure various PHP FPM paramaters, as well as a few Nginx configurations.
 as such. These can be used to drive the configuration of the downstream PHP application in any way necessary, but there are a few environment variables that `bryanlatter/docker-php` will process along the way...
 
-Variable | Example | Description
+See parent [docker-nginx](https://github.com/behance/docker-nginx) for additional configuration  
+
+
+Variable | Example | Default | Description
 --- | --- | ---
-`*` | `DATABASE_HOST=master.rds.aws.com` | PHP has access to environment variables by default
-`CFG_APP_DEBUG` | `CFG_APP_DEBUG=1` | Setting to `1` or `true` will cue the Opcache to watch for file changes. Otherwise, the Opcache check is skipped for a performance boost.
-`SERVER_MAX_BODY_SIZE` | `SERVER_MAX_BODY_SIZE=4M` | Allows the downstream application to specify a non-default `client_max_body_size` configuration for the `server`-level directive in `/etc/nginx/sites-available/default`
-`REPLACE_NEWRELIC_APP` | `REPLACE_NEWRELIC_APP=prod-server-abc` | Sets application name for newrelic
-`REPLACE_NEWRELIC_LICENSE` | `REPLACE_NEWRELIC_LICENSE=abcdefg` | Sets license for newrelic, when combined with above, will enable newrelic reporting
-`PHP_FPM_MEMORY_LIMIT` | `PHP_FPM_MEMORY_LIMIT=256M` | Sets memory limit for FPM instances of PHP
-`PHP_FPM_MAX_EXECUTION_TIME` | `PHP_FPM_MAX_EXECUTION_TIME=60` | Sets time limit for FPM workers
-`PHP_FPM_UPLOAD_MAX_FILESIZE` | `PHP_FPM_UPLOAD_MAX_FILESIZE=100M` | Sets both upload_max_filesize and post_max_size
-`PHP_FPM_MAX_CHILDREN` | `PHP_FPM_MAX_CHILDREN=15` | [docs](http://php.net/manual/en/install.fpm.configuration.php)
-`PHP_FPM_START_SERVERS` | `PHP_FPM_START_SERVERS=128` | [docs](http://php.net/manual/en/install.fpm.configuration.php)
-`PHP_FPM_MAX_REQUESTS` | `PHP_FPM_MAX_REQUESTS=1000` | [docs](http://php.net/manual/en/install.fpm.configuration.php) How many requests an individual FPM worker will process before recycling
-`PHP_FPM_MIN_SPARE_SERVERS` | `PHP_FPM_MIN_SPARE_SERVERS=5` | [docs](http://php.net/manual/en/install.fpm.configuration.php)
-`PHP_FPM_MAX_SPARE_SERVERS` | `PHP_FPM_MAX_SPARE_SERVERS=100` | [docs](http://php.net/manual/en/install.fpm.configuration.php)
+`*` | `DATABASE_HOST=master.rds.aws.com` | - | PHP has access to environment variables by default
+`CFG_APP_DEBUG` | `CFG_APP_DEBUG=1` | 1 | Set to `1` or `true` will cue the Opcache to watch for file changes. Set to 0 for *production mode*, which provides a sizeable performance boost, though manually updating a file will not be seen unless the opcache is reset.
+`SERVER_MAX_BODY_SIZE` | `SERVER_MAX_BODY_SIZE=4M` | 1M | Allows the downstream application to specify a non-default `client_max_body_size` configuration for the `server`-level directive in `/etc/nginx/sites-available/default`
+`REPLACE_NEWRELIC_APP` | `REPLACE_NEWRELIC_APP=prod-server-abc` | - | Sets application name for newrelic
+`REPLACE_NEWRELIC_LICENSE` | `REPLACE_NEWRELIC_LICENSE=abcdefg` | - | Sets license for newrelic, when combined with above, will enable newrelic reporting
+`PHP_FPM_MEMORY_LIMIT` | `PHP_FPM_MEMORY_LIMIT=256M` | 192MB | Sets memory limit for FPM instances of PHP
+`PHP_FPM_MAX_EXECUTION_TIME` | `PHP_FPM_MAX_EXECUTION_TIME=30` | 60 | Sets time limit for FPM workers
+`PHP_FPM_UPLOAD_MAX_FILESIZE` | `PHP_FPM_UPLOAD_MAX_FILESIZE=100M` | 1M | Sets both upload_max_filesize and post_max_size
+`PHP_FPM_MAX_CHILDREN` | `PHP_FPM_MAX_CHILDREN=15` | 4096 | [docs](http://php.net/manual/en/install.fpm.configuration.php)
+`PHP_FPM_START_SERVERS` | `PHP_FPM_START_SERVERS=40` | 20 | [docs](http://php.net/manual/en/install.fpm.configuration.php)
+`PHP_FPM_MAX_REQUESTS` | `PHP_FPM_MAX_REQUESTS=100` | 1024 | [docs](http://php.net/manual/en/install.fpm.configuration.php) How many requests an individual FPM worker will process before recycling
+`PHP_FPM_MIN_SPARE_SERVERS` | `PHP_FPM_MIN_SPARE_SERVERS=10` | 5 | [docs](http://php.net/manual/en/install.fpm.configuration.php)
+`PHP_FPM_MAX_SPARE_SERVERS` | `PHP_FPM_MAX_SPARE_SERVERS=64` | 128 | [docs](http://php.net/manual/en/install.fpm.configuration.php)
 
 

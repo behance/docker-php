@@ -15,7 +15,8 @@ ENV CONF_PHPFPM=/etc/php7/php-fpm.conf \
     PHP_FPM_MEMORY_LIMIT=256M \
     PHP_FPM_MAX_EXECUTION_TIME=60 \
     PHP_FPM_UPLOAD_MAX_FILESIZE=1M \
-    NEWRELIC_VERSION=6.7.0.174
+    NEWRELIC_VERSION=6.7.0.174 \
+    CFG_APP_DEBUG=1
 
 RUN echo '@edge http://dl-cdn.alpinelinux.org/alpine/edge/testing' >> /etc/apk/repositories && \
     echo '@community http://dl-cdn.alpinelinux.org/alpine/edge/community' >> /etc/apk/repositories && \
