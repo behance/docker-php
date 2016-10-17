@@ -53,6 +53,14 @@ server {
     fastcgi_pass 127.0.0.1:9000;
   }
 
+  # Allow locally-accessible (only) Nginx status page
+  location /__nginx_status {
+    stub_status on;
+    access_log off;
+    allow 127.0.0.1;
+    deny all;
+  }
+
   # Protect against accessing hidden files
   location ~ /\. {
     access_log off;
