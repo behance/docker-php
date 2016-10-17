@@ -37,6 +37,10 @@ server {
     # @see http://stackoverflow.com/questions/29770818/error-in-nginxphp-fpm-with-keepalive-fastcgi-keep-conn-on
     fastcgi_keep_conn off;
 
+    fastcgi_buffers 256 16k;
+    fastcgi_buffer_size 128k;
+    fastcgi_busy_buffers_size 256k;
+
     include /etc/nginx/fastcgi_params;
 
     # IMPORTANT: PATH_INFO is set to empty string in this configuration
