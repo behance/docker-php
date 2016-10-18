@@ -100,6 +100,24 @@ RUN apt-get remove --purge -yq \
 # - Enforce ACL that only 127.0.0.1 may connect
 # - Allow FPM to pick up extra configuration in fpm/conf.d folder
 
+# Overlay the root filesystem from this repo
+COPY ./container/root /
+
+# Make additional hacks to migrate files/config from 7.0 --> 5.6 folder
+RUN cp /etc/php/7.0/mods-available/* $CONF_PHPMODS && \
+    cp /etc/php/7.0/fpm/conf.d/overrides.user.ini $CONF_FPMOVERRIDES && \
+    # Hack: share startup scripts with php 7.0 version by symlinking \
+    ln -s /usr/sbin/php-fpm5.6 /usr/sbin/php-fpm7.0 && \
+    # Override default ini values for both CLI + FPM \
+    phpenmod overrides && \
+    # Set nginx to listen on defined port \
+    sed -i "s/listen [0-9]*;/listen ${CONTAINER_PORT};/" $CONF_NGINX_SITE && \
+    # Enable NewRelic via Ubuntu symlinks, but disable in file. Cross-variant startup script uncomments with env vars.
+    phpenmod newrelic && \
+    sed -i 's/extension\s\?=/;extension =/' $CONF_PHPMODS/newrelic.ini && \
+    # Enable status page at "/__status"
+    sed -i 's/;pm.status_path = .*/pm.status_path = \/__status/' $CONF_FPMPOOL
+
 RUN sed -i "s/listen = .*/listen = 127.0.0.1:9000/" $CONF_FPMPOOL && \
     sed -i "s/;chdir = .*/chdir = \/app/" $CONF_FPMPOOL && \
     sed -i "s/pm.max_children = .*/pm.max_children = \${PHP_FPM_MAX_CHILDREN}/" $CONF_FPMPOOL && \
@@ -126,24 +144,6 @@ RUN sed -i "s/listen = .*/listen = 127.0.0.1:9000/" $CONF_FPMPOOL && \
     # Required for php-fpm to place .sock file into, fails otherwise \
     mkdir /var/run/php/ && \
     chown -R $NOT_ROOT_USER:$NOT_ROOT_USER /var/run/php /var/run/lock /var/log/newrelic
-
-# Overlay the root filesystem from this repo
-COPY ./container/root /
-
-# Make additional hacks to migrate files/config from 7.0 --> 5.6 folder
-RUN cp /etc/php/7.0/mods-available/* $CONF_PHPMODS && \
-    cp /etc/php/7.0/fpm/conf.d/overrides.user.ini $CONF_FPMOVERRIDES && \
-    # Hack: share startup scripts with php 7.0 version by symlinking \
-    ln -s /usr/sbin/php-fpm5.6 /usr/sbin/php-fpm7.0 && \
-    # Override default ini values for both CLI + FPM \
-    phpenmod overrides && \
-    # Set nginx to listen on defined port \
-    sed -i "s/listen [0-9]*;/listen ${CONTAINER_PORT};/" $CONF_NGINX_SITE && \
-    # Enable NewRelic via Ubuntu symlinks, but disable in file. Cross-variant startup script uncomments with env vars.
-    phpenmod newrelic && \
-    sed -i 's/extension\s\?=/;extension =/' $CONF_PHPMODS/newrelic.ini && \
-    # Enable status page at "/__status"
-    sed -i 's/;pm.status_path = .*/pm.status_path = \/__status/' $CONF_FPMPOOL
 
 RUN goss -g /tests/php-fpm/legacy.goss.yaml validate && \
     /aufs_hack.sh
