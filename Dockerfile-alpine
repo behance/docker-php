@@ -77,8 +77,7 @@ RUN echo '@edge http://dl-cdn.alpinelinux.org/alpine/edge/testing' >> /etc/apk/r
     sed -i 's/zend_extension\s\?=/;zend_extension =/' $CONF_PHPMODS/xdebug.ini && \
     # Disable postgres by default \
     sed -i 's/extension\s\?=/;extension =/' $CONF_PHPMODS/00_pdo_pgsql.ini && \
-    sed -i 's/extension\s\?=/;extension =/' $CONF_PHPMODS/00_pgsql.ini && \
-    sed -i 's/extension\s\?=/;extension =/' $CONF_PHPMODS/20_redis.ini
+    sed -i 's/extension\s\?=/;extension =/' $CONF_PHPMODS/00_pgsql.ini
 
 # Install Alpine-compatible NewRelic, seed with variables to be replaced
 # Requires PHP to already be installed

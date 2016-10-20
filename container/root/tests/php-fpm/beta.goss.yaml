@@ -53,3 +53,7 @@ package:
     installed: true
   php-yaml:
     installed: true
+command:
+  php -m | grep redis:
+    exit-status: 0
+    stderr: ['!/./']

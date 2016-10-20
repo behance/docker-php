@@ -57,7 +57,7 @@ Three variants are available:
   - pgsql~
   - phar
   - posix
-  - redis~
+  - redis
   - shmop
   - SimpleXML
   - sockets

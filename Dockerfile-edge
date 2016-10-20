@@ -53,6 +53,7 @@ RUN apt-get update -q && \
         php7.1-apcu \
         php7.1-bz2 \
         php7.1-curl \
+        php7.1-dev \
         php7.1-fpm \
         php7.1-gd \
         php7.1-igbinary \
@@ -68,17 +69,22 @@ RUN apt-get update -q && \
         php7.1-xml \
         php7.1-yaml \
         php7.1-zip \
-        php-redis \
         php-xdebug \
         newrelic-php5=${NEWRELIC_VERSION} \
     && \
     phpdismod pdo_pgsql && \
     phpdismod pgsql && \
-    phpdismod redis && \
     phpdismod yaml && \
     phpdismod xdebug && \
     curl -sS https://getcomposer.org/installer | php && \
     mv composer.phar /usr/local/bin/composer && \
+    # Install new PHP7-stable version of redis
+    pecl install redis-3.0.0 && \
+    echo "extension=redis.so" > $CONF_PHPMODS/redis.ini && \
+    # Remove dev packages that were only in place just to compile extensions
+    apt-get remove -yqq \
+        php7.1-dev && \
+    phpenmod redis && \
     /clean.sh
 
 # Temporary Hack: unsupported PHP extensions are dumping old PHP pre-reqs into the mix
