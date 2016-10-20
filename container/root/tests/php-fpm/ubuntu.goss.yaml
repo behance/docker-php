@@ -44,9 +44,11 @@ package:
     installed: true
   php-msgpack:
     installed: true
-  php-redis:
-    installed: true
   php-yaml:
     installed: true
   php-xdebug:
     installed: true
+command:
+  php -m | grep redis:
+    exit-status: 0
+    stderr: ['!/./']

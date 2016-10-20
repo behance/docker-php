@@ -18,7 +18,7 @@ ENV CONF_PHPFPM=/etc/php/7.0/fpm/php-fpm.conf \
     NEWRELIC_VERSION=6.7.0.174 \
     CFG_APP_DEBUG=1
 
-# Ensure cleanup script is available for the next command
+# Ensure cleanup script is available for the next commands
 ADD ./container/root/clean.sh /clean.sh
 
 # Ensure the latest base packages are up to date (don't require a parent rebuild)
@@ -53,6 +53,7 @@ RUN apt-get update -q && \
         php7.0-apcu \
         php7.0-bz2 \
         php7.0-curl \
+        php7.0-dev \
         php7.0-fpm \
         php7.0-gd \
         php7.0-gearman \
@@ -65,7 +66,6 @@ RUN apt-get update -q && \
         php7.0-memcache \
         php7.0-memcached \
         php7.0-mysql \
-        php7.0-redis \
         php7.0-xdebug \
         php7.0-xml \
         php7.0-yaml \
@@ -76,11 +76,17 @@ RUN apt-get update -q && \
     && \
     phpdismod pdo_pgsql && \
     phpdismod pgsql && \
-    phpdismod redis && \
     phpdismod yaml && \
     phpdismod xdebug && \
     curl -sS https://getcomposer.org/installer | php && \
     mv composer.phar /usr/local/bin/composer && \
+    # Install new PHP7-stable version of redis
+    pecl install redis-3.0.0 && \
+    echo "extension=redis.so" > $CONF_PHPMODS/redis.ini && \
+    # Remove dev packages that were only in place just to compile extensions
+    apt-get remove -yqq \
+        php7.0-dev && \
+    phpenmod redis && \
     /clean.sh
 
 # - Configure php-fpm to use TCP rather than unix socket (for stability), fastcgi_pass is also set by /etc/nginx/sites-available/default

@@ -76,7 +76,6 @@ RUN apt-get update -q && \
     && \
     phpdismod pdo_pgsql && \
     phpdismod pgsql && \
-    phpdismod redis && \
     phpdismod yaml && \
     phpdismod xdebug && \
     curl -sS https://getcomposer.org/installer | php && \
