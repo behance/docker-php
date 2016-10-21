@@ -100,6 +100,7 @@ as such. These can be used to drive the configuration of the downstream PHP appl
 See parent [docker-nginx](https://github.com/behance/docker-nginx) for additional configuration
 
 
+
 Variable | Example | Default | Description
 --- | --- | --- | ---
 `*` | `DATABASE_HOST=master.rds.aws.com` | - | PHP has access to environment variables by default
