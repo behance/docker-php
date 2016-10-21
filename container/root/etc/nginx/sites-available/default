@@ -5,7 +5,6 @@
 server {
   listen 8080;
 
-  server_tokens off; # Doesn't broadcast version level of server software
   server_name web; # TODO: replace with environment variable
   root /app/public;
 
@@ -27,8 +26,6 @@ server {
 
     # @see http://justinsilver.com/technology/linux/502-bad-gateway-nginx-buddypress/
     sendfile on;
-    tcp_nopush off;
-    keepalive_requests 0;
 
     fastcgi_read_timeout 60s;
     fastcgi_send_timeout 60s;

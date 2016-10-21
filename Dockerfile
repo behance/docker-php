@@ -16,7 +16,9 @@ ENV CONF_PHPFPM=/etc/php/7.0/fpm/php-fpm.conf \
     PHP_FPM_MAX_EXECUTION_TIME=60 \
     PHP_FPM_UPLOAD_MAX_FILESIZE=1M \
     NEWRELIC_VERSION=6.7.0.174 \
-    CFG_APP_DEBUG=1
+    CFG_APP_DEBUG=1 \
+    CONF_FPM_LIMIT_FILES=40000 \
+    CONF_FPM_LIMIT_CORE=unlimited
 
 # Ensure cleanup script is available for the next command
 ADD ./container/root/clean.sh /clean.sh
@@ -137,4 +139,3 @@ RUN phpenmod overrides && \
 
 RUN goss -g /tests/php-fpm/ubuntu.goss.yaml validate && \
     /aufs_hack.sh
-
