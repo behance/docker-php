@@ -7,7 +7,6 @@ docker-php
 Provides basic building blocks for PHP web applications, available on [Docker Hub](https://hub.docker.com/r/bryanlatten/docker-php/)
 Add’s PHP-FPM, mods, and specific backend configuration to Behance’s [docker-nginx](https://github.com/behance/docker-nginx)
 
-
 Three variants are available:
 - (default) Ubuntu-based, PHP 7.0
 - (slim) Alpine-based, PHP 7.0, tagged as `-alpine`
