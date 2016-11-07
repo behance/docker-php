@@ -64,7 +64,7 @@ Three variants are available:
   - sysvmsg
   - sysvsem
   - sysvshm
-  - xdebug~
+  - xdebug~^
   - xml
   - xmlreader
   - xmlwriter

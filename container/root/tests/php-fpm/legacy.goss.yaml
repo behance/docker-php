@@ -51,8 +51,6 @@ package:
     installed: true
   php5.6-zip:
     installed: true
-  php-yaml:
-    installed: true
 
 file:
   /etc/php/5.6/mods-available/newrelic.ini:
@@ -60,4 +58,22 @@ file:
     contains:
       - "${REPLACE_NEWRELIC_APP}"
       - "${REPLACE_NEWRELIC_LICENSE}"
+
+command:
+  # Hack: enable and disable the various extensions to test their presence
+  phpenmod yaml && php -m | grep yaml && phpdismod yaml:
+    exit-status: 0
+    stderr: ['!/./']
+
+  phpenmod pgsql && php -m | grep pgsql && phpdismod pgsql:
+    exit-status: 0
+    stderr: ['!/./']
+
+  phpenmod pdo_pgsql && php -m | grep pdo_pgsql && phpdismod pdo_pgsql:
+    exit-status: 0
+    stderr: ['!/./']
+
+  phpenmod redis && php -m | grep redis && phpdismod redis:
+    exit-status: 0
+    stderr: ['!/./']
 

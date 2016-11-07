@@ -48,11 +48,24 @@ RUN apt-get update -q && \
 
 # Add PHP and support packages \
 RUN apt-get update -q && \
+    # Ensure PHP 5.5 + 5.6 + 7.1 don't accidentally get added by PPA
+    apt-mark hold \
+            php5.5-cli \
+            php5.5-json \
+            php5.5-common \
+            php5.6-cli \
+            php5.6-json \
+            php5.6-common \
+            php7.1-cli \
+            php7.1-common \
+            php7.1-json \
+    && \
     apt-get -yqq install \
         php7.0 \
         php7.0-apcu \
         php7.0-bz2 \
         php7.0-curl \
+        php7.0-dev \
         php7.0-fpm \
         php7.0-gd \
         php7.0-gearman \
@@ -65,22 +78,29 @@ RUN apt-get update -q && \
         php7.0-memcache \
         php7.0-memcached \
         php7.0-mysql \
-        php7.0-redis \
         php7.0-xdebug \
         php7.0-xml \
-        php7.0-yaml \
         php7.0-zip \
         newrelic-php5=${NEWRELIC_VERSION} \
         newrelic-php5-common=${NEWRELIC_VERSION} \
         newrelic-daemon=${NEWRELIC_VERSION} \
+        libyaml-dev \
     && \
     phpdismod pdo_pgsql && \
     phpdismod pgsql && \
-    phpdismod redis && \
-    phpdismod yaml && \
     phpdismod xdebug && \
     curl -sS https://getcomposer.org/installer | php && \
     mv composer.phar /usr/local/bin/composer && \
+    # Install new PHP7-stable version of Yaml \
+    pecl install yaml-2.0.0 && \
+    echo "extension=yaml.so" > $CONF_PHPMODS/yaml.ini && \
+    # Install new PHP7-stable version of Redis \
+    pecl install redis-3.0.0 && \
+    echo "extension=redis.so" > $CONF_PHPMODS/redis.ini && \
+    # Remove dev packages that were only in place just to compile extensions
+    apt-get remove -yqq \
+        php7.0-dev \
+    && \
     /clean.sh
 
 # - Configure php-fpm to use TCP rather than unix socket (for stability), fastcgi_pass is also set by /etc/nginx/sites-available/default
@@ -92,8 +112,6 @@ RUN apt-get update -q && \
 # - Disable systemd integration, it is not present nor responsible for running service
 # - Enforce ACL that only 127.0.0.1 may connect
 # - Allow FPM to pick up extra configuration in fpm/conf.d folder
-
-# TODO: allow ENV specification of performance management at runtime (in run.d startup script)
 
 RUN sed -i "s/listen = .*/listen = 127.0.0.1:9000/" $CONF_FPMPOOL && \
     sed -i "s/;chdir = .*/chdir = \/app/" $CONF_FPMPOOL && \
