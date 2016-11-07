@@ -1,0 +1,52 @@
+gossfile:
+  base.goss.yaml: {}
+
+package:
+  php7.0-dbgsym:
+    installed: true
+  php7.0-cli-dbgsym:
+    installed: true
+  php7.0-curl-dbgsym:
+    installed: true
+  php7.0-fpm-dbgsym:
+    installed: true
+  php7.0-gd-dbgsym:
+    installed: true
+  php7.0-intl-dbgsym:
+    installed: true
+  php7.0-json-dbgsym:
+    installed: true
+  php7.0-mbstring-dbgsym:
+    installed: true
+  php7.0-mcrypt-dbgsym:
+    installed: true
+  php7.0-mysql-dbgsym:
+    installed: true
+  php7.0-opcache-dbgsym:
+    installed: true
+  php7.0-pgsql-dbgsym:
+    installed: true
+  php7.0-readline-dbgsym:
+    installed: true
+  php7.0-xml-dbgsym:
+    installed: true
+  php7.0-zip-dbgsym:
+    installed: true
+  php-apcu-dbgsym:
+    installed: true
+  php-gearman-dbgsym:
+    installed: true
+  php-igbinary-dbgsym:
+    installed: true
+  php-memcache-dbgsym:
+    installed: true
+  php-memcached-dbgsym:
+    installed: true
+  php-msgpack-dbgsym:
+    installed: true
+  php-redis-dbgsym:
+    installed: true
+  php-yaml-dbgsym:
+    installed: true
+  php-xdebug-dbgsym:
+    installed: true
