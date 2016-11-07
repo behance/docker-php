@@ -48,11 +48,24 @@ RUN apt-get update -q && \
 
 # Add PHP and support packages \
 RUN apt-get update -q && \
+    # Ensure PHP 5.5 + 5.6 + 7.1 don't accidentally get added by PPA
+    apt-mark hold \
+            php5.5-cli \
+            php5.5-json \
+            php5.5-common \
+            php5.6-cli \
+            php5.6-json \
+            php5.6-common \
+            php7.0-cli \
+            php7.0-common \
+            php7.0-json \
+    && \
     apt-get -yqq install \
         php7.1 \
         php7.1-apcu \
         php7.1-bz2 \
         php7.1-curl \
+        php7.1-dev \
         php7.1-fpm \
         php7.1-gd \
         php7.1-igbinary \
@@ -66,26 +79,30 @@ RUN apt-get update -q && \
         php7.1-memcache \
         php7.1-memcached \
         php7.1-xml \
-        php7.1-yaml \
         php7.1-zip \
-        php-redis \
-        php-xdebug \
+        # php-xdebug \  <-- no longer built for PHP 7.1
         newrelic-php5=${NEWRELIC_VERSION} \
+        newrelic-php5-common=${NEWRELIC_VERSION} \
+        newrelic-daemon=${NEWRELIC_VERSION} \
+        libyaml-dev \
     && \
     phpdismod pdo_pgsql && \
     phpdismod pgsql && \
-    phpdismod redis && \
     phpdismod yaml && \
     phpdismod xdebug && \
     curl -sS https://getcomposer.org/installer | php && \
     mv composer.phar /usr/local/bin/composer && \
+    # Install new PHP7-stable version of Yaml \
+    pecl install yaml-2.0.0 && \
+    echo "extension=yaml.so" > $CONF_PHPMODS/yaml.ini && \
+    # Install new PHP7-stable version of Redis \
+    pecl install redis-3.0.0 && \
+    echo "extension=redis.so" > $CONF_PHPMODS/redis.ini && \
+    # Remove dev packages that were only in place just to compile extensions
+    apt-get remove -yqq \
+        php7.1-dev \
+    && \
     /clean.sh
-
-# Temporary Hack: unsupported PHP extensions are dumping old PHP pre-reqs into the mix
-# Even marking them to never install doesn't work. Removing for now, until all extensions are supported
-RUN apt-get remove --purge -yq \
-        php5.5 \
-        php7.0
 
 # - Configure php-fpm to use TCP rather than unix socket (for stability), fastcgi_pass is also set by /etc/nginx/sites-available/default
 # - Set base directory for all php (/app), difficult to use APP_PATH as a replacement, otherwise / breaks command
