@@ -1,27 +1,26 @@
+# Ensure we leverage the parent's test suite, that we have not introduced any nginx-level issues
 gossfile:
   ../nginx/base.goss.yaml: {}
 
+user:
+  www-data:
+    exists: true
 group:
   www-data:
     exists: true
+
 command:
+  # Only confirm that these commands exit cleanly, with no error output.
+  # Version constraints have been pushed down to the variant-level test, since they are different
   php -m:
     exit-status: 0
     stderr: ['!/./']
   php -v:
     exit-status: 0
     stderr: ['!/./']
-  php-fpm7.0 -m:
+  php-fpm -m:
     exit-status: 0
     stderr: ['!/./']
-  php-fpm7.0 -v:
+  php-fpm -v:
     exit-status: 0
-    stderr: ['!/./']
-  php -r 'echo PHP_MAJOR_VERSION;':
-    exit-status: 0
-    stdout: [7]
-    stderr: ['!/./']
-  php -r 'echo PHP_MINOR_VERSION;':
-    exit-status: 0
-    stdout: [0]
     stderr: ['!/./']
