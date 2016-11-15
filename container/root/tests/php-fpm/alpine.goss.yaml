@@ -1,6 +1,41 @@
 gossfile:
   base.goss.yaml: {}
 
+command:
+  # IMPORTANT: confirm the major/minor version of PHP itself
+  php -r 'echo PHP_MAJOR_VERSION;':
+    exit-status: 0
+    stdout: [7]
+    stderr: ['!/./']
+  php -r 'echo PHP_MINOR_VERSION;':
+    exit-status: 0
+    stdout: [0]
+    stderr: ['!/./']
+  php-fpm7.0 -m:
+    exit-status: 0
+    stderr: ['!/./']
+  php-fpm7.0 -v:
+    exit-status: 0
+    stdout: [PHP 7.0]
+    stderr: ['!/./']
+
+  # Hack: enable and disable the various extensions to test their presence
+  phpenmod yaml && php -m | grep yaml && phpdismod yaml:
+    exit-status: 0
+    stderr: ['!/./']
+
+  phpenmod pgsql && php -m | grep pgsql && phpdismod pgsql:
+    exit-status: 0
+    stderr: ['!/./']
+
+  phpenmod pdo_pgsql && php -m | grep pdo_pgsql && phpdismod pdo_pgsql:
+    exit-status: 0
+    stderr: ['!/./']
+
+  phpenmod redis && php -m | grep redis && phpdismod redis:
+    exit-status: 0
+    stderr: ['!/./']
+
 package:
   php7:
     installed: true
@@ -84,23 +119,5 @@ package:
     installed: true
   php7-zlib:
     installed: true
-
-command:
-  # Hack: enable and disable the various extensions to test their presence
-  phpenmod yaml && php -m | grep yaml && phpdismod yaml:
-    exit-status: 0
-    stderr: ['!/./']
-
-  phpenmod pgsql && php -m | grep pgsql && phpdismod pgsql:
-    exit-status: 0
-    stderr: ['!/./']
-
-  phpenmod pdo_pgsql && php -m | grep pdo_pgsql && phpdismod pdo_pgsql:
-    exit-status: 0
-    stderr: ['!/./']
-
-  phpenmod redis && php -m | grep redis && phpdismod redis:
-    exit-status: 0
-    stderr: ['!/./']
 
 

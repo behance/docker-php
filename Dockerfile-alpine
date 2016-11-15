@@ -1,4 +1,4 @@
-FROM behance/docker-nginx:6.1-alpine
+FROM behance/docker-nginx:6.2-alpine
 MAINTAINER Bryan Latten <latten@adobe.com>
 
 # Set TERM to suppress warning messages.
@@ -7,6 +7,11 @@ ENV CONF_PHPFPM=/etc/php7/php-fpm.conf \
     CONF_FPMPOOL=/etc/php7/php-fpm.d/www.conf \
     CONF_FPMOVERRIDES=/etc/php/7.0/fpm/conf.d/overrides.user.ini \
     APP_ROOT=/app \
+    SERVER_WORKER_CONNECTIONS=3072 \
+    SERVER_CLIENT_BODY_BUFFER_SIZE=128k \
+    SERVER_CLIENT_HEADER_BUFFER_SIZE=1k \
+    SERVER_CLIENT_BODY_BUFFER_SIZE=128k \
+    SERVER_LARGE_CLIENT_HEADER_BUFFERS="4 256k" \
     PHP_FPM_MAX_CHILDREN=4096 \
     PHP_FPM_START_SERVERS=20 \
     PHP_FPM_MAX_REQUESTS=1024 \
@@ -15,6 +20,9 @@ ENV CONF_PHPFPM=/etc/php7/php-fpm.conf \
     PHP_FPM_MEMORY_LIMIT=256M \
     PHP_FPM_MAX_EXECUTION_TIME=60 \
     PHP_FPM_UPLOAD_MAX_FILESIZE=1M \
+    PHP_OPCACHE_MEMORY_CONSUMPTION=128 \
+    PHP_OPCACHE_INTERNED_STRINGS_BUFFER=16 \
+    PHP_OPCACHE_MAX_WASTED_PERCENTAGE=5 \
     NEWRELIC_VERSION=6.7.0.174 \
     CFG_APP_DEBUG=1
 
@@ -96,61 +104,14 @@ RUN curl -L https://download.newrelic.com/php_agent/archive/${NEWRELIC_VERSION}/
 RUN curl -sS https://getcomposer.org/installer | php && \
     mv composer.phar /usr/local/bin/composer
 
-#        php-apcu \
-#        php-gearman \
-#        php-igbinary \
-#        php-memcache \
-
-#########################################################################################################################################
-# - Configure php-fpm to use TCP rather than unix socket (for stability), fastcgi_pass is also set by /etc/nginx/sites-available/default
-# - Set base directory for all php (/app), difficult to use APP_PATH as a replacement, otherwise / breaks command
-# - Baseline "optimizations" before benchmarking succeeded at concurrency of 150
-# @see http://www.codestance.com/tutorials-archive/install-and-configure-php-fpm-on-nginx-385
-# - Ensure environment variables aren't cleaned, will make it into FPM  workers
-# - php-fpm processes must pick up stdout/stderr from workers, will cause minor performance decrease (but is required)
-# - Disable systemd integration, it is not present nor responsible for running service
-# - Enforce ACL that only 127.0.0.1 may connect
-# - Allow FPM to pick up extra configuration in fpm/conf.d folder
-#
-## TODO: allow ENV specification of performance management at runtime (in run.d startup script)
-#########################################################################################################################################
-
-RUN sed -i "s/listen = .*/listen = 127.0.0.1:9000/" $CONF_FPMPOOL && \
-    sed -i "s/;chdir = .*/chdir = \/app/" $CONF_FPMPOOL && \
-    sed -i "s/pm.max_children = .*/pm.max_children = \${PHP_FPM_MAX_CHILDREN}/" $CONF_FPMPOOL && \
-    sed -i "s/pm.start_servers = .*/pm.start_servers = \${PHP_FPM_START_SERVERS}/" $CONF_FPMPOOL && \
-    sed -i "s/;pm.max_requests = .*/pm.max_requests = \${PHP_FPM_MAX_REQUESTS}/" $CONF_FPMPOOL && \
-    sed -i "s/pm.min_spare_servers = .*/pm.min_spare_servers = \${PHP_FPM_MIN_SPARE_SERVERS}/" $CONF_FPMPOOL && \
-    sed -i "s/pm.max_spare_servers = .*/pm.max_spare_servers = \${PHP_FPM_MAX_SPARE_SERVERS}/" $CONF_FPMPOOL && \
-    sed -i "s/;clear_env/clear_env/" $CONF_FPMPOOL && \
-    sed -i "s/;catch_workers_output/catch_workers_output/" $CONF_FPMPOOL && \
-    sed -i "s/;\?error_log = .*/error_log = \/dev\/stdout/" $CONF_PHPFPM && \
-    sed -i "s/;listen.allowed_clients/listen.allowed_clients/" $CONF_PHPFPM && \
-    # Since PHP-FPM will be run without root privileges, comment these lines to prevent any startup warnings \
-    sed -i "s/^user =/;user =/" $CONF_FPMPOOL && \
-    sed -i "s/^group =/;group =/" $CONF_FPMPOOL && \
-    # Allow NewRelic to be partially configured by environment variables, set sane defaults \
-    sed -i "s/newrelic.appname = .*/newrelic.appname = \"\${REPLACE_NEWRELIC_APP}\"/" $CONF_PHPMODS/newrelic.ini && \
-    sed -i "s/newrelic.license = .*/newrelic.license = \"\${REPLACE_NEWRELIC_LICENSE}\"/" $CONF_PHPMODS/newrelic.ini && \
-    sed -i "s/newrelic.logfile = .*/newrelic.logfile = \"\/dev\/stdout\"/" $CONF_PHPMODS/newrelic.ini && \
-    sed -i "s/newrelic.daemon.logfile = .*/newrelic.daemon.logfile = \"\/dev\/stdout\"/" $CONF_PHPMODS/newrelic.ini && \
-    sed -i "s/;newrelic.loglevel = .*/newrelic.loglevel = \"warning\"/" $CONF_PHPMODS/newrelic.ini && \
-    sed -i "s/;newrelic.daemon.loglevel = .*/newrelic.daemon.loglevel = \"warning\"/" $CONF_PHPMODS/newrelic.ini && \
-    sed -i 's/extension\s\?=/;extension =/' $CONF_PHPMODS/newrelic.ini && \
-    # Match FPM timeout directive with .ini max execution time
-    sed -i "s/;*request_terminate_timeout = .*/request_terminate_timeout = \${PHP_FPM_MAX_EXECUTION_TIME}/" $CONF_FPMPOOL && \
-    # Required for php-fpm to place .sock file into, fails otherwise \
-    mkdir -p /var/run/php/ /var/log/php7/newrelic && \
-    chown -R $NOT_ROOT_USER:$NOT_ROOT_USER /var/run/php /var/log/newrelic
-
 # Overlay the root filesystem from this repo
 COPY ./container/root /
 
-# Make additional hacks to migrate files from Ubuntu to Alpine folder structure
+# - Make additional hacks to migrate files from Ubuntu to Alpine folder structure
 RUN cp /etc/php/7.0/mods-available/* $CONF_PHPMODS && \
     rm $CONF_PHPMODS/00_opcache.ini && \
-    # Enable status page at "/__status"
-    sed -i 's/;pm.status_path = .*/pm.status_path = \/__status/' $CONF_FPMPOOL
+    # - Run standard set of tweaks to ensure runs performant, reliably, and consistent between variants
+    /bin/bash -e prep-php.sh
 
 RUN goss -g /tests/php-fpm/alpine.goss.yaml validate && \
     /aufs_hack.sh

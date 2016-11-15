@@ -36,7 +36,7 @@ Three variants are available:
   - exif
   - fpm
   - gd
-  - gearman*
+  - gearman*^
   - iconv
   - igbinary*
   - intl
@@ -97,7 +97,7 @@ NOTE: Nginx is exposed and bound to an unprivileged port, `8080`
 Several environment variables can be used to configure various PHP FPM paramaters, as well as a few Nginx configurations.
 as such. These can be used to drive the configuration of the downstream PHP application in any way necessary, but there are a few environment variables that `bryanlatter/docker-php` will process along the way...
 
-See parent [docker-nginx](https://github.com/behance/docker-nginx) for additional configuration  
+See parent(s) [docker-nginx](https://github.com/behance/docker-nginx), [docker-base](https://github.com/behance/docker-base) for additional configuration
 
 
 Variable | Example | Default | Description
@@ -117,6 +117,6 @@ Variable | Example | Default | Description
 `PHP_FPM_START_SERVERS` | `PHP_FPM_START_SERVERS=40` | 20 | [docs](http://php.net/manual/en/install.fpm.configuration.php)
 `PHP_FPM_MAX_REQUESTS` | `PHP_FPM_MAX_REQUESTS=100` | 1024 | [docs](http://php.net/manual/en/install.fpm.configuration.php) How many requests an individual FPM worker will process before recycling
 `PHP_FPM_MIN_SPARE_SERVERS` | `PHP_FPM_MIN_SPARE_SERVERS=10` | 5 | [docs](http://php.net/manual/en/install.fpm.configuration.php)
-`PHP_FPM_MAX_SPARE_SERVERS` | `PHP_FPM_MAX_SPARE_SERVERS=64` | 128 | [docs](http://php.net/manual/en/install.fpm.configuration.php)
-
-
+`PHP_OPCACHE_MEMORY_CONSUMPTION` | `PHP_OPCACHE_MEMORY_CONSUMPTION=512` | 128 | [docs](http://php.net/manual/en/opcache.configuration.php#ini.opcache.memory-consumption)
+`PHP_OPCACHE_MAX_WASTED_PERCENTAGE` | `PHP_OPCACHE_MAX_WASTED_PERCENTAGE=10` | 5 | [docs](http://php.net/manual/en/opcache.configuration.php#ini.opcache.max-wasted-percentage)
+`PHP_OPCACHE_INTERNED_STRINGS_BUFFER` | `PHP_OPCACHE_INTERNED_STRINGS_BUFFER=64` | 16 | [docs](http://php.net/manual/en/opcache.configuration.php#ini.opcache.interned-strings-buffer)
