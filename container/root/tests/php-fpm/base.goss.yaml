@@ -24,3 +24,22 @@ command:
   php-fpm -v:
     exit-status: 0
     stderr: ['!/./']
+
+  # Hack: to test and validate by-default disabled extensions [without side effects]
+  # 1. run php with no ini file (-n)
+  # 2. pass ini key-value (-d), enable the single extension to test
+  # 3. list the newly loaded php mods (-m)
+  # 4. grep the output of the loaded mods for the one under test
+  php -n -d extension=yaml.so -m | grep yaml:
+    exit-status: 0
+    stderr: ['!/./']
+  php -n -d extension=pgsql.so -m | grep pgsql:
+    exit-status: 0
+    stderr: ['!/./']
+  # Note: pdo_pgsql requires pdo to also be present in order to be loaded properly
+  php -n -d extension=pdo.so -d extension=pdo_pgsql.so -m:
+    exit-status: 0
+    stderr: ['!/./']
+  php -n -d extension=redis.so -m | grep redis:
+    exit-status: 0
+    stderr: ['!/./']
