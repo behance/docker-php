@@ -5,6 +5,8 @@
 server {
   listen 8080;
 
+  include /etc/nginx/http_headers.conf;
+
   server_tokens off; # Doesn't broadcast version level of server software
   server_name web; # TODO: replace with environment variable
   root /app/public;
