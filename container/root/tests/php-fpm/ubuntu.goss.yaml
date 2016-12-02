@@ -18,6 +18,9 @@ command:
     exit-status: 0
     stdout: [PHP 7.0]
     stderr: ['!/./']
+  php -n -d extension=redis.so -m | grep redis:
+    exit-status: 0
+    stderr: ['!/./']
 
 package:
   php7.0:
