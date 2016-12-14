@@ -54,9 +54,6 @@ RUN /bin/bash -e /security_updates.sh && \
 RUN apt-get update -q && \
     # Ensure PHP 5.5 + 7.0 + 7.1 don't accidentally get added by PPA
     apt-mark hold \
-            php5.5-cli \
-            php5.5-json \
-            php5.5-common \
             php7.0-cli \
             php7.0-common \
             php7.0-json \
