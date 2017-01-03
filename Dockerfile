@@ -96,7 +96,7 @@ RUN apt-get update -q && \
     pecl install yaml-2.0.0 && \
     echo "extension=yaml.so" > $CONF_PHPMODS/yaml.ini && \
     # Install new PHP7-stable version of Redis \
-    pecl install redis-3.0.0 && \
+    pecl install redis-3.1.0 && \
     echo "extension=redis.so" > $CONF_PHPMODS/redis.ini && \
     # Remove dev packages that were only in place just to compile extensions
     apt-get remove --purge -yq \
