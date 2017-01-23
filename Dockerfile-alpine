@@ -23,7 +23,7 @@ ENV CONF_PHPFPM=/etc/php7/php-fpm.conf \
     PHP_OPCACHE_MEMORY_CONSUMPTION=128 \
     PHP_OPCACHE_INTERNED_STRINGS_BUFFER=16 \
     PHP_OPCACHE_MAX_WASTED_PERCENTAGE=5 \
-    NEWRELIC_VERSION=6.7.0.174 \
+    NEWRELIC_VERSION=6.9.0.182 \
     CFG_APP_DEBUG=1
 
 RUN echo '@edge http://dl-cdn.alpinelinux.org/alpine/edge/testing' >> /etc/apk/repositories && \
