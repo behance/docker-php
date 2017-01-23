@@ -1,4 +1,4 @@
-FROM behance/docker-nginx:6.3-alpine
+FROM behance/docker-nginx:6.4-alpine
 MAINTAINER Bryan Latten <latten@adobe.com>
 
 # Set TERM to suppress warning messages.
@@ -26,57 +26,54 @@ ENV CONF_PHPFPM=/etc/php7/php-fpm.conf \
     NEWRELIC_VERSION=6.9.0.182 \
     CFG_APP_DEBUG=1
 
-RUN echo '@edge http://dl-cdn.alpinelinux.org/alpine/edge/testing' >> /etc/apk/repositories && \
-    echo '@community http://dl-cdn.alpinelinux.org/alpine/edge/community' >> /etc/apk/repositories && \
-    apk update && \
+RUN apk update && \
     apk add --no-cache \
       git \
       curl \
       wget \
-      php7@community \
-      php7-fpm@community \
-      php7-apcu@edge \
-      php7-calendar@community \
-      php7-common@community \
-      php7-ctype@community \
-      php7-curl@community \
-      php7-dom@community \
-      php7-exif@community \
-      php7-ftp@community \
-      php7-gd@community \
-      php7-gettext@community \
-      php7-iconv@community \
-      php7-intl@community \
-      php7-json@community \
-      php7-mcrypt@community \
-      php7-mbstring@community \
+      php7 \
+      php7-fpm \
+      php7-apcu \
+      php7-calendar \
+      php7-common \
+      php7-ctype \
+      php7-curl \
+      php7-dom \
+      php7-exif \
+      php7-ftp \
+      php7-gd \
+      php7-gettext \
+      php7-iconv \
+      php7-intl \
+      php7-json \
+      php7-mcrypt \
+      php7-mbstring \
       php7-msgpack@edge \
-      # php7-memcached@community \ --- currently only built for arm arch
-      php7-mysqli@community \
-      php7-mysqlnd@community \
-      php7-opcache@community \
-      php7-openssl@community \
-      php7-pdo_pgsql@community \
-      php7-pgsql@community \
-      php7-pcntl@community \
-      php7-pdo@community \
-      php7-pdo_mysql@community \
-      php7-phar@community \
-      php7-posix@community \
-      # php7-readline@community \  --- not currently working on PHP 7
-      php7-redis@edge \
-      php7-session@community \
-      php7-sockets@community \
-      php7-sysvmsg@community \
-      php7-sysvsem@community \
-      php7-sysvshm@community \
-      php7-shmop@community \
+      php7-memcached@edge \
+      php7-mysqli \
+      php7-mysqlnd \
+      php7-opcache \
+      php7-openssl \
+      php7-pdo_pgsql \
+      php7-pgsql \
+      php7-pcntl \
+      php7-pdo \
+      php7-pdo_mysql \
+      php7-phar \
+      php7-posix \
+      # php7-readline \  --- not currently working on PHP 7
+      php7-session \
+      php7-sockets \
+      php7-sysvmsg \
+      php7-sysvsem \
+      php7-sysvshm \
+      php7-shmop \
       php7-xdebug@edge \
-      php7-xml@community \
-      php7-xmlreader@community \
-      php7-xsl@community \
-      php7-zip@community \
-      php7-zlib@community \
+      php7-xml \
+      php7-xmlreader \
+      php7-xsl \
+      php7-zip \
+      php7-zlib \
     && \
     # Alpine + Ubuntu use different versioned names --> now standardized \
     ln -s /usr/bin/php7 /usr/bin/php && \
@@ -85,8 +82,7 @@ RUN echo '@edge http://dl-cdn.alpinelinux.org/alpine/edge/testing' >> /etc/apk/r
     sed -i 's/zend_extension\s\?=/;zend_extension =/' $CONF_PHPMODS/xdebug.ini && \
     # Disable postgres by default \
     sed -i 's/extension\s\?=/;extension =/' $CONF_PHPMODS/00_pdo_pgsql.ini && \
-    sed -i 's/extension\s\?=/;extension =/' $CONF_PHPMODS/00_pgsql.ini && \
-    sed -i 's/extension\s\?=/;extension =/' $CONF_PHPMODS/20_redis.ini
+    sed -i 's/extension\s\?=/;extension =/' $CONF_PHPMODS/00_pgsql.ini
 
 # Install Alpine-compatible NewRelic, seed with variables to be replaced
 # Requires PHP to already be installed
@@ -111,7 +107,28 @@ COPY ./container/root /
 RUN cp /etc/php/7.0/mods-available/* $CONF_PHPMODS && \
     rm $CONF_PHPMODS/00_opcache.ini && \
     # - Run standard set of tweaks to ensure runs performant, reliably, and consistent between variants
+    touch /var/run/lock && \
+    chown $NOT_ROOT_USER:$NOT_ROOT_USER /var/log/php7 && \
+    ln -s /usr/sbin/php-fpm7 /usr/sbin/php-fpm && \
     /bin/bash -e prep-php.sh
+
+RUN apk update && \
+    apk add --no-cache \
+        yaml-dev \
+    && \
+    apk add --no-cache --virtual .phpize_deps \
+        autoconf file g++ gcc libc-dev make pkgconf re2c php7-dev php7-pear \
+    && \
+    sed -i 's/^exec $PHP -C -n/exec $PHP -C/g' $(which pecl) && \
+    # Install new PHP7-stable version of Yaml \
+    pecl install yaml-2.0.0 && \
+    echo ";extension=yaml.so" > $CONF_PHPMODS/yaml.ini && \
+    # Install new PHP7-stable version of Redis \
+    pecl install redis-3.1.0 && \
+    echo ";extension=redis.so" > $CONF_PHPMODS/redis.ini && \
+    rm -rf /usr/share/php7 && \
+    apk del .phpize_deps && \
+    /bin/bash -e /clean.sh
 
 RUN goss -g /tests/php-fpm/alpine.goss.yaml validate && \
     /aufs_hack.sh
