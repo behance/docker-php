@@ -44,7 +44,7 @@ Three variants are available:
   - mbstring
   - mcrypt
   - memcache*^
-  - memcached*
+  - memcached
   - mysqli
   - mysqlnd
   - newrelic~ (activates with env variables)

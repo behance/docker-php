@@ -18,7 +18,8 @@ command:
     exit-status: 0
     stdout: [PHP 7.0]
     stderr: ['!/./']
-  php -n -d extension=redis.so -m | grep redis:
+  # On Alpine-only, session is not loaded as part of the core, and must be loaded at this time
+  php -n -d extension=session.so -d extension=redis.so -m | grep redis:
     exit-status: 0
     stderr: ['!/./']
 
@@ -57,8 +58,8 @@ package:
     installed: true
   php7-msgpack:
     installed: true
-  # php7-memcached:
-  #   installed: true
+  php7-memcached:
+    installed: true
   php7-mysqli:
     installed: true
   php7-mysqlnd:
@@ -79,8 +80,8 @@ package:
     installed: true
   php7-posix:
     installed: true
-  php7-redis:
-    installed: true
+  # php7-readline:
+  #   installed: true
   php7-session:
     installed: true
   php7-sockets:

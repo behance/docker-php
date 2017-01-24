@@ -24,7 +24,6 @@ command:
   php-fpm -v:
     exit-status: 0
     stderr: ['!/./']
-
   # Hack: to test and validate by-default disabled extensions [without side effects]
   # 1. run php with no ini file (-n)
   # 2. pass ini key-value (-d), enable the single extension to test
@@ -37,6 +36,6 @@ command:
     exit-status: 0
     stderr: ['!/./']
   # Note: pdo_pgsql requires pdo to also be present in order to be loaded properly
-  php -n -d extension=pdo.so -d extension=pdo_pgsql.so -m:
+  php -n -d extension=pdo.so -d extension=pdo_pgsql.so -m | grep pdo_pgsql:
     exit-status: 0
     stderr: ['!/./']
