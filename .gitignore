@@ -9,3 +9,6 @@
 # SASS
 .sass-cache
 *.css.map
+
+# tmp file for upload
+tmp.txt
