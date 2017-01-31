@@ -86,6 +86,7 @@ RUN apt-get update -q && \
         newrelic-php5-common=${NEWRELIC_VERSION} \
         newrelic-daemon=${NEWRELIC_VERSION} \
         libyaml-dev \
+        librdkafka-dev \
     && \
     phpdismod pdo_pgsql && \
     phpdismod pgsql && \
@@ -98,6 +99,9 @@ RUN apt-get update -q && \
     # Install new PHP5-stable version of Redis \
     pecl install redis-3.1.0 && \
     echo "extension=redis.so" > $CONF_PHPMODS/redis.ini && \
+     # Install kafka extension
+    pecl install rdkafka-3.0.1 && \
+    echo "extension=rdkafka.so" > $CONF_PHPMODS/rdkafka.ini && \
     # Remove dev packages that were only in place just to compile extensions
     apt-get remove --purge -yq \
         php5.6-dev \

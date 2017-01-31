@@ -39,3 +39,6 @@ command:
   php -n -d extension=pdo.so -d extension=pdo_pgsql.so -m | grep pdo_pgsql:
     exit-status: 0
     stderr: ['!/./']
+  php -n -d extension=rdkafka.so -m | grep rdkafka:
+    exit-status: 0
+    stderr: ['!/./']
