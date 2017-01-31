@@ -22,6 +22,9 @@ command:
   php -n -d extension=session.so -d extension=redis.so -m | grep redis:
     exit-status: 0
     stderr: ['!/./']
+  php -n -d extension=rdkafka.so -m | grep rdkafka:
+    exit-status: 0
+    stderr: ['!/./']
 
 package:
   php7:
