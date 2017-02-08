@@ -24,6 +24,11 @@ command:
   php -n -d extension=rdkafka.so -m | grep rdkafka:
     exit-status: 0
     stderr: ['!/./']
+  # Assert librdkafka version
+  dpkg -s librdkafka-dev | grep 0.9.1:
+    exit-status: 0
+    stderr: ['!/./']
+    stdout: ['0.9.1']
 
 package:
   php7.0:

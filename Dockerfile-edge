@@ -37,6 +37,7 @@ RUN /bin/bash -e /security_updates.sh && \
     locale-gen en_US.UTF-8 && export LANG=en_US.UTF-8 && \
     add-apt-repository ppa:git-core/ppa -y && \
     add-apt-repository ppa:ondrej/php -y && \
+    add-apt-repository ppa:guessi/librdkafka -y && \
     echo 'deb http://apt.newrelic.com/debian/ newrelic non-free' | tee /etc/apt/sources.list.d/newrelic.list && \
     wget -O- https://download.newrelic.com/548C16BF.gpg | apt-key add - && \
     # Prevent newrelic install from prompting for input \

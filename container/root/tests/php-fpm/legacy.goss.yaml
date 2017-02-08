@@ -21,6 +21,11 @@ command:
   php -n -d extension=redis.so -m | grep redis:
     exit-status: 0
     stderr: ['!/./']
+  # Assert librdkafka version
+  dpkg -s librdkafka-dev | grep 0.9.1:
+    exit-status: 0
+    stderr: ['!/./']
+    stdout: ['0.9.1']
 
 package:
   php5.6:
