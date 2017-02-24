@@ -33,8 +33,8 @@ sed -i "s/;catch_workers_output.*/catch_workers_output = yes/" $CONF_FPMPOOL
 sed -i "s/;listen.allowed_clients.*/listen.allowed_clients = 127.0.0.1/" $CONF_FPMPOOL
 
 # - Since PHP-FPM will be run without root privileges, comment these lines to prevent any startup warnings
-sed -i "s/^user =/;user =/" $CONF_FPMPOOL
-sed -i "s/^group =/;group =/" $CONF_FPMPOOL
+# sed -i "s/^user =/;user =/" $CONF_FPMPOOL
+# sed -i "s/^group =/;group =/" $CONF_FPMPOOL
 
 # - Match FPM timeout directive with .ini max execution time
 sed -i "s/;*request_terminate_timeout = .*/request_terminate_timeout = \${PHP_FPM_MAX_EXECUTION_TIME}/" $CONF_FPMPOOL
