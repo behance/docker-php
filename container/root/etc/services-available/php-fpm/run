@@ -29,4 +29,4 @@ trap
 
 # PHP-FPM needs to have stdout/stderr filtered for the extra "cruft" it appends.
 # Due to the complexity of this script (it didn't work with S6's pipeline), it is now moved to its own separate script
-s6-setuidgid www-data with-contenv ./.command
+with-contenv ./.command
