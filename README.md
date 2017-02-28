@@ -87,7 +87,7 @@ Production Mode: an immutable container (without file updates) should set `CFG_A
 
 NOTE: Nginx is exposed and bound to an unprivileged port, `8080`  
 
-####Monitoring
+###Monitoring
 --- 
 1. NewRelic APM: automatically enabled by adding providing environment variables `REPLACE_NEWRELIC_APP` and `REPLACE_NEWRELIC_LICENSE`
 1. PHP-FPM Status: available *only* inside container at `/__status`. Application healthcheck can pull PHP-FPM statistics from `http://127.0.0.1/__status?json`. To open to more clients than local, add more `allow` statements in `__status` location block in `$CONF_NGINX_SITE`(`/etc/nginx/sites-available/default`)
@@ -121,3 +121,10 @@ Variable | Example | Default | Description
 `PHP_OPCACHE_MEMORY_CONSUMPTION` | `PHP_OPCACHE_MEMORY_CONSUMPTION=512` | 128 | [docs](http://php.net/manual/en/opcache.configuration.php#ini.opcache.memory-consumption)
 `PHP_OPCACHE_MAX_WASTED_PERCENTAGE` | `PHP_OPCACHE_MAX_WASTED_PERCENTAGE=10` | 5 | [docs](http://php.net/manual/en/opcache.configuration.php#ini.opcache.max-wasted-percentage)
 `PHP_OPCACHE_INTERNED_STRINGS_BUFFER` | `PHP_OPCACHE_INTERNED_STRINGS_BUFFER=64` | 16 | [docs](http://php.net/manual/en/opcache.configuration.php#ini.opcache.interned-strings-buffer)
+
+###Testing
+---   
+- Requires `docker` and `docker-compose`   
+To test locally, run `bash -e ./test.sh {docker-machine}` where `docker-machine` is the IP of the connected docker engine. 
+These same tests get run automatically, per pull request, via Travis CI
+

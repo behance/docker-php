@@ -19,20 +19,4 @@ before_install:
 # - Ensure text from phpinfo is present in response to upload, which is returned for everything
 # ---- mainly to check /tmp permission issues from nginx
 script:
-- docker-compose build ubuntu
-- docker-compose build edge
-- docker-compose build legacy
-- docker-compose build alpine
-- docker-compose up -d
-- sleep 5
-- docker-compose ps
-- curl localhost:8080 | grep "PHP Version 7.0."
-- curl localhost:8081 | grep "PHP Version 7.0."
-- curl localhost:8082 | grep "PHP Version 7.1."
-- curl localhost:8083 | grep "PHP Version 5.6."
-- dd if=/dev/zero of=tmp.txt count=100000 bs=1024
-- curl --form upload=@tmp.txt localhost:8080 | grep "PHP Version 7.0."
-- curl --form upload=@tmp.txt localhost:8081 | grep "PHP Version 7.0."
-- curl --form upload=@tmp.txt localhost:8082 | grep "PHP Version 7.1."
-- curl --form upload=@tmp.txt localhost:8083 | grep "PHP Version 5.6."
-- docker-compose kill
+- bash ./test.sh localhost
