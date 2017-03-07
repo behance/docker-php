@@ -41,13 +41,33 @@ package:
     installed: true
   php7.1-mbstring:
     installed: true
+  php7.1-mcrypt:
+    installed: true
   php7.1-mysql:
     installed: true
   php7.1-opcache:
     installed: true
+  php7.1-pgsql:
+    installed: true
+  php7.1-readline:
+    installed: true
   php7.1-xml:
     installed: true
   php7.1-zip:
+    installed: true
+  php-apcu:
+    installed: true
+  php-gearman:
+    installed: true
+  php-igbinary:
+    installed: true
+  php-memcache:
+    installed: true
+  php-memcached:
+    installed: true
+  php-msgpack:
+    installed: true
+  php-xdebug:
     installed: true
 
 file:

@@ -11,7 +11,7 @@ Add’s PHP-FPM, mods, and specific backend configuration to Behance’s [docker
 Three variants are available:
 - (default) Ubuntu-based, PHP 7.0  
 - (slim) Alpine-based, PHP 7.0, tagged as `-alpine`  
-- (beta) Ubuntu-based, PHP 7.1, tagged as `-beta`  
+- (edge) Ubuntu-based, PHP 7.1, tagged as `-edge`  
 - (legacy) Ubuntu-based, PHP 5.6, tagged as `-legacy`  
 
 ###Includes
@@ -23,10 +23,10 @@ Three variants are available:
 - Extra PHP Modules:
 
 `*`  - not available on Alpine variant  
-`^`  - not available on Beta tag  
+`^`  - not available on Edge variant  
 `~`  - disabled by default (use `phpenmod` to enable on Ubuntu-based variants, uncomment .ini file otherwise)
-  - apc*^ (only visible for backwards compatibility) 
-  - apcu^
+  - apc* (only visible for backwards compatibility) 
+  - apcu
   - calendar
   - bz2
   - ctype
@@ -34,16 +34,16 @@ Three variants are available:
   - date
   - dom
   - exif
-  - fpm
+  - cgi-fcgi
   - gd
-  - gearman*^
+  - gearman*
   - iconv
-  - igbinary*
+  - igbinary
   - intl
   - json
   - mbstring
   - mcrypt
-  - memcache*^
+  - memcache*
   - memcached
   - mysqli
   - mysqlnd
@@ -58,14 +58,14 @@ Three variants are available:
   - phar
   - posix
   - rdkafka~
-  - redis~^
+  - redis~
   - shmop
   - SimpleXML
   - sockets
   - sysvmsg
   - sysvsem
   - sysvshm
-  - xdebug~^
+  - xdebug~
   - xml
   - xmlreader
   - xmlwriter

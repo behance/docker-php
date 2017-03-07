@@ -77,12 +77,12 @@ RUN apt-get update -q && \
         php7.1-mcrypt \
         php7.1-mysql \
         php7.1-pgsql \
-        # php7.1-gearman \  <-- no longer built for PHP 7.1
+        php7.1-gearman \
         php7.1-memcache \
         php7.1-memcached \
         php7.1-xml \
         php7.1-zip \
-        # php-xdebug \  <-- no longer built for PHP 7.1
+        php-xdebug \
         newrelic-php5=${NEWRELIC_VERSION} \
         newrelic-php5-common=${NEWRELIC_VERSION} \
         newrelic-daemon=${NEWRELIC_VERSION} \
@@ -91,14 +91,15 @@ RUN apt-get update -q && \
     && \
     phpdismod pdo_pgsql && \
     phpdismod pgsql && \
+    phpdismod xdebug && \
     curl -sS https://getcomposer.org/installer | php && \
     mv composer.phar /usr/local/bin/composer && \
-    # Install new PHP7-stable version of Yaml \
+    # Install new PHP 7.1-stable version of Yaml \
     pecl install yaml-2.0.0 && \
     echo "extension=yaml.so" > $CONF_PHPMODS/yaml.ini && \
-    # Install new PHP7-stable version of Redis <--- currently broken due to PHP 7.1.0-1 compatibility with version check
-    # pecl install redis-3.1.0 && \
-    # echo "extension=redis.so" > $CONF_PHPMODS/redis.ini && \
+    # Install new PHP 7.1-stable version of Redis
+    pecl install redis-3.1.1 && \
+    echo "extension=redis.so" > $CONF_PHPMODS/redis.ini && \
     # Install kafka extension
     pecl install rdkafka-3.0.1 && \
     echo "extension=rdkafka.so" > $CONF_PHPMODS/rdkafka.ini && \
@@ -123,5 +124,5 @@ RUN cp /etc/php/7.0/mods-available/* $CONF_PHPMODS && \
     # - Run standard set of tweaks to ensure runs performant, reliably, and consistent between variants
     /bin/bash -e /prep-php.sh
 
-RUN goss -g /tests/php-fpm/beta.goss.yaml validate && \
+RUN goss -g /tests/php-fpm/edge.goss.yaml validate && \
     /aufs_hack.sh

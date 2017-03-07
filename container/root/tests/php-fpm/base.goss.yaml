@@ -24,7 +24,108 @@ command:
   php-fpm -v:
     exit-status: 0
     stderr: ['!/./']
-  # Hack: to test and validate by-default disabled extensions [without side effects]
+
+  # Test the standard extensions are enabled
+  php -m | grep -i apcu:
+    exit-status: 0
+  php -m | grep -i calendar:
+    exit-status: 0
+  php -m | grep -i bz2:
+    exit-status: 0
+  php -m | grep -i ctype:
+    exit-status: 0
+  php -m | grep -i curl:
+    exit-status: 0
+  php -m | grep -i date:
+    exit-status: 0
+  php -m | grep -i dom:
+    exit-status: 0
+  php -m | grep -i exif:
+    exit-status: 0
+  # NOTE: extensions only activates running through FPM mode
+  php-fpm -m | grep -i cgi-fcgi:
+    exit-status: 0
+  php -m | grep -i gd:
+    exit-status: 0
+  php -m | grep -i iconv:
+    exit-status: 0
+  php -m | grep -i intl:
+    exit-status: 0
+  php -m | grep -i json:
+    exit-status: 0
+  php -m | grep -i mbstring:
+    exit-status: 0
+  php -m | grep -i mcrypt:
+    exit-status: 0
+  php -m | grep -i memcached:
+    exit-status: 0
+  php -m | grep -i mysqli:
+    exit-status: 0
+  php -m | grep -i mysqlnd:
+    exit-status: 0
+  php -m | grep -i opcache:
+    exit-status: 0
+  php -m | grep -i openssl:
+    exit-status: 0
+  php -m | grep -i pcntl:
+    exit-status: 0
+  php -m | grep -i pdo:
+    exit-status: 0
+  php -m | grep -i pdo_mysql:
+    exit-status: 0
+  php -m | grep -i phar:
+    exit-status: 0
+  php -m | grep -i posix:
+    exit-status: 0
+  php -m | grep -i readline:
+    exit-status: 0
+  php -m | grep -i shmop:
+    exit-status: 0
+  php -m | grep -i simplexml:
+    exit-status: 0
+  php -m | grep -i sockets:
+    exit-status: 0
+  php -m | grep -i sysvmsg:
+    exit-status: 0
+  php -m | grep -i sysvsem:
+    exit-status: 0
+  php -m | grep -i sysvshm:
+    exit-status: 0
+  php -m | grep -i xml:
+    exit-status: 0
+  php -m | grep -i xmlreader:
+    exit-status: 0
+  php -m | grep -i xmlwriter:
+    exit-status: 0
+  php -m | grep -i zip:
+    exit-status: 0
+  php -m | grep -i zlib:
+    exit-status: 0
+
+  # Test that extra extensions are disabled by default
+  php -m | grep newrelic:
+    exit-status: 1
+    stderr: ['!/./']
+  php -m | grep pdo_pgsql:
+    exit-status: 1
+    stderr: ['!/./']
+  php -m | grep pgsql:
+    exit-status: 1
+    stderr: ['!/./']
+  php -m | grep rdkafka:
+    exit-status: 1
+    stderr: ['!/./']
+  php -m | grep redis:
+    exit-status: 1
+    stderr: ['!/./']
+  php -m | grep yaml:
+    exit-status: 1
+    stderr: ['!/./']
+  php -m | grep xdebug:
+    exit-status: 1
+    stderr: ['!/./']
+  # To test and validate by-default disabled extensions [without side effects]
+  # Hack:
   # 1. run php with no ini file (-n)
   # 2. pass ini key-value (-d), enable the single extension to test
   # 3. list the newly loaded php mods (-m)
@@ -42,3 +143,8 @@ command:
   php -n -d extension=rdkafka.so -m | grep rdkafka:
     exit-status: 0
     stderr: ['!/./']
+  # On some variants, session is not loaded as part of the core, and must be loaded at this time
+  php -n -d extension=session.so -d extension=redis.so -m | grep redis:
+    exit-status: 0
+    # On session-default installs, re-loading session causes a warning, ignore
+    # stderr: ['!/./']
