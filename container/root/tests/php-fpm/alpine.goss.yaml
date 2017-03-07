@@ -18,18 +18,13 @@ command:
     exit-status: 0
     stdout: [PHP 7.0]
     stderr: ['!/./']
-  # On Alpine-only, session is not loaded as part of the core, and must be loaded at this time
-  php -n -d extension=session.so -d extension=redis.so -m | grep redis:
-    exit-status: 0
-    stderr: ['!/./']
   php -n -d extension=rdkafka.so -m | grep rdkafka:
     exit-status: 0
     stderr: ['!/./']
-  # Assert librdkafka version
-  apk info librdkafka | grep 0.9.1:
+  # Assert librdkafka version -0.9.*
+  apk info librdkafka | grep "librdkafka-0.9.":
     exit-status: 0
     stderr: ['!/./']
-    stdout: ['0.9.1']
 
 package:
   php7:

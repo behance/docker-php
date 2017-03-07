@@ -32,6 +32,7 @@ RUN apk update && \
       curl \
       wget \
       php7 \
+      php7-bz2 \
       php7-fpm \
       php7-apcu \
       php7-calendar \
@@ -61,7 +62,6 @@ RUN apk update && \
       php7-pdo_mysql \
       php7-phar \
       php7-posix \
-      # php7-readline \  --- not currently working on PHP 7
       php7-session \
       php7-sockets \
       php7-sysvmsg \
@@ -121,11 +121,14 @@ RUN apk update && \
         autoconf file g++ gcc libc-dev make pkgconf re2c php7-dev php7-pear \
     && \
     sed -i 's/^exec $PHP -C -n/exec $PHP -C/g' $(which pecl) && \
+    # Install new PHP7-stable version of igbinary \
+    pecl install igbinary-2.0.1 && \
+    echo "extension=igbinary.so" > $CONF_PHPMODS/igbinary.ini && \
     # Install new PHP7-stable version of Yaml \
     pecl install yaml-2.0.0 && \
     echo ";extension=yaml.so" > $CONF_PHPMODS/yaml.ini && \
     # Install new PHP7-stable version of Redis \
-    pecl install redis-3.1.0 && \
+    pecl install redis-3.1.1 && \
     echo ";extension=redis.so" > $CONF_PHPMODS/redis.ini && \
     # Install kafka extension
     pecl install rdkafka && \

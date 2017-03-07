@@ -98,7 +98,7 @@ RUN apt-get update -q && \
     pecl install yaml-2.0.0 && \
     echo "extension=yaml.so" > $CONF_PHPMODS/yaml.ini && \
     # Install new PHP7-stable version of Redis \
-    pecl install redis-3.1.0 && \
+    pecl install redis-3.1.1 && \
     echo "extension=redis.so" > $CONF_PHPMODS/redis.ini && \
     # Install kafka extension
     pecl install rdkafka-3.0.1 && \

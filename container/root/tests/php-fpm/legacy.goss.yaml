@@ -18,9 +18,6 @@ command:
     exit-status: 0
     stdout: [PHP 5.6]
     stderr: ['!/./']
-  php -n -d extension=redis.so -m | grep redis:
-    exit-status: 0
-    stderr: ['!/./']
   # Assert librdkafka version
   dpkg -s librdkafka-dev | grep 0.9.1:
     exit-status: 0
@@ -44,13 +41,33 @@ package:
     installed: true
   php5.6-mbstring:
     installed: true
+  php5.6-mcrypt:
+    installed: true
   php5.6-mysql:
     installed: true
   php5.6-opcache:
     installed: true
+  php5.6-pgsql:
+    installed: true
+  php5.6-readline:
+    installed: true
   php5.6-xml:
     installed: true
   php5.6-zip:
+    installed: true
+  php-apcu:
+    installed: true
+  php-gearman:
+    installed: true
+  php-igbinary:
+    installed: true
+  php-memcache:
+    installed: true
+  php-memcached:
+    installed: true
+  php-msgpack:
+    installed: true
+  php-xdebug:
     installed: true
 
 file:

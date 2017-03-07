@@ -59,7 +59,7 @@ edge:
   volumes:
    - ./container/root/app:/app
    - ./container/root/tests/php-fpm/base.goss.yaml:/tests/php-fpm/base.goss.yaml
-   - ./container/root/tests/php-fpm/beta.goss.yaml:/tests/php-fpm/beta.goss.yaml
+   - ./container/root/tests/php-fpm/edge.goss.yaml:/tests/php-fpm/edge.goss.yaml
 legacy:
   build: .
   dockerfile: Dockerfile-legacy
@@ -80,4 +80,4 @@ legacy:
   volumes:
    - ./container/root/app:/app
    - ./container/root/tests/php-fpm/base.goss.yaml:/tests/php-fpm/base.goss.yaml
-   - ./container/root/tests/php-fpm/beta.goss.yaml:/tests/php-fpm/legacy.goss.yaml
+   - ./container/root/tests/php-fpm/legacy.goss.yaml:/tests/php-fpm/legacy.goss.yaml
