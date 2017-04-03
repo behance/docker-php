@@ -57,7 +57,6 @@ Three variants are available:
   - pgsql~
   - phar
   - posix
-  - rdkafka~
   - redis~
   - shmop
   - SimpleXML

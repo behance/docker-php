@@ -23,7 +23,7 @@ ENV CONF_PHPFPM=/etc/php/7.1/fpm/php-fpm.conf \
     PHP_OPCACHE_MEMORY_CONSUMPTION=128 \
     PHP_OPCACHE_INTERNED_STRINGS_BUFFER=16 \
     PHP_OPCACHE_MAX_WASTED_PERCENTAGE=5 \
-    NEWRELIC_VERSION=6.9.0.182 \
+    NEWRELIC_VERSION=7.0.0.186 \
     CFG_APP_DEBUG=1
 
 # - Update security packages, only
@@ -37,7 +37,6 @@ RUN /bin/bash -e /security_updates.sh && \
     locale-gen en_US.UTF-8 && export LANG=en_US.UTF-8 && \
     add-apt-repository ppa:git-core/ppa -y && \
     add-apt-repository ppa:ondrej/php -y && \
-    add-apt-repository ppa:guessi/librdkafka -y && \
     echo 'deb http://apt.newrelic.com/debian/ newrelic non-free' | tee /etc/apt/sources.list.d/newrelic.list && \
     wget -O- https://download.newrelic.com/548C16BF.gpg | apt-key add - && \
     # Prevent newrelic install from prompting for input \
@@ -87,7 +86,6 @@ RUN apt-get update -q && \
         newrelic-php5-common=${NEWRELIC_VERSION} \
         newrelic-daemon=${NEWRELIC_VERSION} \
         libyaml-dev \
-        librdkafka-dev \
     && \
     phpdismod pdo_pgsql && \
     phpdismod pgsql && \
@@ -100,9 +98,6 @@ RUN apt-get update -q && \
     # Install new PHP 7.1-stable version of Redis
     pecl install redis-3.1.1 && \
     echo "extension=redis.so" > $CONF_PHPMODS/redis.ini && \
-    # Install kafka extension
-    pecl install rdkafka-3.0.1 && \
-    echo "extension=rdkafka.so" > $CONF_PHPMODS/rdkafka.ini && \
     # Remove dev packages that were only in place just to compile extensions
     apt-get remove --purge -yq \
         php7.1-dev \
