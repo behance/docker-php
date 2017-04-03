@@ -112,9 +112,6 @@ command:
   php -m | grep pgsql:
     exit-status: 1
     stderr: ['!/./']
-  php -m | grep rdkafka:
-    exit-status: 1
-    stderr: ['!/./']
   php -m | grep redis:
     exit-status: 1
     stderr: ['!/./']
@@ -138,9 +135,6 @@ command:
     stderr: ['!/./']
   # Note: pdo_pgsql requires pdo to also be present in order to be loaded properly
   php -n -d extension=pdo.so -d extension=pdo_pgsql.so -m | grep pdo_pgsql:
-    exit-status: 0
-    stderr: ['!/./']
-  php -n -d extension=rdkafka.so -m | grep rdkafka:
     exit-status: 0
     stderr: ['!/./']
   # On some variants, session is not loaded as part of the core, and must be loaded at this time
