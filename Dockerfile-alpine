@@ -74,7 +74,6 @@ RUN apk update && \
       php7-xsl \
       php7-zip \
       php7-zlib \
-      librdkafka-dev@edge \
     && \
     # Alpine + Ubuntu use different versioned names --> now standardized \
     ln -s /usr/bin/php7 /usr/bin/php && \
@@ -130,9 +129,6 @@ RUN apk update && \
     # Install new PHP7-stable version of Redis \
     pecl install redis-3.1.1 && \
     echo ";extension=redis.so" > $CONF_PHPMODS/redis.ini && \
-    # Install kafka extension
-    pecl install rdkafka && \
-    echo ";extension=rdkafka.so" > $CONF_PHPMODS/rdkafka.ini && \
     rm -rf /usr/share/php7 && \
     apk del .phpize_deps && \
     /bin/bash -e /clean.sh
