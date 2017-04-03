@@ -14,7 +14,7 @@ Three variants are available:
 - (edge) Ubuntu-based, PHP 7.1, tagged as `-edge`  
 - (legacy) Ubuntu-based, PHP 5.6, tagged as `-legacy`  
 
-###Includes
+### Includes
 ---
 - Nginx
 - PHP/PHP-FPM (7.0, 7.1, 5.6)
@@ -74,7 +74,7 @@ Three variants are available:
 
 
 
-###Expectations
+### Expectations
 ---
 Applications that leverage `bryanlatten/docker-php` as their container parent are expected to copy their application into `/app`, for example:
 ```COPY ./ /app/```
@@ -86,13 +86,13 @@ Production Mode: an immutable container (without file updates) should set `CFG_A
 
 NOTE: Nginx is exposed and bound to an unprivileged port, `8080`  
 
-###Monitoring
+### Monitoring
 --- 
 1. NewRelic APM: automatically enabled by adding providing environment variables `REPLACE_NEWRELIC_APP` and `REPLACE_NEWRELIC_LICENSE`
 1. PHP-FPM Status: available *only* inside container at `/__status`. Application healthcheck can pull PHP-FPM statistics from `http://127.0.0.1/__status?json`. To open to more clients than local, add more `allow` statements in `__status` location block in `$CONF_NGINX_SITE`(`/etc/nginx/sites-available/default`)
 1. Nginx Status: available *only* inside container at `/__nginx_status`. Application healthcheck can pull nginx statistics from `http://127.0.0.1/__nginx_status`. To open to more clients than local, add more `allow` statements in `__nginx_status` location block in $CONF_NGINX_SITE (`/etc/nginx/sites-available/default`) 
 
-###Downstream Configuration
+### Downstream Configuration
 ---
 Several environment variables can be used to configure various PHP FPM paramaters, as well as a few Nginx configurations.
 as such. These can be used to drive the configuration of the downstream PHP application in any way necessary, but there are a few environment variables that `bryanlatter/docker-php` will process along the way...
@@ -121,7 +121,7 @@ Variable | Example | Default | Description
 `PHP_OPCACHE_MAX_WASTED_PERCENTAGE` | `PHP_OPCACHE_MAX_WASTED_PERCENTAGE=10` | 5 | [docs](http://php.net/manual/en/opcache.configuration.php#ini.opcache.max-wasted-percentage)
 `PHP_OPCACHE_INTERNED_STRINGS_BUFFER` | `PHP_OPCACHE_INTERNED_STRINGS_BUFFER=64` | 16 | [docs](http://php.net/manual/en/opcache.configuration.php#ini.opcache.interned-strings-buffer)
 
-###Testing
+### Testing
 ---   
 - Requires `docker` and `docker-compose`   
 To test locally, run `bash -e ./test.sh {docker-machine}` where `docker-machine` is the IP of the connected docker engine. 
