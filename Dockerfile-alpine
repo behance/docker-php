@@ -23,7 +23,7 @@ ENV CONF_PHPFPM=/etc/php7/php-fpm.conf \
     PHP_OPCACHE_MEMORY_CONSUMPTION=128 \
     PHP_OPCACHE_INTERNED_STRINGS_BUFFER=16 \
     PHP_OPCACHE_MAX_WASTED_PERCENTAGE=5 \
-    NEWRELIC_VERSION=7.1.0.187 \
+    NEWRELIC_VERSION=7.2.0.191 \
     CFG_APP_DEBUG=1
 
 RUN apk update && \
@@ -49,8 +49,8 @@ RUN apk update && \
       php7-json \
       php7-mcrypt \
       php7-mbstring \
-      php7-msgpack@edge \
-      php7-memcached@edge \
+      # php7-msgpack@edge \
+      # php7-memcached@community \
       php7-mysqli \
       php7-mysqlnd \
       php7-opcache \
@@ -68,7 +68,7 @@ RUN apk update && \
       php7-sysvsem \
       php7-sysvshm \
       php7-shmop \
-      php7-xdebug@edge \
+      php7-xdebug \
       php7-xml \
       php7-xmlreader \
       php7-xsl \
@@ -118,20 +118,30 @@ RUN cp /etc/php/7.0/mods-available/* $CONF_PHPMODS && \
 RUN apk update && \
     apk add --no-cache \
         yaml-dev \
+        zlib-dev \
+        libmemcached-dev \
+        cyrus-sasl-dev \
     && \
     apk add --no-cache --virtual .phpize_deps \
         autoconf file g++ gcc libc-dev make pkgconf re2c php7-dev php7-pear \
     && \
     sed -i 's/^exec $PHP -C -n/exec $PHP -C/g' $(which pecl) && \
-    # Install new PHP7-stable version of igbinary \
+
     pecl install igbinary-2.0.1 && \
     echo "extension=igbinary.so" > $CONF_PHPMODS/igbinary.ini && \
-    # Install new PHP7-stable version of Yaml \
+
     pecl install yaml-2.0.0 && \
     echo ";extension=yaml.so" > $CONF_PHPMODS/yaml.ini && \
-    # Install new PHP7-stable version of Redis \
+
     pecl install redis-3.1.1 && \
     echo ";extension=redis.so" > $CONF_PHPMODS/redis.ini && \
+
+    pecl install msgpack-2.0.2 && \
+    echo "extension=msgpack.so" > $CONF_PHPMODS/msgpack.ini && \
+
+    pecl install memcached-3.0.3 && \
+    echo "extension=memcached.so" > $CONF_PHPMODS/memcached.ini && \
+
     rm -rf /usr/share/php7 && \
     apk del .phpize_deps && \
     /bin/bash -e /clean.sh
