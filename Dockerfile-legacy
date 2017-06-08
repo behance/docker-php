@@ -33,6 +33,7 @@ RUN /bin/bash -e /security_updates.sh && \
         curl \
         wget \
         software-properties-common \
+        locales \
     && \
     locale-gen en_US.UTF-8 && export LANG=en_US.UTF-8 && \
     add-apt-repository ppa:git-core/ppa -y && \
@@ -46,6 +47,7 @@ RUN /bin/bash -e /security_updates.sh && \
     apt-get remove --purge -yq \
         patch \
         software-properties-common \
+        locales \
         wget \
     && \
     /bin/bash /clean.sh
@@ -96,7 +98,7 @@ RUN apt-get update -q && \
     pecl install yaml-1.3.0 && \
     echo "extension=yaml.so" > $CONF_PHPMODS/yaml.ini && \
     # Install new PHP5-stable version of Redis \
-    pecl install redis-3.1.1 && \
+    pecl install redis-3.1.2 && \
     echo "extension=redis.so" > $CONF_PHPMODS/redis.ini && \
     # Remove dev packages that were only in place just to compile extensions
     apt-get remove --purge -yq \
