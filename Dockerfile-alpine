@@ -1,4 +1,4 @@
-FROM behance/docker-nginx:8.0-alpine
+FROM behance/docker-nginx:8.0.0-alpine
 MAINTAINER Bryan Latten <latten@adobe.com>
 
 # Set TERM to suppress warning messages.
@@ -133,7 +133,7 @@ RUN apk update && \
     pecl install yaml-2.0.0 && \
     echo ";extension=yaml.so" > $CONF_PHPMODS/yaml.ini && \
 
-    pecl install redis-3.1.1 && \
+    pecl install redis-3.1.2 && \
     echo ";extension=redis.so" > $CONF_PHPMODS/redis.ini && \
 
     pecl install msgpack-2.0.2 && \
