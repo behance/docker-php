@@ -33,6 +33,7 @@ RUN /bin/bash -e /security_updates.sh && \
         curl \
         wget \
         software-properties-common \
+        locales \
     && \
     locale-gen en_US.UTF-8 && export LANG=en_US.UTF-8 && \
     add-apt-repository ppa:git-core/ppa -y && \
