@@ -106,7 +106,8 @@ See parent(s) [docker-nginx](https://github.com/behance/docker-nginx), [docker-b
 Variable | Example | Default | Description
 --- | --- | --- | ---
 `*` | `DATABASE_HOST=master.rds.aws.com` | - | PHP has access to environment variables by default
-`CFG_APP_DEBUG` | `CFG_APP_DEBUG=1` | 1 | Set to `1` or `true` will cue the Opcache to watch for file changes. Set to 0 for *production mode*, which provides a sizeable performance boost, though manually updating a file will not be seen unless the opcache is reset.
+`CFG_APP_DEBUG` | `CFG_APP_DEBUG=1` | 1 | Setting to `1` or `true` will cue the Opcache to watch for file changes. Set to 0 for *production mode*, which provides a sizeable performance boost, though manually updating a file will not be seen unless the opcache is reset.
+`CFG_XDEBUG_ENABLE` | `CFG_XDEBUG_ENABLE=1` | - | Setting to `1` or `true` will enable the XDebug extension, which is preconfigured to allow remote debugging as well as profiling. NOTE: Requires "dev" mode be enabled via `CFG_APP_DEBUG`.
 `SERVER_MAX_BODY_SIZE` | `SERVER_MAX_BODY_SIZE=4M` | 1M | Allows the downstream application to specify a non-default `client_max_body_size` configuration for the `server`-level directive in `/etc/nginx/sites-available/default`
 `SERVER_FASTCGI_BUFFERS` | `SERVER_FASTCGI_BUFFERS=‘512 32k’` | 256 16k | [docs](http://nginx.org/en/docs/http/ngx_http_fastcgi_module.html#fastcgi_buffers), [tweaking](https://gist.github.com/magnetikonline/11312172#determine-actual-fastcgi-response-sizes)
 `SERVER_FASTCGI_BUFFER_SIZE` | `SERVER_FASTCGI_BUFFER_SIZE=‘256k’` | 128k | [docs](http://nginx.org/en/docs/http/ngx_http_fastcgi_module.html#fastcgi_buffers_size), [tweaking](https://gist.github.com/magnetikonline/11312172#determine-actual-fastcgi-response-sizes)

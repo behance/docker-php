@@ -144,3 +144,6 @@ command:
     exit-status: 0
     # On session-default installs, re-loading session causes a warning, ignore
     # stderr: ['!/./']
+  php -n -d zend_extension=xdebug.so --ri xdebug:
+    exit-status: 0
+    stderr: ['!/./']
