@@ -23,7 +23,6 @@ ENV CONF_PHPFPM=/etc/php7/php-fpm.conf \
     PHP_OPCACHE_MEMORY_CONSUMPTION=128 \
     PHP_OPCACHE_INTERNED_STRINGS_BUFFER=16 \
     PHP_OPCACHE_MAX_WASTED_PERCENTAGE=5 \
-    NEWRELIC_VERSION=7.3.1.197 \
     CFG_APP_DEBUG=1
 
 RUN apk update && \
@@ -85,17 +84,20 @@ RUN apk update && \
     sed -i 's/extension\s\?=/;extension =/' $CONF_PHPMODS/00_pgsql.ini && \
     /bin/bash -e /clean.sh
 
-# Install Alpine-compatible NewRelic, seed with variables to be replaced
+# Locate and install latest Alpine-compatible NewRelic, seed with variables to be replaced
 # Requires PHP to already be installed
-RUN curl -L https://download.newrelic.com/php_agent/archive/${NEWRELIC_VERSION}/newrelic-php5-${NEWRELIC_VERSION}-linux-musl.tar.gz -o /root/newrelic-php5-${NEWRELIC_VERSION}-linux-musl.tar.gz && \
+RUN NEWRELIC_MUSL_PATH=$(curl -s https://download.newrelic.com/php_agent/release/ | grep 'linux-musl.tar.gz' | cut -d '"' -f2) && \
+    NEWRELIC_PATH="https://download.newrelic.com${NEWRELIC_MUSL_PATH}" && \
+    curl -L ${NEWRELIC_PATH} -o ./root/newrelic-musl.tar.gz && \
     cd /root && \
-    gzip -dc newrelic-php5-${NEWRELIC_VERSION}-linux-musl.tar.gz | tar xf - && \
-    rm newrelic-php5-${NEWRELIC_VERSION}-linux-musl.tar.gz && \
-    cd newrelic-php5-${NEWRELIC_VERSION}-linux-musl && \
+    gzip -dc newrelic-musl.tar.gz | tar xf - && \
+    rm newrelic-musl.tar.gz && \
+    NEWRELIC_DIRECTORY=/root/$(basename $(find . -maxdepth 1 -type d -name newrelic\*)) && \
+    cd $NEWRELIC_DIRECTORY && \
     echo "\n" | ./newrelic-install install && \
-    chown root:root /root/newrelic-php5-${NEWRELIC_VERSION}-linux-musl/agent/x64/newrelic-20151012.so && \
-    mv /root/newrelic-php5-${NEWRELIC_VERSION}-linux-musl/agent/x64/newrelic-20151012.so /usr/lib/php7/modules/newrelic.so && \
-    rm -rf /root/newrelic-php5-${NEWRELIC_VERSION}-linux-musl/agent/x64 && \
+    chown root:root $NEWRELIC_DIRECTORY/agent/x64/newrelic-20151012.so && \
+    mv $NEWRELIC_DIRECTORY/agent/x64/newrelic-20151012.so /usr/lib/php7/modules/newrelic.so && \
+    rm -rf $NEWRELIC_DIRECTORY/agent/x64 && \
     # Fix permissions on extracted folder \
     chown -R $NOT_ROOT_USER:$NOT_ROOT_USER * && \
     /bin/bash -e /clean.sh
