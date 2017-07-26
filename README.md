@@ -10,7 +10,7 @@ Add’s PHP-FPM, mods, and specific backend configuration to Behance’s [docker
 
 Three variants are available:
 - (default) Ubuntu-based, PHP 7.0  
-- (slim) Alpine-based, PHP 7.0, tagged as `-alpine`  
+- (slim) Alpine-based, PHP 7.1, tagged as `-alpine`  
 - (edge) Ubuntu-based, PHP 7.1, tagged as `-edge`  
 - (legacy) Ubuntu-based, PHP 5.6, tagged as `-legacy`  
 

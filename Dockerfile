@@ -91,6 +91,12 @@ RUN apt-get update -q && \
     phpdismod pdo_pgsql && \
     phpdismod pgsql && \
     phpdismod xdebug && \
+    # Remove extra extensions installed via packages for other versions of PHP, leaving the active engine folder
+    rm -rf /usr/lib/php/20121212 && \
+    rm -rf /usr/lib/php/20131226 && \
+    # rm -rf /usr/lib/php/20151012 && \
+    rm -rf /usr/lib/php/20160303 && \
+
     curl -sS https://getcomposer.org/installer | php && \
     mv composer.phar /usr/local/bin/composer && \
     # Install new PHP7-stable version of Yaml \
@@ -103,6 +109,7 @@ RUN apt-get update -q && \
     apt-get remove --purge -yq \
         php7.0-dev \
     && \
+
     /bin/bash /clean.sh
 
 # Overlay the root filesystem from this repo
