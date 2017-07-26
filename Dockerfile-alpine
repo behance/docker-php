@@ -1,4 +1,4 @@
-FROM behance/docker-nginx:8.0.0-alpine
+FROM behance/docker-nginx:8.0-alpine
 MAINTAINER Bryan Latten <latten@adobe.com>
 
 # Set TERM to suppress warning messages.
@@ -62,6 +62,7 @@ RUN apk update && \
       php7-phar \
       php7-posix \
       php7-session \
+      php7-simplexml \
       php7-sockets \
       php7-sysvmsg \
       php7-sysvsem \
@@ -70,18 +71,16 @@ RUN apk update && \
       php7-xdebug \
       php7-xml \
       php7-xmlreader \
+      php7-xmlwriter \
       php7-xsl \
       php7-zip \
       php7-zlib \
     && \
-    # Alpine + Ubuntu use different versioned names --> now standardized \
-    ln -s /usr/bin/php7 /usr/bin/php && \
-    ln -s /usr/sbin/php-fpm7 /usr/sbin/php-fpm7.0 && \
     # Disable xdebug by default \
     sed -i 's/zend_extension\s\?=/;zend_extension =/' $CONF_PHPMODS/xdebug.ini && \
     # Disable postgres by default \
-    sed -i 's/extension\s\?=/;extension =/' $CONF_PHPMODS/00_pdo_pgsql.ini && \
-    sed -i 's/extension\s\?=/;extension =/' $CONF_PHPMODS/00_pgsql.ini && \
+    sed -i 's/extension/;extension/' $CONF_PHPMODS/01_pdo_pgsql.ini && \
+    sed -i 's/extension/;extension/' $CONF_PHPMODS/00_pgsql.ini && \
     /bin/bash -e /clean.sh
 
 # Locate and install latest Alpine-compatible NewRelic, seed with variables to be replaced
@@ -95,8 +94,8 @@ RUN NEWRELIC_MUSL_PATH=$(curl -s https://download.newrelic.com/php_agent/release
     NEWRELIC_DIRECTORY=/root/$(basename $(find . -maxdepth 1 -type d -name newrelic\*)) && \
     cd $NEWRELIC_DIRECTORY && \
     echo "\n" | ./newrelic-install install && \
-    chown root:root $NEWRELIC_DIRECTORY/agent/x64/newrelic-20151012.so && \
-    mv $NEWRELIC_DIRECTORY/agent/x64/newrelic-20151012.so /usr/lib/php7/modules/newrelic.so && \
+    chown root:root $NEWRELIC_DIRECTORY/agent/x64/newrelic-20160303.so && \
+    mv $NEWRELIC_DIRECTORY/agent/x64/newrelic-20160303.so /usr/lib/php7/modules/newrelic.so && \
     rm -rf $NEWRELIC_DIRECTORY/agent/x64 && \
     # Fix permissions on extracted folder \
     chown -R $NOT_ROOT_USER:$NOT_ROOT_USER * && \

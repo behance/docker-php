@@ -36,3 +36,5 @@ curl --form upload=@tmp.txt $MACHINE:8080 | grep "PHP Version 7.0." > /dev/null
 curl --form upload=@tmp.txt $MACHINE:8081 | grep "PHP Version 7.0." > /dev/null
 curl --form upload=@tmp.txt $MACHINE:8082 | grep "PHP Version 7.1." > /dev/null
 curl --form upload=@tmp.txt $MACHINE:8083 | grep "PHP Version 5.6." > /dev/null
+
+rm tmp.txt
