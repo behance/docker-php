@@ -68,6 +68,7 @@ RUN apk update && \
       php7-sysvsem \
       php7-sysvshm \
       php7-shmop \
+      php7-tokenizer \
       php7-xdebug \
       php7-xml \
       php7-xmlreader \
