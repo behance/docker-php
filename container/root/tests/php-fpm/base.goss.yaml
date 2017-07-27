@@ -91,6 +91,8 @@ command:
     exit-status: 0
   php -m | grep -i sysvshm:
     exit-status: 0
+  php -m | grep -i tokenizer:
+    exit-status: 0
   php -m | grep -i xml:
     exit-status: 0
   php -m | grep -i xmlreader:

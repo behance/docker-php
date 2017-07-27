@@ -64,6 +64,7 @@ Three variants are available:
   - sysvmsg
   - sysvsem
   - sysvshm
+  - tokenizer
   - xdebug~
   - xml
   - xmlreader

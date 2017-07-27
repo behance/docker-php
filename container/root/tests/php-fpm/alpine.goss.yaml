@@ -90,6 +90,8 @@ package:
     installed: true
   php7-shmop:
     installed: true
+  php7-tokenizer:
+    installed: true
   php7-xdebug:
     installed: true
   php7-xml:
