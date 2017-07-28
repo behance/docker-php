@@ -4,28 +4,29 @@
 docker-php
 ==========
 
-Provides basic building blocks for PHP web applications, available on [Docker Hub](https://hub.docker.com/r/bryanlatten/docker-php/)  
+Provides basic building blocks for PHP web applications, available on [Docker Hub](https://hub.docker.com/r/bryanlatten/docker-php/). 
 Add’s PHP-FPM, mods, and specific backend configuration to Behance’s [docker-nginx](https://github.com/behance/docker-nginx)
 
+####New naming scheme: `PHP_MAJOR.PHP_MINOR-Major.Minor.Patch(-variant)`
 
-Three variants are available:
-- (default) Ubuntu-based, PHP 7.0  
-- (slim) Alpine-based, PHP 7.1, tagged as `-alpine`  
-- (edge) Ubuntu-based, PHP 7.1, tagged as `-edge`  
-- (legacy) Ubuntu-based, PHP 5.6, tagged as `-legacy`  
+- `PHP_MAJOR.PHP_MINOR` are the runtime versions of PHP. 
+- `Major.Minor.Patch` are versions of the container provisioning software
+- `(-variant)`, an optional distinction, i.e. `-alpine`. Alpine variants are slim versions of the container.
+
 
 ### Includes
 ---
-- Nginx
-- PHP/PHP-FPM (7.0, 7.1, 5.6)
-- S6: for PID 1 zombie reaping, startup coordination, shutdown signal transferal
-- Goss: for serverspec-like testing. Run `goss -g /tests/php-fpm/{variant_name}.goss.yaml` to validate any configuration updates
+- Ubuntu or Alpine container [base](https://github.com/behance/docker-base)
+- [Nginx](https://github.com/behance/docker-nginx)
+- PHP / PHP-FPM: choose from 5.6, 7.0, 7.1, 7.2 (beta)
+- [S6](https://github.com/just-containers/s6-overlay): PID 1 zombie reaping, startup coordination, shutdown signal transferal
+- [Goss](https://goss.rocks): for serverspec-like testing. Run `goss -g /tests/php-fpm/{PHP_MAJOR.PHP_MINOR}(-variant).goss.yaml` to validate any configuration updates
 - Extra PHP Modules:
 
-`*`  - not available on Alpine variant  
-`^`  - not available on Edge variant  
-`~`  - disabled by default (use `phpenmod` to enable on Ubuntu-based variants, uncomment .ini file otherwise)
-  - apc* (only visible for backwards compatibility) 
+`*`  - not available on `-alpine` variant  
+`^`  - not available on `7.2` 
+`~`  - disabled by default (use `phpenmod` to enable on non-Alpine variants, uncomment .ini file otherwise)
+
   - apcu
   - calendar
   - bz2
@@ -36,18 +37,19 @@ Three variants are available:
   - exif
   - cgi-fcgi
   - gd
-  - gearman*
+  - gearman*^
   - iconv
-  - igbinary
+  - igbinary^
   - intl
   - json
   - mbstring
-  - mcrypt
-  - memcache*
-  - memcached
+  - mcrypt^
+  - memcache*^
+  - memcached^
+  - msgpack^
   - mysqli
   - mysqlnd
-  - newrelic~ (activates with env variables)
+  - newrelic~^ (activates with env variables)
   - opcache
   - openssl
   - pcntl
@@ -57,7 +59,7 @@ Three variants are available:
   - pgsql~
   - phar
   - posix
-  - redis~
+  - redis~^
   - shmop
   - SimpleXML
   - sockets
@@ -65,11 +67,11 @@ Three variants are available:
   - sysvsem
   - sysvshm
   - tokenizer
-  - xdebug~
+  - xdebug~^
   - xml
   - xmlreader
   - xmlwriter
-  - yaml*~
+  - yaml~^
   - zip
   - zlib
 

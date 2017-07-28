@@ -148,5 +148,5 @@ RUN apk update && \
     apk del .phpize_deps && \
     /bin/bash -e /clean.sh
 
-RUN goss -g /tests/php-fpm/alpine.goss.yaml validate && \
+RUN goss -g /tests/php-fpm/7.1-alpine.goss.yaml validate && \
     /aufs_hack.sh
