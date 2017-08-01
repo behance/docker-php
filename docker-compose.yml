@@ -1,5 +1,6 @@
-ubuntu:
+'56':
   build: .
+  dockerfile: Dockerfile-56
   ports:
    - '8080:8080'
   environment:
@@ -17,10 +18,10 @@ ubuntu:
   volumes:
    - ./container/root/app:/app
    - ./container/root/tests/php-fpm/base.goss.yaml:/tests/php-fpm/base.goss.yaml
-   - ./container/root/tests/php-fpm/ubuntu.goss.yaml:/tests/php-fpm/ubuntu.goss.yaml
-alpine:
+   - ./container/root/tests/php-fpm/5.6.goss.yaml:/tests/php-fpm/5.6.goss.yaml
+'70':
   build: .
-  dockerfile: Dockerfile-alpine
+  dockerfile: Dockerfile-70
   ports:
    - '8081:8080'
   environment:
@@ -38,10 +39,10 @@ alpine:
   volumes:
    - ./container/root/app:/app
    - ./container/root/tests/php-fpm/base.goss.yaml:/tests/php-fpm/base.goss.yaml
-   - ./container/root/tests/php-fpm/alpine.goss.yaml:/tests/php-fpm/alpine.goss.yaml
-edge:
+   - ./container/root/tests/php-fpm/7.0.goss.yaml:/tests/php-fpm/7.0.goss.yaml
+'71':
   build: .
-  dockerfile: Dockerfile-edge
+  dockerfile: Dockerfile-71
   ports:
    - '8082:8080'
   environment:
@@ -59,10 +60,10 @@ edge:
   volumes:
    - ./container/root/app:/app
    - ./container/root/tests/php-fpm/base.goss.yaml:/tests/php-fpm/base.goss.yaml
-   - ./container/root/tests/php-fpm/edge.goss.yaml:/tests/php-fpm/edge.goss.yaml
-legacy:
+   - ./container/root/tests/php-fpm/7.1.goss.yaml:/tests/php-fpm/7.1.goss.yaml
+71-alpine:
   build: .
-  dockerfile: Dockerfile-legacy
+  dockerfile: Dockerfile-71-alpine
   ports:
    - '8083:8080'
   environment:
@@ -80,4 +81,25 @@ legacy:
   volumes:
    - ./container/root/app:/app
    - ./container/root/tests/php-fpm/base.goss.yaml:/tests/php-fpm/base.goss.yaml
-   - ./container/root/tests/php-fpm/legacy.goss.yaml:/tests/php-fpm/legacy.goss.yaml
+   - ./container/root/tests/php-fpm/7.1-alpine.goss.yaml:/tests/php-fpm/7.1-alpine.goss.yaml
+'72':
+  build: .
+  dockerfile: Dockerfile-72
+  ports:
+   - '8084:8080'
+  environment:
+    CFG_APP_DEBUG: 1
+    SERVER_LOG_MINIMAL: 1
+    PHP_FPM_MEMORY_LIMIT: 257M
+    PHP_FPM_MAX_EXECUTION_TIME: 61
+    PHP_FPM_UPLOAD_MAX_FILESIZE: 100M
+    SERVER_MAX_BODY_SIZE: 100m
+    SERVER_APP_NAME: docker-test
+    REPLACE_NEWRELIC_APP: abcdefg
+    REPLACE_NEWRELIC_LICENSE: hijklmno
+    S6_KILL_FINISH_MAXTIME: 1
+    S6_KILL_GRACETIME: 1
+  volumes:
+   - ./container/root/app:/app
+   - ./container/root/tests/php-fpm/base.goss.yaml:/tests/php-fpm/base.goss.yaml
+   - ./container/root/tests/php-fpm/7.2.goss.yaml:/tests/php-fpm/7.2.goss.yaml
