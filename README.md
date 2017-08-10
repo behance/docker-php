@@ -7,7 +7,7 @@ docker-php
 Provides basic building blocks for PHP web applications, available on [Docker Hub](https://hub.docker.com/r/bryanlatten/docker-php/). 
 Add’s PHP-FPM, mods, and specific backend configuration to Behance’s [docker-nginx](https://github.com/behance/docker-nginx)
 
-####New naming scheme: `PHP_MAJOR.PHP_MINOR-Major.Minor.Patch(-variant)`
+#### New naming scheme: `PHP_MAJOR.PHP_MINOR-Major.Minor.Patch(-variant)`
 
 - `PHP_MAJOR.PHP_MINOR` are the runtime versions of PHP. 
 - `Major.Minor.Patch` are versions of the container provisioning software
