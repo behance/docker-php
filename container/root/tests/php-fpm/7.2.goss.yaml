@@ -29,9 +29,11 @@ command:
   # Test the standard extensions are enabled
   php -m | grep -i apcu:
     exit-status: 0
-  php -m | grep -i calendar:
+  php -m | grep -i bcmath:
     exit-status: 0
   php -m | grep -i bz2:
+    exit-status: 0
+  php -m | grep -i calendar:
     exit-status: 0
   php -m | grep -i ctype:
     exit-status: 0

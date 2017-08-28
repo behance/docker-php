@@ -10,7 +10,7 @@ Add’s PHP-FPM, mods, and specific backend configuration to Behance’s [docker
 #### New naming scheme: `PHP_MAJOR.PHP_MINOR-Major.Minor.Patch(-variant)`
 
 - `PHP_MAJOR.PHP_MINOR` are the runtime versions of PHP. 
-- `Major.Minor.Patch` are versions of the container provisioning software
+- `Major.Minor.Patch` are versions of the container provisioning software 
 - `(-variant)`, an optional distinction, i.e. `-alpine`. Alpine variants are slim versions of the container.
 
 
@@ -28,6 +28,7 @@ Add’s PHP-FPM, mods, and specific backend configuration to Behance’s [docker
 `~`  - disabled by default (use `phpenmod` to enable on non-Alpine variants, uncomment .ini file otherwise)
 
   - apcu
+  - bcmath
   - bz2
   - calendar
   - ctype
