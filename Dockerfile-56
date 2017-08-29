@@ -65,6 +65,7 @@ RUN apt-get update -q && \
     apt-get -yqq install \
         php5.6 \
         php5.6-apcu \
+        php5.6-bcmath \
         php5.6-bz2 \
         php5.6-curl \
         php5.6-dev \
