@@ -104,11 +104,26 @@ RUN apt-get -yqq install \
     curl -sS https://getcomposer.org/installer | php && \
     mv composer.phar /usr/local/bin/composer && \
     # Install new PHP 7.X-stable version of Yaml \
-    # pecl install yaml-2.0.0 && \
-    # echo "extension=yaml.so" > $CONF_PHPMODS/yaml.ini && \
+    pecl install yaml-2.0.2 && \
+    echo "extension=yaml.so" > $CONF_PHPMODS/yaml.ini && \
     # Install new PHP 7.X-stable version of Redis
-    # pecl install redis-3.1.2 && \
-    # echo "extension=redis.so" > $CONF_PHPMODS/redis.ini && \
+    pecl install redis-3.1.2 && \
+    echo "extension=redis.so" > $CONF_PHPMODS/redis.ini && \
+
+    # TODO: use the packaged versions above, don't build from scratch \
+
+    pecl install igbinary-2.0.1 && \
+    echo "extension=igbinary.so" > $CONF_PHPMODS/igbinary.ini && \
+    phpenmod igbinary && \
+
+    pecl install msgpack-2.0.2 && \
+    echo "extension=msgpack.so" > $CONF_PHPMODS/msgpack.ini && \
+    phpenmod msgpack && \
+
+    pecl install apcu-5.1.8 && \
+    echo "extension=apcu.so" > $CONF_PHPMODS/apcu.ini && \
+    phpenmod apcu && \
+
     # Remove dev packages that were only in place just to compile extensions
     apt-get remove --purge -yq \
         php7.2-dev \

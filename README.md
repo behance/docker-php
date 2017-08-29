@@ -28,8 +28,8 @@ Add’s PHP-FPM, mods, and specific backend configuration to Behance’s [docker
 `~`  - disabled by default (use `phpenmod` to enable on non-Alpine variants, uncomment .ini file otherwise)
 
   - apcu
-  - calendar
   - bz2
+  - calendar
   - ctype
   - curl
   - date
@@ -39,14 +39,14 @@ Add’s PHP-FPM, mods, and specific backend configuration to Behance’s [docker
   - gd
   - gearman*^
   - iconv
-  - igbinary^
+  - igbinary
   - intl
   - json
   - mbstring
   - mcrypt^
   - memcache*^
   - memcached^
-  - msgpack^
+  - msgpack
   - mysqli
   - mysqlnd
   - newrelic~^ (activates with env variables)
@@ -59,7 +59,7 @@ Add’s PHP-FPM, mods, and specific backend configuration to Behance’s [docker
   - pgsql~
   - phar
   - posix
-  - redis~^
+  - redis~
   - shmop
   - SimpleXML
   - sockets
@@ -71,7 +71,7 @@ Add’s PHP-FPM, mods, and specific backend configuration to Behance’s [docker
   - xml
   - xmlreader
   - xmlwriter
-  - yaml~^
+  - yaml~
   - zip
   - zlib
 

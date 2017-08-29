@@ -27,8 +27,8 @@ command:
     stderr: ['!/./']
 
   # Test the standard extensions are enabled
-  # php -m | grep -i apcu:
-  #   exit-status: 0
+  php -m | grep -i apcu:
+    exit-status: 0
   php -m | grep -i calendar:
     exit-status: 0
   php -m | grep -i bz2:
@@ -50,6 +50,8 @@ command:
     exit-status: 0
   php -m | grep -i iconv:
     exit-status: 0
+  php -m | grep -i igbinary:
+    exit-status: 0
   php -m | grep -i intl:
     exit-status: 0
   php -m | grep -i json:
@@ -60,6 +62,8 @@ command:
   #   exit-status: 0
   # php -m | grep -i memcached:
   #   exit-status: 0
+  php -m | grep -i msgpack:
+    exit-status: 0
   php -m | grep -i mysqli:
     exit-status: 0
   php -m | grep -i mysqlnd:
@@ -115,12 +119,12 @@ command:
   php -m | grep pgsql:
     exit-status: 1
     stderr: ['!/./']
-  # php -m | grep redis:
-  #   exit-status: 1
-  #   stderr: ['!/./']
-  # php -m | grep yaml:
-  #   exit-status: 1
-  #   stderr: ['!/./']
+  php -m | grep redis:
+    exit-status: 1
+    stderr: ['!/./']
+  php -m | grep yaml:
+    exit-status: 1
+    stderr: ['!/./']
   php -m | grep xdebug:
     exit-status: 1
     stderr: ['!/./']
@@ -130,9 +134,9 @@ command:
   # 2. pass ini key-value (-d), enable the single extension to test
   # 3. list the newly loaded php mods (-m)
   # 4. grep the output of the loaded mods for the one under test
-  # php -n -d extension=yaml.so -m | grep yaml:
-  #   exit-status: 0
-  #   stderr: ['!/./']
+  php -n -d extension=yaml.so -m | grep yaml:
+    exit-status: 0
+    stderr: ['!/./']
   php -n -d extension=pgsql.so -m | grep pgsql:
     exit-status: 0
     stderr: ['!/./']
@@ -141,12 +145,10 @@ command:
     exit-status: 0
     stderr: ['!/./']
   # On some variants, session is not loaded as part of the core, and must be loaded at this time
-  # php -n -d extension=session.so -d extension=redis.so -m | grep redis:
-  #   exit-status: 0
+  php -n -d extension=redis.so -m | grep redis:
+    exit-status: 0
     # On session-default installs, re-loading session causes a warning, ignore
-    # stderr: ['!/./']
-
-
+    stderr: ['!/./']
 
 
 
