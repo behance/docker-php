@@ -50,6 +50,8 @@ command:
     exit-status: 0
   php -m | grep -i gd:
     exit-status: 0
+  php -m | grep -i gearman:
+    exit-status: 0
   php -m | grep -i iconv:
     exit-status: 0
   php -m | grep -i igbinary:
@@ -62,8 +64,11 @@ command:
     exit-status: 0
   # php -m | grep -i mcrypt:
   #   exit-status: 0
-  # php -m | grep -i memcached:
-  #   exit-status: 0
+  # Not common to all variants, test in supported children
+  php -m | grep -i memcache:
+    exit-status: 0
+  php -m | grep -i memcached:
+    exit-status: 0
   php -m | grep -i msgpack:
     exit-status: 0
   php -m | grep -i mysqli:
@@ -164,10 +169,10 @@ command:
     exit-status: 0
     stdout: [2]
     stderr: ['!/./']
-  php-fpm7.2 -m:
+  php-fpm -m:
     exit-status: 0
     stderr: ['!/./']
-  php-fpm7.2 -v:
+  php-fpm -v:
     exit-status: 0
     stdout: [PHP 7.2]
     stderr: ['!/./']
@@ -203,18 +208,18 @@ package:
     installed: true
   php7.2-zip:
     installed: true
-  # php-apcu:
-  #   installed: true
-  # php-gearman:
-  #   installed: true
-  # php-igbinary:
-  #   installed: true
-  # php-memcache:
-  #   installed: true
-  # php-memcached:
-  #   installed: true
-  # php-msgpack:
-  #   installed: true
+  php7.2-apcu:
+    installed: true
+  php7.2-gearman:
+    installed: true
+  php7.2-igbinary:
+    installed: true
+  php7.2-memcache:
+    installed: true
+  php7.2-memcached:
+    installed: true
+  php7.2-msgpack:
+    installed: true
   # php-xdebug:
   #   installed: true
 

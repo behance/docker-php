@@ -11,10 +11,10 @@ command:
     exit-status: 0
     stdout: [1]
     stderr: ['!/./']
-  php-fpm7 -m:
+  php-fpm -m:
     exit-status: 0
     stderr: ['!/./']
-  php-fpm7 -v:
+  php-fpm -v:
     exit-status: 0
     stdout: [PHP 7.1]
     stderr: ['!/./']

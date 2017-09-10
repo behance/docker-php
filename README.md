@@ -38,15 +38,15 @@ Add’s PHP-FPM, mods, and specific backend configuration to Behance’s [docker
   - exif
   - cgi-fcgi
   - gd
-  - gearman*^
+  - gearman*
   - iconv
   - igbinary
   - intl
   - json
   - mbstring
   - mcrypt^
-  - memcache*^
-  - memcached^
+  - memcache*
+  - memcached
   - msgpack
   - mysqli
   - mysqlnd

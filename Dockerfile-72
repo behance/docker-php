@@ -66,12 +66,7 @@ RUN apt-get update -q && \
             php7.1-json
 
 # TODO: fix these packages:
-# php7.2-igbinary
-# php7.2-apcu
 # php7.2-mcrypt
-# php7.2-gearman
-# php7.2-memcache
-# php7.2-memcached
 # php-xdebug
 # newrelic-php5
 # newrelic-php5-common
@@ -79,20 +74,26 @@ RUN apt-get update -q && \
 
 RUN apt-get -yqq install \
         php7.2 \
+        php7.2-apcu \
         php7.2-bcmath \
         php7.2-bz2 \
         php7.2-curl \
         php7.2-dev \
         php7.2-fpm \
+        php7.2-gearman \
         php7.2-gd \
+        php7.2-igbinary \
         php7.2-intl \
         php7.2-json \
         php7.2-mbstring \
+        php7.2-memcache \
+        php7.2-memcached \
+        php7.2-msgpack \
         php7.2-mysql \
         php7.2-pgsql \
         php7.2-xml \
+        php7.2-yaml \
         php7.2-zip \
-        libyaml-dev \
     && \
     phpdismod pdo_pgsql && \
     phpdismod pgsql && \
@@ -104,26 +105,9 @@ RUN apt-get -yqq install \
     rm -rf /usr/lib/php/20160303 && \
     curl -sS https://getcomposer.org/installer | php && \
     mv composer.phar /usr/local/bin/composer && \
-    # Install new PHP 7.X-stable version of Yaml \
-    pecl install yaml-2.0.2 && \
-    echo "extension=yaml.so" > $CONF_PHPMODS/yaml.ini && \
     # Install new PHP 7.X-stable version of Redis
-    pecl install redis-3.1.2 && \
+    pecl install redis-3.1.3 && \
     echo "extension=redis.so" > $CONF_PHPMODS/redis.ini && \
-
-    # TODO: use the packaged versions above, don't build from scratch \
-
-    pecl install igbinary-2.0.1 && \
-    echo "extension=igbinary.so" > $CONF_PHPMODS/igbinary.ini && \
-    phpenmod igbinary && \
-
-    pecl install msgpack-2.0.2 && \
-    echo "extension=msgpack.so" > $CONF_PHPMODS/msgpack.ini && \
-    phpenmod msgpack && \
-
-    pecl install apcu-5.1.8 && \
-    echo "extension=apcu.so" > $CONF_PHPMODS/apcu.ini && \
-    phpenmod apcu && \
 
     # Remove dev packages that were only in place just to compile extensions
     apt-get remove --purge -yq \
