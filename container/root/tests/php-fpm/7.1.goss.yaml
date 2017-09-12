@@ -18,6 +18,9 @@ command:
     exit-status: 0
     stdout: [PHP 7.1]
     stderr: ['!/./']
+  # Not common to all variants, test in supported children
+  php -m | grep -i memcache:
+    exit-status: 0
 
 package:
   php7.1:
