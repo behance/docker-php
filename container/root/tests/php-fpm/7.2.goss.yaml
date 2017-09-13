@@ -208,17 +208,17 @@ package:
     installed: true
   php7.2-zip:
     installed: true
-  php7.2-apcu:
+  php-apcu:
     installed: true
-  php7.2-gearman:
+  php-gearman:
     installed: true
-  php7.2-igbinary:
+  php-igbinary:
     installed: true
-  php7.2-memcache:
+  php-memcache:
     installed: true
-  php7.2-memcached:
+  php-memcached:
     installed: true
-  php7.2-msgpack:
+  php-msgpack:
     installed: true
   # php-xdebug:
   #   installed: true

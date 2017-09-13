@@ -97,6 +97,7 @@ RUN apt-get -yqq install \
     && \
     phpdismod pdo_pgsql && \
     phpdismod pgsql && \
+    phpdismod yaml && \
     # phpdismod xdebug && \
     # Remove extra extensions installed via packages for other versions of PHP, leaving the active engine folder
     rm -rf /usr/lib/php/20121212 && \
