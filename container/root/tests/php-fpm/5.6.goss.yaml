@@ -21,6 +21,8 @@ command:
   # Not common to all variants, test in supported children
   php -m | grep -i memcache:
     exit-status: 0
+  php -m | grep -i gearman:
+    exit-status: 0
 
 package:
   php5.6:
