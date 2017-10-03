@@ -4,28 +4,43 @@
 docker-php
 ==========
 
-Provides basic building blocks for PHP web applications, available on [Docker Hub](https://hub.docker.com/r/bryanlatten/docker-php/). 
-Add’s PHP-FPM, mods, and specific backend configuration to Behance’s [docker-nginx](https://github.com/behance/docker-nginx)
+Provides a pre-wired, configurable PHP + Nginx setup across multiple runtime versions.
 
-#### New naming scheme: `PHP_MAJOR.PHP_MINOR-Major.Minor.Patch(-variant)`
+Integrated with Behance’s [docker-nginx](https://github.com/behance/docker-nginx)
 
-- `PHP_MAJOR.PHP_MINOR` are the runtime versions of PHP. 
-- `Major.Minor.Patch` are versions of the container provisioning software 
-- `(-variant)`, an optional distinction, i.e. `-alpine`. Alpine variants are slim versions of the container.
+Available on [Docker Hub](https://hub.docker.com/r/bryanlatten/docker-php/). 
 
+### Quick-start
+
+- `docker run bryanlatten/docker-php:7.0 "php" "-v"`
+- `docker run bryanlatten/docker-php:7.1 "php" "-v"`
+- `docker run bryanlatten/docker-php:7.1-alpine "php" "-v"`
+- `docker run bryanlatten/docker-php:7.2-beta "php" "-v"`
+
+Adding code to runtime, see [here](https://github.com/bryanlatten/docker-php#expectations).  
+PHP tuning and configuration, see [here](https://github.com/bryanlatten/docker-php#downstream-configuration).  
+Nginx tuning and configuration, see [here](https://github.com/behance/docker-nginx#environment-variables).  
+Adding startup logic, [basic](https://github.com/behance/docker-base#startupruntime-modification) or [advanced](https://github.com/behance/docker-base#advanced-modification).  
+
+#### Container tag scheme: `PHP_MAJOR.PHP_MINOR(-Major.Minor.Patch)(-variant)`
+
+- `PHP_MAJOR.PHP_MINOR`, required. Engine versions of PHP. ex. `docker-php:7.1`
+- `(Major.Minor.Patch)`, optional. Semantically versioned container provisioning code. ex. `docker-php:7.1-12.4.0`.  
+- `(-variant)`, optional. Alpine variants are slim versions of the container. ex. `docker-php:7.1-alpine`.  
 
 ### Includes
 ---
-- Ubuntu or Alpine container [base](https://github.com/behance/docker-base)
-- [Nginx](https://github.com/behance/docker-nginx)
-- PHP / PHP-FPM: choose from 5.6, 7.0, 7.1, 7.2 (beta)
-- [S6](https://github.com/just-containers/s6-overlay): PID 1 zombie reaping, startup coordination, shutdown signal transferal
+
+- [Nginx](https://github.com/behance/docker-nginx) HTTP server
+- PHP / PHP-FPM: primary runtime
+- [S6](https://github.com/just-containers/s6-overlay): PID 1 zombie reaping, startup coordination, shutdown signal transferal. Nginx and PHP are preconfigured to shutdown as gracefully as possible.
 - [Goss](https://goss.rocks): for serverspec-like testing. Run `goss -g /tests/php-fpm/{PHP_MAJOR.PHP_MINOR}(-variant).goss.yaml` to validate any configuration updates
+- Ubuntu (default) or Alpine OS [base](https://github.com/behance/docker-base)
 - Extra PHP Modules:
 
 `*`  - not available on `-alpine` variant  
 `^`  - not available on `7.2` 
-`~`  - disabled by default (use `phpenmod` to enable on non-Alpine variants, uncomment .ini file otherwise)
+`~`  - disabled by default (default: use `phpenmod` to enable, Alpine-only: uncomment .ini file)
 
   - apcu
   - bcmath
@@ -80,21 +95,39 @@ Add’s PHP-FPM, mods, and specific backend configuration to Behance’s [docker
 
 ### Expectations
 ---
-Applications that leverage `bryanlatten/docker-php` as their container parent are expected to copy their application into `/app`, for example:
+
+Sample `Dockerfile`
+```
+FROM bryanlatten/docker-php:7.1
+
+# (optional, recommended) Verify everything is in order from the parent
+RUN goss -g /tests/php-fpm/7.1.goss.yaml validate && /aufs_hack.sh
+
+# Layer local code into runtime
+COPY ./ /app/
+
+# Done!
+```
+
+- Local code should be copied into `/app`, for example:
 ```COPY ./ /app/```
+- Nginx is pre-configured to use a front controller PHP file  (entrypoint) 
+a front controller called `index.php` within a `public` folder. `/app/public/index.php`
 
-Inside the copied directory, there must be a directory named `public` -- this will be automatically assigned as the webroot for the web server, which expects
-a front controller called `index.php`.
-
-Production Mode: an immutable container (without file updates) should set `CFG_APP_DEBUG=0` for max PHP performance  
-
-NOTE: Nginx is exposed and bound to an unprivileged port, `8080`  
+- Dev Mode (no ENV variables): PHP's opcache is enabled, and is set to check files for updates. Code can be developed locally in Docker by mounting into the `/app` folder. 
+For example, the `docker-compose.yml` syntax: 
+```  
+volumes:
+   - ./:/app
+```
+- Production Mode [recommended]: using ENV variable, `CFG_APP_DEBUG=0`. Container becomes immutable, PHP's opcache is configured to not check files for updates.
+- NOTE: Nginx is exposed and bound to an unprivileged port, `8080`.  
 
 ### Monitoring
 --- 
-1. NewRelic APM: automatically enabled by adding providing environment variables `REPLACE_NEWRELIC_APP` and `REPLACE_NEWRELIC_LICENSE`
-1. PHP-FPM Status: available *only* inside container at `/__status`. Application healthcheck can pull PHP-FPM statistics from `http://127.0.0.1/__status?json`. To open to more clients than local, add more `allow` statements in `__status` location block in `$CONF_NGINX_SITE`(`/etc/nginx/sites-available/default`)
-1. Nginx Status: available *only* inside container at `/__nginx_status`. Application healthcheck can pull nginx statistics from `http://127.0.0.1/__nginx_status`. To open to more clients than local, add more `allow` statements in `__nginx_status` location block in $CONF_NGINX_SITE (`/etc/nginx/sites-available/default`) 
+- NewRelic APM: automatically enabled by adding providing environment variables `REPLACE_NEWRELIC_APP` and `REPLACE_NEWRELIC_LICENSE`
+- PHP-FPM Status: available *only* inside container at `/__status`. Application healthcheck can pull PHP-FPM statistics from `http://127.0.0.1/__status?json`. To open to more clients than local, add more `allow` statements in `__status` location block in `$CONF_NGINX_SITE`(`/etc/nginx/sites-available/default`)
+- Nginx Status: available *only* inside container at `/__nginx_status`. Application healthcheck can pull nginx statistics from `http://127.0.0.1/__nginx_status`. To open to more clients than local, add more `allow` statements in `__nginx_status` location block in $CONF_NGINX_SITE (`/etc/nginx/sites-available/default`) 
 
 ### Downstream Configuration
 ---
