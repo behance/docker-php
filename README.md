@@ -36,11 +36,13 @@ Adding startup logic, [basic](https://github.com/behance/docker-base#startuprunt
 - [S6](https://github.com/just-containers/s6-overlay): PID 1 zombie reaping, startup coordination, shutdown signal transferal. Nginx and PHP are preconfigured to shutdown as gracefully as possible.
 - [Goss](https://goss.rocks): for serverspec-like testing. Run `goss -g /tests/php-fpm/{PHP_MAJOR.PHP_MINOR}(-variant).goss.yaml` to validate any configuration updates
 - Ubuntu (default) or Alpine OS [base](https://github.com/behance/docker-base)
-- Extra PHP Modules:
+- Common PHP extensions:
+
+For extension customization, including enabling and disabling defaults, see [here](https://github.com/bryanlatten/docker-php#downstream-configuration)
 
 `*`  - not available on `-alpine` variant  
 `^`  - not available on `7.2`  
-`~`  - disabled by default (default: use `phpenmod` to enable, Alpine-only: uncomment .ini file)  
+`~`  - disabled by default  
 
   - apcu
   - bcmath
