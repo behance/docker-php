@@ -136,26 +136,26 @@ volumes:
 
 A variety of common extensions are included, and can be enabled or disabled as needed.
 
-To `enable` a built-in and disabled extension:
+##### To `enable` a built-in and disabled extension:
 
-Ubuntu (default) variant
+On Ubuntu (default):
 ```(bash)
 # phpenmod XXX
 ```  
 
-Alpine variant
+On Alpine variant:
 ```(bash)
 # sed -i "s/^;ext/ext/" $CONF_PHPMODS/XXX.ini
 ```
 
-To `disable` a built-in extension:
+##### To `disable` a built-in extension:
 
-Ubuntu (default) variant
+On Ubuntu (default):
 ```(bash)
 # phpdismod XXX
 ```  
 
-Alpine variant
+On Alpine variant:
 ```(bash)
 # sed -i "s/ext/;ext/" $CONF_PHPMODS/XXX.ini
 ```
@@ -165,10 +165,11 @@ Alpine variant
 
 #### Environment variables  
 
-Several environment variables can be used to configure various PHP FPM paramaters, as well as a few Nginx configurations.
-as such. These can be used to drive the configuration of the downstream PHP application in any way necessary, but there are a few environment variables that `bryanlatter/docker-php` will process along the way...
+Environment variables can be used to tune various PHP-FPM and Nginx parameters without baking them in.
 
-See parent(s) [docker-nginx](https://github.com/behance/docker-nginx), [docker-base](https://github.com/behance/docker-base) for additional configuration
+See parent(s) for additional configuration options: 
+- [docker-nginx](https://github.com/behance/docker-nginx)
+- [docker-base](https://github.com/behance/docker-base) 
 
 
 Variable | Example | Default | Description
@@ -196,6 +197,13 @@ Variable | Example | Default | Description
 ### Testing
 ---   
 - Requires `docker` and `docker-compose`   
+
 To test locally, run `bash -e ./test.sh {docker-machine}` where `docker-machine` is the IP of the connected docker engine. 
+This will: 
+- Build all variants and engine versions.
+- [Goss](https://goss.rocks) runs at the end of each container build, confirming package, config, and extension installation.
+- Run each built container, check the default output from its live service.
+- Perform a large file upload
+
 These same tests get run automatically, per pull request, via Travis CI
 
