@@ -39,8 +39,8 @@ Adding startup logic, [basic](https://github.com/behance/docker-base#startuprunt
 - Extra PHP Modules:
 
 `*`  - not available on `-alpine` variant  
-`^`  - not available on `7.2` 
-`~`  - disabled by default (default: use `phpenmod` to enable, Alpine-only: uncomment .ini file)
+`^`  - not available on `7.2`  
+`~`  - disabled by default (default: use `phpenmod` to enable, Alpine-only: uncomment .ini file)  
 
   - apcu
   - bcmath
@@ -131,6 +131,40 @@ volumes:
 
 ### Downstream Configuration
 ---
+
+#### PHP Extensions
+
+A variety of common extensions are included, and can be enabled or disabled as needed.
+
+To `enable` a built-in and disabled extension:
+
+Ubuntu (default) variant
+```(bash)
+# phpenmod XXX
+```  
+
+Alpine variant
+```(bash)
+# sed -i "s/^;ext/ext/" $CONF_PHPMODS/XXX.ini
+```
+
+To `disable` a built-in extension:
+
+Ubuntu (default) variant
+```(bash)
+# phpdismod XXX
+```  
+
+Alpine variant
+```(bash)
+# sed -i "s/ext/;ext/" $CONF_PHPMODS/XXX.ini
+```
+
+
+
+
+#### Environment variables  
+
 Several environment variables can be used to configure various PHP FPM paramaters, as well as a few Nginx configurations.
 as such. These can be used to drive the configuration of the downstream PHP application in any way necessary, but there are a few environment variables that `bryanlatter/docker-php` will process along the way...
 
