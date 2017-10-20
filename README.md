@@ -36,11 +36,13 @@ Adding startup logic, [basic](https://github.com/behance/docker-base#startuprunt
 - [S6](https://github.com/just-containers/s6-overlay): PID 1 zombie reaping, startup coordination, shutdown signal transferal. Nginx and PHP are preconfigured to shutdown as gracefully as possible.
 - [Goss](https://goss.rocks): for serverspec-like testing. Run `goss -g /tests/php-fpm/{PHP_MAJOR.PHP_MINOR}(-variant).goss.yaml` to validate any configuration updates
 - Ubuntu (default) or Alpine OS [base](https://github.com/behance/docker-base)
-- Extra PHP Modules:
+- Common PHP extensions:
+
+For extension customization, including enabling and disabling defaults, see [here](https://github.com/bryanlatten/docker-php#downstream-configuration)
 
 `*`  - not available on `-alpine` variant  
-`^`  - not available on `7.2` 
-`~`  - disabled by default (default: use `phpenmod` to enable, Alpine-only: uncomment .ini file)
+`^`  - not available on `7.2`  
+`~`  - disabled by default  
 
   - apcu
   - bcmath
@@ -131,10 +133,45 @@ volumes:
 
 ### Downstream Configuration
 ---
-Several environment variables can be used to configure various PHP FPM paramaters, as well as a few Nginx configurations.
-as such. These can be used to drive the configuration of the downstream PHP application in any way necessary, but there are a few environment variables that `bryanlatter/docker-php` will process along the way...
 
-See parent(s) [docker-nginx](https://github.com/behance/docker-nginx), [docker-base](https://github.com/behance/docker-base) for additional configuration
+#### PHP Extensions
+
+A variety of common extensions are included, and can be enabled or disabled as needed.
+
+##### To `enable` a built-in and disabled extension:
+
+On Ubuntu (default):
+```(bash)
+# phpenmod XXX
+```  
+
+On Alpine variant:
+```(bash)
+# sed -i "s/^;ext/ext/" $CONF_PHPMODS/XXX.ini
+```
+
+##### To `disable` a built-in extension:
+
+On Ubuntu (default):
+```(bash)
+# phpdismod XXX
+```  
+
+On Alpine variant:
+```(bash)
+# sed -i "s/ext/;ext/" $CONF_PHPMODS/XXX.ini
+```
+
+
+
+
+#### Environment variables  
+
+Environment variables can be used to tune various PHP-FPM and Nginx parameters without baking them in.
+
+See parent(s) for additional configuration options: 
+- [docker-nginx](https://github.com/behance/docker-nginx)
+- [docker-base](https://github.com/behance/docker-base) 
 
 
 Variable | Example | Default | Description
@@ -162,6 +199,13 @@ Variable | Example | Default | Description
 ### Testing
 ---   
 - Requires `docker` and `docker-compose`   
+
 To test locally, run `bash -e ./test.sh {docker-machine}` where `docker-machine` is the IP of the connected docker engine. 
+This will: 
+- Build all variants and engine versions.
+- [Goss](https://goss.rocks) runs at the end of each container build, confirming package, config, and extension installation.
+- Run each built container, check the default output from its live service.
+- Perform a large file upload
+
 These same tests get run automatically, per pull request, via Travis CI
 
