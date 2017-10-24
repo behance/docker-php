@@ -129,22 +129,16 @@ RUN apk update && \
         autoconf file g++ gcc libc-dev make pkgconf re2c php7-dev php7-pear \
     && \
     sed -i 's/^exec $PHP -C -n/exec $PHP -C/g' $(which pecl) && \
-
     pecl install igbinary-2.0.1 && \
     echo "extension=igbinary.so" > $CONF_PHPMODS/igbinary.ini && \
-
     pecl install yaml-2.0.2 && \
     echo ";extension=yaml.so" > $CONF_PHPMODS/yaml.ini && \
-
     pecl install redis-3.1.3 && \
     echo ";extension=redis.so" > $CONF_PHPMODS/redis.ini && \
-
     pecl install msgpack-2.0.2 && \
     echo "extension=msgpack.so" > $CONF_PHPMODS/msgpack.ini && \
-
     pecl install memcached-3.0.3 && \
     echo "extension=memcached.so" > $CONF_PHPMODS/memcached.ini && \
-
     rm -rf /usr/share/php7 && \
     apk del .phpize_deps && \
     /bin/bash -e /clean.sh

@@ -102,7 +102,6 @@ RUN apt-get update -q && \
     rm -rf /usr/lib/php/20131226 && \
     rm -rf /usr/lib/php/20160303 && \
     rm -rf /usr/lib/php/20170718 && \
-
     curl -sS https://getcomposer.org/installer | php && \
     mv composer.phar /usr/local/bin/composer && \
     # Install new PHP7-stable version of Redis \
@@ -112,7 +111,6 @@ RUN apt-get update -q && \
     apt-get remove --purge -yq \
         php7.0-dev \
     && \
-
     /bin/bash /clean.sh
 
 # Overlay the root filesystem from this repo
