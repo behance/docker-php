@@ -1,4 +1,4 @@
-[![Build Status](https://travis-ci.org/bryanlatten/docker-php.svg?branch=master)](https://travis-ci.org/bryanlatten/docker-php)
+[![Build Status](https://travis-ci.org/behance/docker-php.svg?branch=master)](https://travis-ci.org/behance/docker-php)
 [![Docker Pulls](https://img.shields.io/docker/pulls/bryanlatten/docker-php.svg?maxAge=2592000)]()
 
 docker-php
@@ -8,25 +8,25 @@ Provides a pre-wired, configurable PHP + Nginx setup across multiple runtime ver
 
 Integrated with Behance’s [docker-nginx](https://github.com/behance/docker-nginx)
 
-Available on [Docker Hub](https://hub.docker.com/r/bryanlatten/docker-php/). 
+Available on [Docker Hub](https://hub.docker.com/r/behance/docker-php/).
 
 ### Quick-start
 
-- `docker run bryanlatten/docker-php:7.0 "php" "-v"`
-- `docker run bryanlatten/docker-php:7.1 "php" "-v"`
-- `docker run bryanlatten/docker-php:7.1-alpine "php" "-v"`
-- `docker run bryanlatten/docker-php:7.2-beta "php" "-v"`
+- `docker run behance/docker-php:7.0 "php" "-v"`
+- `docker run behance/docker-php:7.1 "php" "-v"`
+- `docker run behance/docker-php:7.1-alpine "php" "-v"`
+- `docker run behance/docker-php:7.2-beta "php" "-v"`
 
-Adding code to runtime, see [here](https://github.com/bryanlatten/docker-php#expectations).  
-PHP tuning and configuration, see [here](https://github.com/bryanlatten/docker-php#downstream-configuration).  
-Nginx tuning and configuration, see [here](https://github.com/behance/docker-nginx#environment-variables).  
-Adding startup logic, [basic](https://github.com/behance/docker-base#startupruntime-modification) or [advanced](https://github.com/behance/docker-base#advanced-modification).  
+Adding code to runtime, see [here](https://github.com/behance/docker-php#expectations).
+PHP tuning and configuration, see [here](https://github.com/behance/docker-php#downstream-configuration).
+Nginx tuning and configuration, see [here](https://github.com/behance/docker-nginx#environment-variables).
+Adding startup logic, [basic](https://github.com/behance/docker-base#startupruntime-modification) or [advanced](https://github.com/behance/docker-base#advanced-modification).
 
 #### Container tag scheme: `PHP_MAJOR.PHP_MINOR(-Major.Minor.Patch)(-variant)`
 
 - `PHP_MAJOR.PHP_MINOR`, required. Engine versions of PHP. ex. `docker-php:7.1`
-- `(Major.Minor.Patch)`, optional. Semantically versioned container provisioning code. ex. `docker-php:7.1-12.4.0`.  
-- `(-variant)`, optional. Alpine variants are slim versions of the container. ex. `docker-php:7.1-alpine`.  
+- `(Major.Minor.Patch)`, optional. Semantically versioned container provisioning code. ex. `docker-php:7.1-12.4.0`.
+- `(-variant)`, optional. Alpine variants are slim versions of the container. ex. `docker-php:7.1-alpine`.
 
 ### Includes
 ---
@@ -38,11 +38,11 @@ Adding startup logic, [basic](https://github.com/behance/docker-base#startuprunt
 - Ubuntu (default) or Alpine OS [base](https://github.com/behance/docker-base)
 - Common PHP extensions:
 
-For extension customization, including enabling and disabling defaults, see [here](https://github.com/bryanlatten/docker-php#downstream-configuration)
+For extension customization, including enabling and disabling defaults, see [here](https://github.com/behance/docker-php#downstream-configuration)
 
-`*`  - not available on `-alpine` variant  
-`^`  - not available on `7.2`  
-`~`  - disabled by default  
+`*`  - not available on `-alpine` variant
+`^`  - not available on `7.2`
+`~`  - disabled by default
 
   - apcu
   - bcmath
@@ -100,7 +100,7 @@ For extension customization, including enabling and disabling defaults, see [her
 
 Sample `Dockerfile`
 ```
-FROM bryanlatten/docker-php:7.1
+FROM behance/docker-php:7.1
 
 # (optional, recommended) Verify everything is in order from the parent
 RUN goss -g /tests/php-fpm/7.1.goss.yaml validate && /aufs_hack.sh
@@ -113,23 +113,23 @@ COPY ./ /app/
 
 - Local code should be copied into `/app`, for example:
 ```COPY ./ /app/```
-- Nginx is pre-configured to use a front controller PHP file  (entrypoint) 
+- Nginx is pre-configured to use a front controller PHP file  (entrypoint)
 a front controller called `index.php` within a `public` folder. `/app/public/index.php`
 
-- Dev Mode (no ENV variables): PHP's opcache is enabled, and is set to check files for updates. Code can be developed locally in Docker by mounting into the `/app` folder. 
-For example, the `docker-compose.yml` syntax: 
-```  
+- Dev Mode (no ENV variables): PHP's opcache is enabled, and is set to check files for updates. Code can be developed locally in Docker by mounting into the `/app` folder.
+For example, the `docker-compose.yml` syntax:
+```
 volumes:
    - ./:/app
 ```
 - Production Mode [recommended]: using ENV variable, `CFG_APP_DEBUG=0`. Container becomes immutable, PHP's opcache is configured to not check files for updates.
-- NOTE: Nginx is exposed and bound to an unprivileged port, `8080`.  
+- NOTE: Nginx is exposed and bound to an unprivileged port, `8080`.
 
 ### Monitoring
---- 
+---
 - NewRelic APM: automatically enabled by adding providing environment variables `REPLACE_NEWRELIC_APP` and `REPLACE_NEWRELIC_LICENSE`
 - PHP-FPM Status: available *only* inside container at `/__status`. Application healthcheck can pull PHP-FPM statistics from `http://127.0.0.1/__status?json`. To open to more clients than local, add more `allow` statements in `__status` location block in `$CONF_NGINX_SITE`(`/etc/nginx/sites-available/default`)
-- Nginx Status: available *only* inside container at `/__nginx_status`. Application healthcheck can pull nginx statistics from `http://127.0.0.1/__nginx_status`. To open to more clients than local, add more `allow` statements in `__nginx_status` location block in $CONF_NGINX_SITE (`/etc/nginx/sites-available/default`) 
+- Nginx Status: available *only* inside container at `/__nginx_status`. Application healthcheck can pull nginx statistics from `http://127.0.0.1/__nginx_status`. To open to more clients than local, add more `allow` statements in `__nginx_status` location block in $CONF_NGINX_SITE (`/etc/nginx/sites-available/default`)
 
 ### Downstream Configuration
 ---
@@ -143,7 +143,7 @@ A variety of common extensions are included, and can be enabled or disabled as n
 On Ubuntu (default):
 ```(bash)
 # phpenmod XXX
-```  
+```
 
 On Alpine variant:
 ```(bash)
@@ -155,7 +155,7 @@ On Alpine variant:
 On Ubuntu (default):
 ```(bash)
 # phpdismod XXX
-```  
+```
 
 On Alpine variant:
 ```(bash)
@@ -165,13 +165,13 @@ On Alpine variant:
 
 
 
-#### Environment variables  
+#### Environment variables
 
 Environment variables can be used to tune various PHP-FPM and Nginx parameters without baking them in.
 
-See parent(s) for additional configuration options: 
+See parent(s) for additional configuration options:
 - [docker-nginx](https://github.com/behance/docker-nginx)
-- [docker-base](https://github.com/behance/docker-base) 
+- [docker-base](https://github.com/behance/docker-base)
 
 
 Variable | Example | Default | Description
@@ -197,11 +197,11 @@ Variable | Example | Default | Description
 `PHP_OPCACHE_INTERNED_STRINGS_BUFFER` | `PHP_OPCACHE_INTERNED_STRINGS_BUFFER=64` | 16 | [docs](http://php.net/manual/en/opcache.configuration.php#ini.opcache.interned-strings-buffer)
 
 ### Testing
----   
-- Requires `docker` and `docker-compose`   
+---
+- Requires `docker` and `docker-compose`
 
-To test locally, run `bash -e ./test.sh {docker-machine}` where `docker-machine` is the IP of the connected docker engine. 
-This will: 
+To test locally, run `bash -e ./test.sh {docker-machine}` where `docker-machine` is the IP of the connected docker engine.
+This will:
 - Build all variants and engine versions.
 - [Goss](https://goss.rocks) runs at the end of each container build, confirming package, config, and extension installation.
 - Run each built container, check the default output from its live service.
