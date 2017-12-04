@@ -12,10 +12,11 @@ Available on [Docker Hub](https://hub.docker.com/r/behance/docker-php/).
 
 ### Quick-start
 
+- `docker run behance/docker-php:5.6 "php" "-v"`
 - `docker run behance/docker-php:7.0 "php" "-v"`
 - `docker run behance/docker-php:7.1 "php" "-v"`
 - `docker run behance/docker-php:7.1-alpine "php" "-v"`
-- `docker run behance/docker-php:7.2-beta "php" "-v"`
+- `docker run behance/docker-php:7.2 "php" "-v"`
 
 Adding code to runtime, see [here](https://github.com/behance/docker-php#expectations).
 PHP tuning and configuration, see [here](https://github.com/behance/docker-php#downstream-configuration).
