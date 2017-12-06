@@ -65,7 +65,7 @@ RUN apt-get update -q && \
             php7.2-common \
             php7.2-json \
     && \
-    apt-get -yqq install --no-install-recommends \
+    apt-get -yqq install \
         libgearman8 \
         php7.0 \
         php7.0-apcu \
