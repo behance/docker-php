@@ -51,6 +51,13 @@ RUN /bin/bash -e /security_updates.sh && \
     && \
     /bin/bash /clean.sh
 
+# TODO: fix these packages:
+# php7.2-mcrypt
+# php-xdebug
+# newrelic-php5
+# newrelic-php5-common
+# newrelic-daemon
+
 # Add PHP and support packages \
 RUN apt-get update -q && \
     # Ensure PHP 5.5 + 5.6 + 7.1 don't accidentally get added by PPA
@@ -63,16 +70,9 @@ RUN apt-get update -q && \
             php7.0-json \
             php7.1-cli \
             php7.1-common \
-            php7.1-json
-
-# TODO: fix these packages:
-# php7.2-mcrypt
-# php-xdebug
-# newrelic-php5
-# newrelic-php5-common
-# newrelic-daemon
-
-RUN apt-get -yqq install --no-install-recommends \
+            php7.1-json \
+    && \
+    apt-get -yqq install \
         libgearman8 \
         php7.2 \
         php7.2-apcu \
