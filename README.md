@@ -56,7 +56,6 @@ For extension customization, including enabling and disabling defaults, see [her
   - exif
   - cgi-fcgi
   - gd
-  - gearman*
   - iconv
   - igbinary
   - intl
