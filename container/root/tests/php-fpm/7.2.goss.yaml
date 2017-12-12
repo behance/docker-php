@@ -50,8 +50,6 @@ command:
     exit-status: 0
   php -m | grep -i gd:
     exit-status: 0
-  php -m | grep -i gearman:
-    exit-status: 0
   php -m | grep -i iconv:
     exit-status: 0
   php -m | grep -i igbinary:
@@ -209,8 +207,6 @@ package:
   php7.2-zip:
     installed: true
   php-apcu:
-    installed: true
-  php-gearman:
     installed: true
   php-igbinary:
     installed: true
