@@ -102,7 +102,7 @@ RUN apt-get update -q && \
     curl -sS https://getcomposer.org/installer | php && \
     mv composer.phar /usr/local/bin/composer && \
     # Install new PHP 7.1-stable version of Redis
-    pecl install redis-3.1.4 && \
+    pecl install redis-3.1.6 && \
     echo "extension=redis.so" > $CONF_PHPMODS/redis.ini && \
     # Remove dev packages that were only in place just to compile extensions
     apt-get remove --purge -yq \

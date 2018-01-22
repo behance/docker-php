@@ -53,9 +53,6 @@ RUN /bin/bash -e /security_updates.sh && \
 # TODO: fix these packages:
 # php7.2-mcrypt
 # php-xdebug
-# newrelic-php5
-# newrelic-php5-common
-# newrelic-daemon
 
 # Add PHP and support packages \
 RUN apt-get update -q && \
@@ -92,6 +89,9 @@ RUN apt-get update -q && \
         php7.2-xml \
         php7.2-yaml \
         php7.2-zip \
+        newrelic-php5 \
+        newrelic-php5-common \
+        newrelic-daemon \
     && \
     phpdismod pdo_pgsql && \
     phpdismod pgsql && \
@@ -105,7 +105,7 @@ RUN apt-get update -q && \
     curl -sS https://getcomposer.org/installer | php && \
     mv composer.phar /usr/local/bin/composer && \
     # Install new PHP 7.X-stable version of Redis
-    pecl install redis-3.1.4 && \
+    pecl install redis-3.1.6 && \
     echo "extension=redis.so" > $CONF_PHPMODS/redis.ini && \
     # Remove dev packages that were only in place just to compile extensions
     apt-get remove --purge -yq \
@@ -124,10 +124,7 @@ RUN cp /etc/php/7.0/mods-available/* $CONF_PHPMODS && \
     # Override default ini values for both CLI + FPM \
     phpenmod overrides && \
     # Enable NewRelic via Ubuntu symlinks, but disable in file. Cross-variant startup script uncomments with env vars.
-    # HACK: ensure file/folders exist so prep script still runs until NewRelic extension works with PHP 7.2
-    touch $CONF_PHPMODS/newrelic.ini && \
-    mkdir /var/log/newrelic && \
-    # phpenmod newrelic && \
+    phpenmod newrelic && \
     # - Run standard set of tweaks to ensure runs performant, reliably, and consistent between variants
     /bin/bash -e /prep-php.sh
 
