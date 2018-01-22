@@ -240,16 +240,16 @@ file:
       - '/^request_terminate_timeout = \${PHP_FPM_MAX_EXECUTION_TIME}/'
       - '/^rlimit_files = 40000/'
       - '/^rlimit_core = unlimited/'
-  # /etc/php/7.2/mods-available/newrelic.ini:
-  #   exists: true
-  #   contains:
-  #     - '/^;extension =/'
-  #     - '/^newrelic.appname = \"\${REPLACE_NEWRELIC_APP}\"/'
-  #     - '/^newrelic.license = \"\${REPLACE_NEWRELIC_LICENSE}\"/'
-  #     - '/^newrelic.logfile = \"\/dev\/stdout\"/'
-  #     - '/^newrelic.daemon.logfile = \"\/dev\/stdout\"/'
-  #     - '/^newrelic.loglevel = \"warning\"/'
-  #     - '/^newrelic.daemon.loglevel = \"warning\"/'
+  /etc/php/7.2/mods-available/newrelic.ini:
+    exists: true
+    contains:
+      - '/^;extension =/'
+      - '/^newrelic.appname = \"\${REPLACE_NEWRELIC_APP}\"/'
+      - '/^newrelic.license = \"\${REPLACE_NEWRELIC_LICENSE}\"/'
+      - '/^newrelic.logfile = \"\/dev\/stdout\"/'
+      - '/^newrelic.daemon.logfile = \"\/dev\/stdout\"/'
+      - '/^newrelic.loglevel = \"warning\"/'
+      - '/^newrelic.daemon.loglevel = \"warning\"/'
   /etc/php/7.2/fpm/php-fpm.conf:
     exists: true
     contains:
