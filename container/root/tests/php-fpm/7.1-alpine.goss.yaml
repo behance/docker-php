@@ -102,5 +102,3 @@ package:
     installed: true
   php7-zip:
     installed: true
-  php7-zlib:
-    installed: true
