@@ -1,4 +1,4 @@
-FROM behance/docker-nginx:8.1
+FROM behance/docker-nginx:8.2
 MAINTAINER Bryan Latten <latten@adobe.com>
 
 # Set TERM to suppress warning messages.
@@ -28,6 +28,7 @@ ENV CONF_PHPFPM=/etc/php/7.0/fpm/php-fpm.conf \
 # - Update security packages, only
 RUN /bin/bash -e /security_updates.sh && \
     apt-get install -yqq --no-install-recommends \
+        gpg-agent \
         git \
         curl \
         wget \
@@ -63,6 +64,9 @@ RUN apt-get update -q && \
             php7.2-cli \
             php7.2-common \
             php7.2-json \
+            php7.3-cli \
+            php7.3-common \
+            php7.3-json \
     && \
     apt-get -yqq install \
         php7.0 \
