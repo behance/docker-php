@@ -9,7 +9,7 @@ command:
     stderr: ['!/./']
   php -r 'echo PHP_MINOR_VERSION;':
     exit-status: 0
-    stdout: [1]
+    stdout: [2]
     stderr: ['!/./']
   php-fpm -m:
     exit-status: 0
