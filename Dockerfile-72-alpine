@@ -129,7 +129,7 @@ RUN apk update && \
         autoconf file g++ gcc libc-dev make pkgconf re2c php7-dev php7-pear \
     && \
     sed -i 's/^exec $PHP -C -n/exec $PHP -C/g' $(which pecl) && \
-    pecl install igbinary-2.0.5 && \
+    pecl install igbinary-2.0.7 && \
     echo "extension=igbinary.so" > $CONF_PHPMODS/igbinary.ini && \
     pecl install yaml-2.0.2 && \
     echo ";extension=yaml.so" > $CONF_PHPMODS/yaml.ini && \
@@ -143,5 +143,5 @@ RUN apk update && \
     apk del .phpize_deps && \
     /bin/bash -e /clean.sh
 
-RUN goss -g /tests/php-fpm/7.1-alpine.goss.yaml validate && \
+RUN goss -g /tests/php-fpm/7.2-alpine.goss.yaml validate && \
     /aufs_hack.sh
