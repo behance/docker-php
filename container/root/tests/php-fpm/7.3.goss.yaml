@@ -126,8 +126,8 @@ command:
   php -m | grep redis:
     exit-status: 1
     stderr: ['!/./']
-  # php -m | grep yaml:
-  #   exit-status: 1
+  php -m | grep yaml:
+    exit-status: 1
     stderr: ['!/./']
   php -m | grep xdebug:
     exit-status: 1
@@ -138,9 +138,9 @@ command:
   # 2. pass ini key-value (-d), enable the single extension to test
   # 3. list the newly loaded php mods (-m)
   # 4. grep the output of the loaded mods for the one under test
-  # php -n -d extension=yaml.so -m | grep yaml:
-  #   exit-status: 0
-  #   stderr: ['!/./']
+  php -n -d extension=yaml.so -m | grep yaml:
+    exit-status: 0
+    stderr: ['!/./']
   php -n -d extension=pgsql.so -m | grep pgsql:
     exit-status: 0
     stderr: ['!/./']
@@ -237,16 +237,16 @@ file:
       - '/^request_terminate_timeout = \${PHP_FPM_MAX_EXECUTION_TIME}/'
       - '/^rlimit_files = 40000/'
       - '/^rlimit_core = unlimited/'
-  # /etc/php/7.3/mods-available/newrelic.ini:
-  #   exists: true
-  #   contains:
-  #     - '/^;extension =/'
-  #     - '/^newrelic.appname = \"\${REPLACE_NEWRELIC_APP}\"/'
-  #     - '/^newrelic.license = \"\${REPLACE_NEWRELIC_LICENSE}\"/'
-  #     - '/^newrelic.logfile = \"\/dev\/stdout\"/'
-  #     - '/^newrelic.daemon.logfile = \"\/dev\/stdout\"/'
-  #     - '/^newrelic.loglevel = \"warning\"/'
-  #     - '/^newrelic.daemon.loglevel = \"warning\"/'
+  /etc/php/7.3/mods-available/newrelic.ini:
+    exists: true
+    contains:
+      - '/^;extension =/'
+      - '/^newrelic.appname = \"\${REPLACE_NEWRELIC_APP}\"/'
+      - '/^newrelic.license = \"\${REPLACE_NEWRELIC_LICENSE}\"/'
+      - '/^newrelic.logfile = \"\/dev\/stdout\"/'
+      - '/^newrelic.daemon.logfile = \"\/dev\/stdout\"/'
+      - '/^newrelic.loglevel = \"warning\"/'
+      - '/^newrelic.daemon.loglevel = \"warning\"/'
   /etc/php/7.3/fpm/php-fpm.conf:
     exists: true
     contains:
