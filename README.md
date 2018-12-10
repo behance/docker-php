@@ -44,7 +44,7 @@ For extension customization, including enabling and disabling defaults, see [her
 
 `^`  - not available on `-alpine` variant
 `*`  - not available on `7.2`
-`**` - not available on `7.3-beta`
+`**` - not available on `7.3`
 `~`  - disabled by default
 
   - apcu
@@ -69,7 +69,7 @@ For extension customization, including enabling and disabling defaults, see [her
   - msgpack
   - mysqli
   - mysqlnd
-  - newrelic ~,** (activates with env variables)
+  - newrelic ~ (activates with env variables)
   - opcache
   - openssl
   - pcntl
@@ -91,7 +91,7 @@ For extension customization, including enabling and disabling defaults, see [her
   - xml
   - xmlreader
   - xmlwriter
-  - yaml ~,**
+  - yaml ~
   - zip
   - zlib
 
