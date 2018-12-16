@@ -113,7 +113,7 @@ RUN apt-get update -q && \
     pecl install apcu && \
     echo "extension=apcu.so" > $CONF_PHPMODS/apcu.ini && \
     phpenmod apcu && \
-    pecl install redis && \
+    pecl install redis-4.2.0 && \
     echo "extension=redis.so" > $CONF_PHPMODS/redis.ini && \
     # Remove dev packages that were only in place just to compile extensions
     apt-get remove --purge -yq \
