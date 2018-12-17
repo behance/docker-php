@@ -22,8 +22,8 @@ fi
 docker-compose build 56
 docker-compose build 70
 docker-compose build 71
-docker-compose build 71-alpine
 docker-compose build 72
+docker-compose build 72-alpine
 
 docker-compose up -d
 sleep 5
