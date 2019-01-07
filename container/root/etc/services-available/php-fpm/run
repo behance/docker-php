@@ -8,22 +8,11 @@ trap
 {
   term
   {
-    foreground
-    {
-      backtick -i -n NGINXPID { cat /tmp/.nginx/nginx.pid }
-    }
-    import -u NGINXPID ifthenelse { $NGINXPID }
-    {
-      foreground
-      {
-        echo [sigterm-phpfpm] waiting for nginx to exit
-      }
-      wait { $NGINXPID } import -u ! kill -s SIGQUIT ${!}
-    }
-    foreground
-    {
-      import -u ! kill -s SIGQUIT ${!}
-    }
+    echo [run php-fpm] TERM received
+  }
+  hup
+  {
+    echo [run php-fpm] HUP received
   }
 }
 

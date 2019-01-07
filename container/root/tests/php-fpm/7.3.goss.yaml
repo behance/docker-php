@@ -15,3 +15,12 @@ command:
   # Not common to all variants, test in supported children
   php -m | grep -i memcache:
     exit-status: 0
+
+file:
+  {{ .Env.CONF_PHPFPM }}:
+    contains:
+      - '/^log_limit = \${PHP_FPM_LOG_LIMIT}/'
+      - '/^log_buffering = yes/'
+  {{ .Env.CONF_FPMPOOL }}:
+    contains:
+      - '/^decorate_workers_output = no/'
