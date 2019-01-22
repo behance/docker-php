@@ -1,7 +1,7 @@
 # TODO: this is a copy-pasted version of the base, with tweaks.
 #       Use ONLY until more base-required extensions are available
 gossfile:
-  ../nginx/base.goss.yaml: {}
+  ../common/nginx.goss.yaml: {}
 
 user:
   www-data:

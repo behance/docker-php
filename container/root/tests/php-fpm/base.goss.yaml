@@ -1,6 +1,6 @@
 # Ensure we leverage the parent's test suite, that we have not introduced any nginx-level issues
 gossfile:
-  ../nginx/base.goss.yaml: {}
+  ../common/nginx.goss.yaml: {}
 
 user:
   www-data:
