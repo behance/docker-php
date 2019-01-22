@@ -24,6 +24,7 @@ docker-compose build 70
 docker-compose build 71
 docker-compose build 72
 docker-compose build 72-alpine
+docker-compose build 73
 
 docker-compose up -d
 sleep 5
@@ -32,8 +33,9 @@ docker-compose ps
 curl $MACHINE:8080 | grep "PHP Version 5.6."
 curl $MACHINE:8081 | grep "PHP Version 7.0."
 curl $MACHINE:8082 | grep "PHP Version 7.1."
-curl $MACHINE:8083 | grep "PHP Version 7.1."
+curl $MACHINE:8083 | grep "PHP Version 7.2."
 curl $MACHINE:8084 | grep "PHP Version 7.2."
+curl $MACHINE:8085 | grep "PHP Version 7.3."
 
 # Create a junk file that will test container uploading capability
 dd if=/dev/zero of=tmp.txt count=100000 bs=1024
@@ -41,9 +43,10 @@ dd if=/dev/zero of=tmp.txt count=100000 bs=1024
 # Though the file is uploaded, the response message is still the default phpinfo page
 curl --form upload=@tmp.txt $MACHINE:8080 | grep "PHP Version 5.6." > /dev/null
 curl --form upload=@tmp.txt $MACHINE:8081 | grep "PHP Version 7.0." > /dev/null
-curl --form upload=@tmp.txt $MACHINE:8082 | grep "PHP Version 7.0." > /dev/null
-curl --form upload=@tmp.txt $MACHINE:8083 | grep "PHP Version 7.1." > /dev/null
+curl --form upload=@tmp.txt $MACHINE:8082 | grep "PHP Version 7.1." > /dev/null
+curl --form upload=@tmp.txt $MACHINE:8083 | grep "PHP Version 7.2." > /dev/null
 curl --form upload=@tmp.txt $MACHINE:8084 | grep "PHP Version 7.2." > /dev/null
+curl --form upload=@tmp.txt $MACHINE:8085 | grep "PHP Version 7.3." > /dev/null
 
 # Cleanup
 rm tmp.txt
