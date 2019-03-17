@@ -2,6 +2,7 @@ sudo: required
 
 env:
   DOCKER_COMPOSE_VERSION: 1.17.1
+  GOSS_PATH: ./goss 
 
 services:
   - docker
@@ -11,6 +12,9 @@ before_install:
   - curl -L https://github.com/docker/compose/releases/download/${DOCKER_COMPOSE_VERSION}/docker-compose-`uname -s`-`uname -m` > docker-compose
   - chmod +x docker-compose
   - sudo mv docker-compose /usr/local/bin
+  - curl -L https://raw.githubusercontent.com/aelsabbahy/goss/master/extras/dgoss/dgoss -o dgoss
+  - curl -L https://github.com/aelsabbahy/goss/releases/download/v0.3.6/goss-linux-amd64 -o goss
+  - chmod 755 dgoss goss
 
 # - Build and run all variants
 # - Ensure text from phpinfo is present in default response

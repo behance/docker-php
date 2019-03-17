@@ -102,3 +102,14 @@ package:
     installed: true
   php7-zip:
     installed: true
+
+file:
+  /etc/php7/conf.d/newrelic.ini:
+    exists: true
+    mode: "0644"
+    filetype: file # file, symlink, directory
+    contains:  # Check file content for these patterns
+      - '!/^newrelic.transaction_tracer.enabled = true/'
+      - '!/^newrelic.distributed_tracing_enabled = true/'
+      - '/^;newrelic.transaction_tracer.enabled = true/'
+      - '/^;newrelic.distributed_tracing_enabled = false/'
