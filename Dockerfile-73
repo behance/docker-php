@@ -53,7 +53,6 @@ RUN /bin/bash -e /security_updates.sh && \
 
 # TODO: fix these packages:
 # php7.3-mcrypt
-# php-xdebug
 
 # Add PHP and support packages \
 RUN apt-get update -q && \
@@ -93,6 +92,7 @@ RUN apt-get update -q && \
         php7.3-xml \
         php7.3-yaml \
         php7.3-zip \
+        php-xdebug \
         newrelic-php5 \
         newrelic-php5-common \
         newrelic-daemon \
@@ -100,7 +100,7 @@ RUN apt-get update -q && \
     phpdismod pdo_pgsql && \
     phpdismod pgsql && \
     phpdismod yaml && \
-    # phpdismod xdebug && \
+    phpdismod xdebug && \
     # Remove extra extensions installed via packages for other versions of PHP, leaving the active engine folder
     rm -rf /usr/lib/php/20121212 && \
     rm -rf /usr/lib/php/20131226 && \
