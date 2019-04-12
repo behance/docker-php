@@ -130,6 +130,7 @@ volumes:
 ### Monitoring
 ---
 - NewRelic APM: automatically enabled by adding providing environment variables `REPLACE_NEWRELIC_APP` and `REPLACE_NEWRELIC_LICENSE`
+- NewRelic Distributed Tracing: Before enabling distributed tracing be sure to read the [transition guide](https://docs.newrelic.com/docs/apm/distributed-tracing/getting-started/transition-guide-distributed-tracing). To enable this set `NEWRELIC_TRACING_ENABLED` to `true`.
 - PHP-FPM Status: available *only* inside container at `/__status`. Application healthcheck can pull PHP-FPM statistics from `http://127.0.0.1/__status?json`. To open to more clients than local, add more `allow` statements in `__status` location block in `$CONF_NGINX_SITE`(`/etc/nginx/sites-available/default`)
 - Nginx Status: available *only* inside container at `/__nginx_status`. Application healthcheck can pull nginx statistics from `http://127.0.0.1/__nginx_status`. To open to more clients than local, add more `allow` statements in `__nginx_status` location block in $CONF_NGINX_SITE (`/etc/nginx/sites-available/default`)
 
@@ -187,6 +188,7 @@ Variable | Example | Default | Description
 `SERVER_FASTCGI_BUSY_BUFFERS_SIZE` | `SERVER_FASTCGI_BUSY_BUFFERS_SIZE=‘1024k’` | 256k | [docs](http://nginx.org/en/docs/http/ngx_http_fastcgi_module.html#fastcgi_busy_buffers_size)
 `REPLACE_NEWRELIC_APP` | `REPLACE_NEWRELIC_APP=prod-server-abc` | - | Sets application name for newrelic
 `REPLACE_NEWRELIC_LICENSE` | `REPLACE_NEWRELIC_LICENSE=abcdefg` | - | Sets license for newrelic, when combined with above, will enable newrelic reporting
+`NEWRELIC_TRACING_ENABLED` | `NEWRELIC_TRACING_ENABLED=true` | disabled | Sets transaction_tracer and distributed_tracing true for newrelic, when combined with above, will enable [newrelic distributed tracing](https://docs.newrelic.com/docs/agents/php-agent/configuration/php-agent-configuration#inivar-distributed-enabled)
 `PHP_FPM_MEMORY_LIMIT` | `PHP_FPM_MEMORY_LIMIT=256M` | 192MB | Sets memory limit for FPM instances of PHP
 `PHP_FPM_MAX_EXECUTION_TIME` | `PHP_FPM_MAX_EXECUTION_TIME=30` | 60 | Sets time limit for FPM workers
 `PHP_FPM_UPLOAD_MAX_FILESIZE` | `PHP_FPM_UPLOAD_MAX_FILESIZE=100M` | 1M | Sets both upload_max_filesize and post_max_size

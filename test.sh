@@ -48,5 +48,24 @@ curl --form upload=@tmp.txt $MACHINE:8083 | grep "PHP Version 7.2." > /dev/null
 curl --form upload=@tmp.txt $MACHINE:8084 | grep "PHP Version 7.2." > /dev/null
 curl --form upload=@tmp.txt $MACHINE:8085 | grep "PHP Version 7.3." > /dev/null
 
+# Error exit codes in dgoss do not bubble up to the runner.
+# In order to work around this we need to increment $i.
+i=0
+
+echo "Running Runtime Test for 5.6"
+GOSSPATH=goss GOSS_FILES_PATH=runtime-tests/newrelic/56/ ./dgoss run -e REPLACE_NEWRELIC_APP="abcefg" -e REPLACE_NEWRELIC_LICENSE="hijklmno" -e NEWRELIC_TRACING_ENABLED="true" dockerphp_56 || ((i++))
+echo "Running Runtime Test for 7.0"
+GOSS_PATH=goss GOSS_FILES_PATH=runtime-tests/newrelic/70/ ./dgoss run -e REPLACE_NEWRELIC_APP="abcdefg" -e REPLACE_NEWRELIC_LICENSE="hijklmno" -e NEWRELIC_TRACING_ENABLED="true" dockerphp_70 || ((i++))
+echo "Running Runtime Test for 7.1"
+GOSS_PATH=goss GOSS_FILES_PATH=runtime-tests/newrelic/71/ ./dgoss run -e REPLACE_NEWRELIC_APP="abcdefg" -e REPLACE_NEWRELIC_LICENSE="hijklmno" -e NEWRELIC_TRACING_ENABLED="true" dockerphp_71 || ((i++))
+echo "Running Runtime Test for 7.2"
+GOSS_PATH=goss GOSS_FILES_PATH=runtime-tests/newrelic/72/ ./dgoss run -e REPLACE_NEWRELIC_APP="abcdefg" -e REPLACE_NEWRELIC_LICENSE="hijklmno" -e NEWRELIC_TRACING_ENABLED="true" dockerphp_72 || ((i++))
+echo "Running Runtime Test for 7.2-alpine"
+GOSS_PATH=goss GOSS_FILES_PATH=runtime-tests/newrelic/72-alpine/ ./dgoss run -e REPLACE_NEWRELIC_APP="abcdefg" -e REPLACE_NEWRELIC_LICENSE="hijklmno" -e NEWRELIC_TRACING_ENABLED="true" dockerphp_72-alpine || ((i++))
+echo "Running Runtime Test for 7.3"
+GOSS_PATH=goss GOSS_FILES_PATH=runtime-tests/newrelic/73/ ./dgoss run -e REPLACE_NEWRELIC_APP="abcdefg" -e REPLACE_NEWRELIC_LICENSE="hijklmno" -e NEWRELIC_TRACING_ENABLED="true" dockerphp_73 || ((i++))
+
 # Cleanup
 rm tmp.txt
+
+exit $i

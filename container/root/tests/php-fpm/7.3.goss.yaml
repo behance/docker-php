@@ -247,8 +247,13 @@ file:
       - '/^newrelic.daemon.logfile = \"\/dev\/stdout\"/'
       - '/^newrelic.loglevel = \"warning\"/'
       - '/^newrelic.daemon.loglevel = \"warning\"/'
+      - '!/^newrelic.transaction_tracer.enabled = true/'
+      - '!/^newrelic.distributed_tracing_enabled = true/'
+      - '/^;newrelic.transaction_tracer.enabled = true/'
+      - '/^;newrelic.distributed_tracing_enabled = false/'
   /etc/php/7.3/fpm/php-fpm.conf:
     exists: true
     contains:
       - '/^error_log = \/dev\/stdout/'
+
 
