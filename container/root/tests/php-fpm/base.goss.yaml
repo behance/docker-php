@@ -57,8 +57,9 @@ command:
     exit-status: 0
   php -m | grep -i mbstring:
     exit-status: 0
-  php -m | grep -i mcrypt:
-    exit-status: 0
+  # --- No longer supported in PHP
+  # php -m | grep -i mcrypt:
+  #   exit-status: 0
   php -m | grep -i memcached:
     exit-status: 0
   php -m | grep -i mysqli:
@@ -125,6 +126,7 @@ command:
   php -m | grep xdebug:
     exit-status: 1
     stderr: ['!/./']
+
   # To test and validate by-default disabled extensions [without side effects]
   # Hack:
   # 1. run php with no ini file (-n)

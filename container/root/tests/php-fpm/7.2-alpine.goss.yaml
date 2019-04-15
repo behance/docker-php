@@ -16,14 +16,14 @@ command:
     stderr: ['!/./']
   php-fpm -v:
     exit-status: 0
-    stdout: [PHP 7.1]
+    stdout: [/PHP 7.1/]
     stderr: ['!/./']
 
 package:
   php7:
     installed: true
-  php7-apcu:
-    installed: true
+  # php7-apcu:
+  #   installed: true
   php7-calendar:
     installed: true
   php7-common:
@@ -48,8 +48,8 @@ package:
     installed: true
   php7-json:
     installed: true
-  php7-mcrypt:
-    installed: true
+  # php7-mcrypt:
+  #   installed: true
   php7-mbstring:
     installed: true
   # php7-msgpack:
@@ -92,8 +92,9 @@ package:
     installed: true
   php7-tokenizer:
     installed: true
-  php7-xdebug:
-    installed: true
+  # -- Fails for packaging reasons, but is checked by base.goss.yaml
+  # php7-xdebug:
+  #   installed: true
   php7-xml:
     installed: true
   php7-xmlreader:
