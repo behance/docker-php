@@ -63,7 +63,7 @@ For extension customization, including enabling and disabling defaults, see [her
   - intl
   - json
   - mbstring
-  - mcrypt ^,*,**
+  - mcrypt *,**
   - memcache ^
   - memcached
   - msgpack
