@@ -5,7 +5,7 @@
 # runs performant, reliably, and consistent between variants
 #---------------------------------------------------------------------------------
 
-sed -i "s/error_log = .*/error_log = \/dev\/stdout/" $CONF_PHPFPM
+sed -i "s/;*error_log = .*/error_log = \/dev\/stdout/" $CONF_PHPFPM
 
 # - Configure php-fpm to use TCP rather than unix socket (for stability), fastcgi_pass is also set by /etc/nginx/sites-available/default
 sed -i "s/listen = .*/listen = 127.0.0.1:9000/" $CONF_FPMPOOL

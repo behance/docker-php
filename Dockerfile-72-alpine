@@ -106,18 +106,6 @@ RUN NEWRELIC_MUSL_PATH=$(curl -s https://download.newrelic.com/php_agent/release
 RUN curl -sS https://getcomposer.org/installer | php && \
     mv composer.phar /usr/local/bin/composer
 
-# Overlay the root filesystem from this repo
-COPY ./container/root /
-
-# - Make additional hacks to migrate files from Ubuntu to Alpine folder structure
-RUN cp /etc/php/7.0/mods-available/* $CONF_PHPMODS && \
-    rm $CONF_PHPMODS/00_opcache.ini && \
-    # - Run standard set of tweaks to ensure runs performant, reliably, and consistent between variants
-    touch /var/run/lock && \
-    chown $NOT_ROOT_USER:$NOT_ROOT_USER /var/log/php7 && \
-    ln -s /usr/sbin/php-fpm7 /usr/sbin/php-fpm && \
-    /bin/bash -e prep-php.sh
-
 RUN apk update && \
     apk add --no-cache \
         yaml-dev \
@@ -129,19 +117,31 @@ RUN apk update && \
         autoconf file g++ gcc libc-dev make pkgconf re2c php7-dev php7-pear \
     && \
     sed -i 's/^exec $PHP -C -n/exec $PHP -C/g' $(which pecl) && \
-    pecl install igbinary-2.0.7 && \
+    pecl install igbinary-3.0.1 && \
     echo "extension=igbinary.so" > $CONF_PHPMODS/igbinary.ini && \
     pecl install yaml-2.0.2 && \
     echo ";extension=yaml.so" > $CONF_PHPMODS/yaml.ini && \
     pecl install redis-4.2.0 && \
     echo ";extension=redis.so" > $CONF_PHPMODS/redis.ini && \
-    pecl install msgpack-2.0.2 && \
+    pecl install msgpack-2.0.3 && \
     echo "extension=msgpack.so" > $CONF_PHPMODS/msgpack.ini && \
     pecl install memcached-3.0.4 && \
     echo "extension=memcached.so" > $CONF_PHPMODS/memcached.ini && \
     rm -rf /usr/share/php7 && \
     apk del .phpize_deps && \
     /bin/bash -e /clean.sh
+
+# Overlay the root filesystem from this repo
+COPY ./container/root /
+
+# - Make additional hacks to migrate files from Ubuntu to Alpine folder structure
+RUN cp /etc/php/7.0/mods-available/* $CONF_PHPMODS && \
+    rm $CONF_PHPMODS/00_opcache.ini && \
+    # - Run standard set of tweaks to ensure runs performant, reliably, and consistent between variants
+    touch /var/run/lock && \
+    chown $NOT_ROOT_USER:$NOT_ROOT_USER /var/log/php7 && \
+    ln -s /usr/sbin/php-fpm7 /usr/sbin/php-fpm && \
+    /bin/bash -e prep-php.sh
 
 RUN goss -g /tests/php-fpm/7.2-alpine.goss.yaml validate && \
     /aufs_hack.sh

@@ -151,3 +151,42 @@ command:
   php -n -d zend_extension=xdebug.so --ri xdebug:
     exit-status: 0
     stderr: ['!/./']
+
+file:
+  {{ .Env.CONF_FPMPOOL }}:
+    exists: true
+    contains:
+      - '/^listen = 127.0.0.1:9000/'
+      - '/^chdir = \/app/'
+      - '/^pm.max_children = \${PHP_FPM_MAX_CHILDREN}/'
+      - '/^pm.start_servers = \${PHP_FPM_START_SERVERS}/'
+      - '/^pm.max_requests = \${PHP_FPM_MAX_REQUESTS}/'
+      - '/^pm.min_spare_servers = \${PHP_FPM_MIN_SPARE_SERVERS}/'
+      - '/^pm.max_spare_servers = \${PHP_FPM_MAX_SPARE_SERVERS}/'
+      - '/^pm.status_path = \/__status/'
+      - '/^clear_env = no/'
+      - '/^catch_workers_output = yes/'
+      - '/^listen.allowed_clients = 127.0.0.1/'
+      # - '/^;user =/'
+      # - '/^;group =/'
+      - '/^request_terminate_timeout = \${PHP_FPM_MAX_EXECUTION_TIME}/'
+      - '/^rlimit_files = 40000/'
+      - '/^rlimit_core = unlimited/'
+  {{ .Env.CONF_PHPMODS }}/newrelic.ini:
+    exists: true
+    contains:
+      - '/^;extension =/'
+      - '/^newrelic.appname = \"\${REPLACE_NEWRELIC_APP}\"/'
+      - '/^newrelic.license = \"\${REPLACE_NEWRELIC_LICENSE}\"/'
+      - '/^newrelic.logfile = \"\/dev\/stdout\"/'
+      - '/^newrelic.daemon.logfile = \"\/dev\/stdout\"/'
+      - '/^newrelic.loglevel = \"warning\"/'
+      - '/^newrelic.daemon.loglevel = \"warning\"/'
+      - '!/^newrelic.transaction_tracer.enabled = true/'
+      - '!/^newrelic.distributed_tracing_enabled = true/'
+      - '/^;newrelic.transaction_tracer.enabled = true/'
+      - '/^;newrelic.distributed_tracing_enabled = false/'
+  {{ .Env.CONF_PHPFPM }}:
+    exists: true
+    contains:
+      - '/^error_log = \/dev\/stdout/'
