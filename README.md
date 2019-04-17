@@ -15,9 +15,9 @@ Available on [Docker Hub](https://hub.docker.com/r/behance/docker-php/).
 - `docker run behance/docker-php:5.6 "php" "-v"`
 - `docker run behance/docker-php:7.0 "php" "-v"`
 - `docker run behance/docker-php:7.1 "php" "-v"`
-- `docker run behance/docker-php:7.1-alpine "php" "-v"`
 - `docker run behance/docker-php:7.2 "php" "-v"`
-- `docker run behance/docker-php:7.3-beta" "php" "-v"`
+- `docker run behance/docker-php:7.2-alpine "php" "-v"`
+- `docker run behance/docker-php:7.3" "php" "-v"`
 
 Adding code to runtime, see [here](https://github.com/behance/docker-php#expectations).
 PHP tuning and configuration, see [here](https://github.com/behance/docker-php#downstream-configuration).
@@ -28,7 +28,7 @@ Adding startup logic, [basic](https://github.com/behance/docker-base#startuprunt
 
 - `PHP_MAJOR.PHP_MINOR`, required. Engine versions of PHP. ex. `docker-php:7.1`
 - `(Major.Minor.Patch)`, optional. Semantically versioned container provisioning code. ex. `docker-php:7.1-12.4.0`.
-- `(-variant)`, optional. Alpine variants are slim versions of the container. ex. `docker-php:7.1-alpine`. Beta versions are non-stable PHP engines. ex. `docker-php:7.3-beta`
+- `(-variant)`, optional. Alpine variants are slim versions of the container. ex. `docker-php:7.1-alpine`.
 
 ### Includes
 ---
