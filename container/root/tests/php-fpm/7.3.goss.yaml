@@ -18,9 +18,11 @@ command:
 
 file:
   {{ .Env.CONF_PHPFPM }}:
+    exists: true
     contains:
-      - '/^log_limit = \${PHP_FPM_LOG_LIMIT}/'
-      - '/^log_buffering = yes/'
+      - '/log_limit = \${PHP_FPM_LOG_LIMIT}/'
+      - '/log_buffering = \${PHP_FPM_LOG_BUFFERING}/'
   {{ .Env.CONF_FPMPOOL }}:
+    exists: true
     contains:
       - '/^decorate_workers_output = no/'

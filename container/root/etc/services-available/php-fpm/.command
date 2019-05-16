@@ -4,11 +4,12 @@
 set -o pipefail
 
 # IMPORTANT: PHP 7.3+ optionally allows undecorated stdout/stderr, removing pipe magic requirement
-grep "decorate_workers_output = no" $CONF_FPMPOOL
+UPGRADE_COMMAND=`grep "decorate_workers_output = no" $CONF_FPMPOOL`
 
-if [ $? ]; then
+if [ $UPGRADE_COMMAND ]; then
   exec php-fpm -F -O
-fi
 else
   exec php-fpm -F -O 2>&1 | sed -u 's,.*: \"\(.*\)$,\1,'| sed -u 's,\"$,,'
 fi
+
+

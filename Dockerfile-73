@@ -1,4 +1,4 @@
-FROM behance/docker-nginx:8.3
+FROM behance/docker-nginx:8.5
 MAINTAINER Bryan Latten <latten@adobe.com>
 
 # Set TERM to suppress warning messages.
@@ -24,6 +24,7 @@ ENV CONF_PHPFPM=/etc/php/7.3/fpm/php-fpm.conf \
     PHP_OPCACHE_INTERNED_STRINGS_BUFFER=16 \
     PHP_OPCACHE_MAX_WASTED_PERCENTAGE=5 \
     PHP_FPM_LOG_LIMIT=4096 \
+    PHP_FPM_LOG_BUFFERING=yes \
     CFG_APP_DEBUG=1
 
 # - Update security packages, only
@@ -140,9 +141,7 @@ RUN cp /etc/php/7.0/mods-available/* $CONF_PHPMODS && \
     sed -i "s/;decorate_workers_output.*/decorate_workers_output = no/" $CONF_FPMPOOL && \
     sed -i "s/;log_limit.*/log_limit = \${PHP_FPM_LOG_LIMIT}/" $CONF_PHPFPM && \
     # Experimental, eventually disable to maximize performance in heavy logging scenarios
-    sed -i "s/;log_buffering.*/log_buffering = yes/" $CONF_PHPFPM && \
-    # HACK: simplify the previous <=7.2 command wrapper without streaming sed processors
-    sed -ri "s/(exec php-fpm)(.*)\|.*\|.*/\1\2/" /etc/services-available/php-fpm/.command
+    sed -i "s/;log_buffering.*/log_buffering = \${PHP_FPM_LOG_BUFFERING}/" $CONF_PHPFPM
 
 RUN goss -g /tests/php-fpm/7.3.goss.yaml validate && \
     /aufs_hack.sh
