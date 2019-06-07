@@ -23,11 +23,6 @@ command:
 
 # Using workaround commands until https://github.com/aelsabbahy/goss/issues/392 is solved
 file:
-  {{ .Env.CONF_PHPFPM }}:
-    exists: true
-    contains:
-      - '/log_limit = \${PHP_FPM_LOG_LIMIT}/'
-      - '/log_buffering = \${PHP_FPM_LOG_BUFFERING}/'
   {{ .Env.CONF_FPMPOOL }}:
     exists: true
     contains:

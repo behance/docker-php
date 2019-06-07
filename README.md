@@ -179,26 +179,28 @@ See parent(s) for additional configuration options:
 
 Variable | Example | Default | Description
 --- | --- | --- | ---
-`*` | `DATABASE_HOST=master.rds.aws.com` | - | PHP has access to environment variables by default
-`CFG_APP_DEBUG` | `CFG_APP_DEBUG=1` | 1 | Setting to `1` or `true` will cue the Opcache to watch for file changes. Set to 0 for *production mode*, which provides a sizeable performance boost, though manually updating a file will not be seen unless the opcache is reset.
-`CFG_XDEBUG_ENABLE` | `CFG_XDEBUG_ENABLE=1` | - | Setting to `1` or `true` will enable the XDebug extension, which is preconfigured to allow remote debugging as well as profiling. NOTE: Requires "dev" mode be enabled via `CFG_APP_DEBUG`.
-`SERVER_MAX_BODY_SIZE` | `SERVER_MAX_BODY_SIZE=4M` | 1M | Allows the downstream application to specify a non-default `client_max_body_size` configuration for the `server`-level directive in `/etc/nginx/sites-available/default`
-`SERVER_FASTCGI_BUFFERS` | `SERVER_FASTCGI_BUFFERS=‘512 32k’` | 256 16k | [docs](http://nginx.org/en/docs/http/ngx_http_fastcgi_module.html#fastcgi_buffers), [tweaking](https://gist.github.com/magnetikonline/11312172#determine-actual-fastcgi-response-sizes)
-`SERVER_FASTCGI_BUFFER_SIZE` | `SERVER_FASTCGI_BUFFER_SIZE=‘256k’` | 128k | [docs](http://nginx.org/en/docs/http/ngx_http_fastcgi_module.html#fastcgi_buffers_size), [tweaking](https://gist.github.com/magnetikonline/11312172#determine-actual-fastcgi-response-sizes)
-`SERVER_FASTCGI_BUSY_BUFFERS_SIZE` | `SERVER_FASTCGI_BUSY_BUFFERS_SIZE=‘1024k’` | 256k | [docs](http://nginx.org/en/docs/http/ngx_http_fastcgi_module.html#fastcgi_busy_buffers_size)
-`REPLACE_NEWRELIC_APP` | `REPLACE_NEWRELIC_APP=prod-server-abc` | - | Sets application name for newrelic
-`REPLACE_NEWRELIC_LICENSE` | `REPLACE_NEWRELIC_LICENSE=abcdefg` | - | Sets license for newrelic, when combined with above, will enable newrelic reporting
-`NEWRELIC_TRACING_ENABLED` | `NEWRELIC_TRACING_ENABLED=true` | disabled | Sets transaction_tracer and distributed_tracing true for newrelic, when combined with above, will enable [newrelic distributed tracing](https://docs.newrelic.com/docs/agents/php-agent/configuration/php-agent-configuration#inivar-distributed-enabled)
-`PHP_FPM_MEMORY_LIMIT` | `PHP_FPM_MEMORY_LIMIT=256M` | 192MB | Sets memory limit for FPM instances of PHP
-`PHP_FPM_MAX_EXECUTION_TIME` | `PHP_FPM_MAX_EXECUTION_TIME=30` | 60 | Sets time limit for FPM workers
-`PHP_FPM_UPLOAD_MAX_FILESIZE` | `PHP_FPM_UPLOAD_MAX_FILESIZE=100M` | 1M | Sets both upload_max_filesize and post_max_size
-`PHP_FPM_MAX_CHILDREN` | `PHP_FPM_MAX_CHILDREN=15` | 4096 | [docs](http://php.net/manual/en/install.fpm.configuration.php)
-`PHP_FPM_START_SERVERS` | `PHP_FPM_START_SERVERS=40` | 20 | [docs](http://php.net/manual/en/install.fpm.configuration.php)
-`PHP_FPM_MAX_REQUESTS` | `PHP_FPM_MAX_REQUESTS=100` | 1024 | [docs](http://php.net/manual/en/install.fpm.configuration.php) How many requests an individual FPM worker will process before recycling
-`PHP_FPM_MIN_SPARE_SERVERS` | `PHP_FPM_MIN_SPARE_SERVERS=10` | 5 | [docs](http://php.net/manual/en/install.fpm.configuration.php)
-`PHP_OPCACHE_MEMORY_CONSUMPTION` | `PHP_OPCACHE_MEMORY_CONSUMPTION=512` | 128 | [docs](http://php.net/manual/en/opcache.configuration.php#ini.opcache.memory-consumption)
-`PHP_OPCACHE_MAX_WASTED_PERCENTAGE` | `PHP_OPCACHE_MAX_WASTED_PERCENTAGE=10` | 5 | [docs](http://php.net/manual/en/opcache.configuration.php#ini.opcache.max-wasted-percentage)
-`PHP_OPCACHE_INTERNED_STRINGS_BUFFER` | `PHP_OPCACHE_INTERNED_STRINGS_BUFFER=64` | 16 | [docs](http://php.net/manual/en/opcache.configuration.php#ini.opcache.interned-strings-buffer)
+(all) | DATABASE_HOST=master.rds.aws.com | - | PHP has access to environment variables by default
+CFG_APP_DEBUG | CFG_APP_DEBUG=1 | 1 | Setting to `1` or `true` will cue the Opcache to watch for file changes. Set to 0 for *production mode*, which provides a sizeable performance boost, though manually updating a file will not be seen unless the opcache is reset.
+CFG_XDEBUG_ENABLE | CFG_XDEBUG_ENABLE=1 | - | Setting to `1` or `true` will enable the XDebug extension, which is preconfigured to allow remote debugging as well as profiling. NOTE: Requires "dev" mode be enabled via `CFG_APP_DEBUG`.
+SERVER_MAX_BODY_SIZE | SERVER_MAX_BODY_SIZE=4M | 1M | Allows the downstream application to specify a non-default `client_max_body_size` configuration for the `server`-level directive in `/etc/nginx/sites-available/default`
+SERVER_FASTCGI_BUFFERS | SERVER_FASTCGI_BUFFERS='512 32k' | 256 16k | [docs](http://nginx.org/en/docs/http/ngx_http_fastcgi_module.html#fastcgi_buffers), [tweaking](https://gist.github.com/magnetikonline/11312172#determine-actual-fastcgi-response-sizes)
+SERVER_FASTCGI_BUFFER_SIZE | SERVER_FASTCGI_BUFFER_SIZE='256k' | 128k | [docs](http://nginx.org/en/docs/http/ngx_http_fastcgi_module.html#fastcgi_buffers_size), [tweaking](https://gist.github.com/magnetikonline/11312172#determine-actual-fastcgi-response-sizes)
+SERVER_FASTCGI_BUSY_BUFFERS_SIZE | SERVER_FASTCGI_BUSY_BUFFERS_SIZE='1024k' | 256k | [docs](http://nginx.org/en/docs/http/ngx_http_fastcgi_module.html#fastcgi_busy_buffers_size)
+REPLACE_NEWRELIC_APP | REPLACE_NEWRELIC_APP=prod-server-abc | - | Sets application name for newrelic
+REPLACE_NEWRELIC_LICENSE | REPLACE_NEWRELIC_LICENSE=abcdefg | - | Sets license for newrelic, when combined with above, will enable newrelic reporting
+NEWRELIC_TRACING_ENABLED | NEWRELIC_TRACING_ENABLED=true | disabled | Sets transaction_tracer and distributed_tracing true for newrelic, when combined with above, will enable [newrelic distributed tracing](https://docs.newrelic.com/docs/agents/php-agent/configuration/php-agent-configuration#inivar-distributed-enabled)
+PHP_FPM_MEMORY_LIMIT | PHP_FPM_MEMORY_LIMIT=256M | 192MB | Sets memory limit for FPM instances of PHP
+PHP_FPM_MAX_EXECUTION_TIME | PHP_FPM_MAX_EXECUTION_TIME=30 | 60 | Sets time limit for FPM workers
+PHP_FPM_UPLOAD_MAX_FILESIZE | PHP_FPM_UPLOAD_MAX_FILESIZE=100M | 1M | Sets both upload_max_filesize and post_max_size
+PHP_FPM_MAX_CHILDREN | PHP_FPM_MAX_CHILDREN=15 | 4096 | [docs](http://php.net/manual/en/install.fpm.configuration.php)
+PHP_FPM_START_SERVERS | PHP_FPM_START_SERVERS=40 | 20 | [docs](http://php.net/manual/en/install.fpm.configuration.php)
+PHP_FPM_MAX_REQUESTS | PHP_FPM_MAX_REQUESTS=100 | 1024 | [docs](http://php.net/manual/en/install.fpm.configuration.php) How many requests an individual FPM worker will process before recycling
+PHP_FPM_MIN_SPARE_SERVERS | PHP_FPM_MIN_SPARE_SERVERS=10 | 5 | [docs](http://php.net/manual/en/install.fpm.configuration.php)
+PHP_OPCACHE_MEMORY_CONSUMPTION | PHP_OPCACHE_MEMORY_CONSUMPTION=512 | 128 | [docs](http://php.net/manual/en/opcache.configuration.php#ini.opcache.memory-consumption)
+PHP_OPCACHE_MAX_WASTED_PERCENTAGE | PHP_OPCACHE_MAX_WASTED_PERCENTAGE=10 | 5 | [docs](http://php.net/manual/en/opcache.configuration.php#ini.opcache.max-wasted-percentage)
+PHP_OPCACHE_INTERNED_STRINGS_BUFFER | PHP_OPCACHE_INTERNED_STRINGS_BUFFER=64 | 16 | [docs](http://php.net/manual/en/opcache.configuration.php#ini.opcache.interned-strings-buffer)
+PHP_FPM_LOG_LIMIT | PHP_FPM_LOG_LIMIT=4096 | 1024 | PHP 7.3-only, allows configurable stdout message max length [docs](https://www.php.net/manual/en/install.fpm.configuration.php)
+PHP_FPM_LOG_BUFFERING | PHP_FPM_LOG_BUFFERING=no | yes | Experimental, PHP 7.3-only [docs](https://www.php.net/manual/en/install.fpm.configuration.php)
 
 ### Testing
 ---
