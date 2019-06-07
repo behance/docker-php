@@ -1,4 +1,4 @@
-FROM behance/docker-nginx:8.3
+FROM behance/docker-nginx:8.5
 MAINTAINER Bryan Latten <latten@adobe.com>
 
 # Set TERM to suppress warning messages.
@@ -133,8 +133,13 @@ RUN cp /etc/php/7.0/mods-available/* $CONF_PHPMODS && \
     phpenmod overrides && \
     # Enable NewRelic via Ubuntu symlinks, but disable in file. Cross-variant startup script uncomments with env vars.
     phpenmod newrelic && \
-    # - Run standard set of tweaks to ensure runs performant, reliably, and consistent between variants
-    /bin/bash -e /prep-php.sh
+    # Run standard set of tweaks to ensure runs performant, reliably, and consistent between variants
+    /bin/bash -e /prep-php.sh && \
+    # Add new 7.3+ conf
+    sed -i "s/;decorate_workers_output.*/decorate_workers_output = no/" $CONF_FPMPOOL
 
-RUN goss -g /tests/php-fpm/7.3.goss.yaml validate && \
+# HACK: workaround for https://github.com/aelsabbahy/goss/issues/392
+# Run the child and parent test configs separately
+RUN goss -g /tests/php-fpm/base.goss.yaml validate && \
+    goss -g /tests/php-fpm/7.3.goss.yaml validate && \
     /aufs_hack.sh

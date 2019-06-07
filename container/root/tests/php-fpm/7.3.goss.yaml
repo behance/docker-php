@@ -1,5 +1,10 @@
-gossfile:
-  base.goss.yaml: {}
+
+# Extended file tests will be overridden/ignored from parent
+# Note: Other variants may not include extended file tests, are not susceptible
+# @see https://github.com/aelsabbahy/goss/issues/392
+
+# gossfile:
+#   base.goss.yaml: {}
 
 command:
   # IMPORTANT: confirm the major/minor version of PHP itself
@@ -15,3 +20,10 @@ command:
   # Not common to all variants, test in supported children
   php -m | grep -i memcache:
     exit-status: 0
+
+# Using workaround commands until https://github.com/aelsabbahy/goss/issues/392 is solved
+file:
+  {{ .Env.CONF_FPMPOOL }}:
+    exists: true
+    contains:
+      - '/^decorate_workers_output = no/'

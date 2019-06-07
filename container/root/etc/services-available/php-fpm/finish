@@ -4,4 +4,7 @@
 if { s6-test ${1} -ne 0 }
 if { s6-test ${1} -ne 256 }
 
-s6-svscanctl -t /var/run/s6/services
+# Suppress superfluous time-of-check-time-of-use (TOCTOU) message
+# @see https://github.com/just-containers/s6-overlay/issues/193
+redirfd -w 2 /dev/null s6-svscanctl -t /var/run/s6/services
+

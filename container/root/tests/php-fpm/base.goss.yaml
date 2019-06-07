@@ -24,6 +24,9 @@ command:
   php-fpm -v:
     exit-status: 0
     stderr: ['!/./']
+  php-fpm -t:
+    exit-status: 0
+    stderr: ['/successful/']
 
   # Test the standard extensions are enabled
   php -m | grep -i apcu:
