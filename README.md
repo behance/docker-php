@@ -131,6 +131,8 @@ volumes:
 ---
 - NewRelic APM: automatically enabled by adding providing environment variables `REPLACE_NEWRELIC_APP` and `REPLACE_NEWRELIC_LICENSE`
 - NewRelic Distributed Tracing: Before enabling distributed tracing be sure to read the [transition guide](https://docs.newrelic.com/docs/apm/distributed-tracing/getting-started/transition-guide-distributed-tracing). To enable this set `NEWRELIC_TRACING_ENABLED` to `true`.
+- NewRelic Loglevel: you can override the NewRelic `newrelic.loglevel` and `newrelic.daemon.loglevel` config defaults (currently `warning`) to something more verbose for debugging purposes by setting environment variable `NEWRELIC_LOGLEVEL` to an available option (options include `info`, `debug`, `verbosedebug`)
+- NewRelic Special: NewRelic has a `newrelic.special` config for special debug (sometimes requested by the NewRelic support team), you can turn that option on as directed by NewRelic support by setting enviroment variable `NEWRELIC_SPECIAL` to whatever value requested.
 - PHP-FPM Status: available *only* inside container at `/__status`. Application healthcheck can pull PHP-FPM statistics from `http://127.0.0.1/__status?json`. To open to more clients than local, add more `allow` statements in `__status` location block in `$CONF_NGINX_SITE`(`/etc/nginx/sites-available/default`)
 - Nginx Status: available *only* inside container at `/__nginx_status`. Application healthcheck can pull nginx statistics from `http://127.0.0.1/__nginx_status`. To open to more clients than local, add more `allow` statements in `__nginx_status` location block in $CONF_NGINX_SITE (`/etc/nginx/sites-available/default`)
 
@@ -189,6 +191,8 @@ SERVER_FASTCGI_BUSY_BUFFERS_SIZE | SERVER_FASTCGI_BUSY_BUFFERS_SIZE='1024k' | 25
 REPLACE_NEWRELIC_APP | REPLACE_NEWRELIC_APP=prod-server-abc | - | Sets application name for newrelic
 REPLACE_NEWRELIC_LICENSE | REPLACE_NEWRELIC_LICENSE=abcdefg | - | Sets license for newrelic, when combined with above, will enable newrelic reporting
 NEWRELIC_TRACING_ENABLED | NEWRELIC_TRACING_ENABLED=true | disabled | Sets transaction_tracer and distributed_tracing true for newrelic, when combined with above, will enable [newrelic distributed tracing](https://docs.newrelic.com/docs/agents/php-agent/configuration/php-agent-configuration#inivar-distributed-enabled)
+NEWRELIC_LOGLEVEL | NEWRELIC_LOGLEVEL=verbosedebug | - | Overrides sane default loglevels for `newrelic.loglevel` and `newrelic.daemon.loglevel` (options include `warning`, `info`, `debug`, `verbosedebug`)
+NEWRELIC_SPECIAL | NEWRELIC_SPECIAL=debug_autorum | - | Special NewRelic environment variable, for use with NewRelic support for when doing special debugging.
 PHP_FPM_MEMORY_LIMIT | PHP_FPM_MEMORY_LIMIT=256M | 192MB | Sets memory limit for FPM instances of PHP
 PHP_FPM_MAX_EXECUTION_TIME | PHP_FPM_MAX_EXECUTION_TIME=30 | 60 | Sets time limit for FPM workers
 PHP_FPM_UPLOAD_MAX_FILESIZE | PHP_FPM_UPLOAD_MAX_FILESIZE=100M | 1M | Sets both upload_max_filesize and post_max_size

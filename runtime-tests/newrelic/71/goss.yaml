@@ -6,3 +6,6 @@ file:
     contains:  # Check file content for these patterns
       - '/^newrelic.transaction_tracer.enabled = true/'
       - '/^newrelic.distributed_tracing_enabled = true/'
+      - '/^newrelic.loglevel = \"verbosedebug\"/'
+      - '/^newrelic.daemon.loglevel = \"verbosedebug\"/'
+      - '/^newrelic.special=debug_autorum/'
