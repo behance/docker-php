@@ -13,10 +13,10 @@ command:
     stdout: [7]
   php -r 'echo PHP_MINOR_VERSION;':
     exit-status: 0
-    stdout: [3]
+    stdout: [4]
   php-fpm -v:
     exit-status: 0
-    stdout: [PHP 7.3]
+    stdout: [PHP 7.4]
   # Not common to all variants, test in supported children
   php -m | grep -i memcache:
     exit-status: 0
