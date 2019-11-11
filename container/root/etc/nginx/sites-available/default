@@ -65,8 +65,9 @@ server {
     deny all;
   }
 
-  # Protect against accessing hidden files
-  location ~ /\. {
+  # Protect against accessing hidden files, except for files living under .well-known
+  # @see https://www.ietf.org/rfc/rfc5785.txt
+  location ~ /\.(?!well-known/) {
     access_log off;
     log_not_found off;
     deny all;
