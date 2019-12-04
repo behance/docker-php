@@ -124,3 +124,24 @@
    - ./container/root/app:/app
    - ./container/root/tests/php-fpm/base.goss.yaml:/tests/php-fpm/base.goss.yaml
    - ./container/root/tests/php-fpm/7.3.goss.yaml:/tests/php-fpm/7.3.goss.yaml
+'74':
+  build: .
+  dockerfile: Dockerfile-74
+  ports:
+   - '8086:8080'
+  environment:
+    CFG_APP_DEBUG: 1
+    SERVER_LOG_MINIMAL: 1
+    PHP_FPM_MEMORY_LIMIT: 257M
+    PHP_FPM_MAX_EXECUTION_TIME: 61
+    PHP_FPM_UPLOAD_MAX_FILESIZE: 100M
+    SERVER_MAX_BODY_SIZE: 100m
+    SERVER_APP_NAME: docker-test
+    REPLACE_NEWRELIC_APP: abcdefg
+    REPLACE_NEWRELIC_LICENSE: hijklmno
+    S6_KILL_FINISH_MAXTIME: 1
+    S6_KILL_GRACETIME: 1
+  volumes:
+   - ./container/root/app:/app
+   - ./container/root/tests/php-fpm/base.goss.yaml:/tests/php-fpm/base.goss.yaml
+   - ./container/root/tests/php-fpm/7.4.goss.yaml:/tests/php-fpm/7.4.goss.yaml

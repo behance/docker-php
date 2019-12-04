@@ -25,6 +25,7 @@ docker-compose build 71
 docker-compose build 72
 docker-compose build 72-alpine
 docker-compose build 73
+docker-compose build 74
 
 docker-compose up -d
 sleep 5
@@ -36,6 +37,7 @@ curl $MACHINE:8082 | grep "PHP Version 7.1."
 curl $MACHINE:8083 | grep "PHP Version 7.2."
 curl $MACHINE:8084 | grep "PHP Version 7.2."
 curl $MACHINE:8085 | grep "PHP Version 7.3."
+curl $MACHINE:8086 | grep "PHP Version 7.4."
 
 # Create a junk file that will test container uploading capability
 dd if=/dev/zero of=tmp.txt count=100000 bs=1024
@@ -47,6 +49,7 @@ curl --form upload=@tmp.txt $MACHINE:8082 | grep "PHP Version 7.1." > /dev/null
 curl --form upload=@tmp.txt $MACHINE:8083 | grep "PHP Version 7.2." > /dev/null
 curl --form upload=@tmp.txt $MACHINE:8084 | grep "PHP Version 7.2." > /dev/null
 curl --form upload=@tmp.txt $MACHINE:8085 | grep "PHP Version 7.3." > /dev/null
+curl --form upload=@tmp.txt $MACHINE:8086 | grep "PHP Version 7.4." > /dev/null
 
 # Error exit codes in dgoss do not bubble up to the runner.
 # In order to work around this we need to increment $i.
@@ -64,6 +67,8 @@ echo "Running Runtime Test for 7.2-alpine"
 GOSS_PATH=goss GOSS_FILES_PATH=runtime-tests/newrelic/72-alpine/ ./dgoss run -e REPLACE_NEWRELIC_APP="abcdefg" -e REPLACE_NEWRELIC_LICENSE="hijklmno" -e NEWRELIC_TRACING_ENABLED="true" -e NEWRELIC_LOGLEVEL="verbosedebug" -e NEWRELIC_SPECIAL="debug_autorum" dockerphp_72-alpine || ((i++))
 echo "Running Runtime Test for 7.3"
 GOSS_PATH=goss GOSS_FILES_PATH=runtime-tests/newrelic/73/ ./dgoss run -e REPLACE_NEWRELIC_APP="abcdefg" -e REPLACE_NEWRELIC_LICENSE="hijklmno" -e NEWRELIC_TRACING_ENABLED="true" -e NEWRELIC_LOGLEVEL="verbosedebug" -e NEWRELIC_SPECIAL="debug_autorum" dockerphp_73 || ((i++))
+echo "Running Runtime Test for 7.4"
+GOSS_PATH=goss GOSS_FILES_PATH=runtime-tests/newrelic/74/ ./dgoss run -e REPLACE_NEWRELIC_APP="abcdefg" -e REPLACE_NEWRELIC_LICENSE="hijklmno" -e NEWRELIC_TRACING_ENABLED="true" -e NEWRELIC_LOGLEVEL="verbosedebug" -e NEWRELIC_SPECIAL="debug_autorum" dockerphp_74 || ((i++))
 
 # Cleanup
 rm tmp.txt
