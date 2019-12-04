@@ -1,5 +1,5 @@
 FROM behance/docker-nginx:8.7
-MAINTAINER Bryan Latten <latten@adobe.com>
+LABEL maintainers="Behance Team <dev-behance@adobe.com>"
 
 # Set TERM to suppress warning messages.
 ENV CONF_PHPFPM=/etc/php/7.1/fpm/php-fpm.conf \
