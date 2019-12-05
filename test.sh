@@ -19,7 +19,6 @@ if [ -z "$1" ]; then
     exit 1;
 fi
 
-docker-compose build 56
 docker-compose build 70
 docker-compose build 71
 docker-compose build 72
@@ -31,7 +30,6 @@ docker-compose up -d
 sleep 5
 docker-compose ps
 
-curl $MACHINE:8080 | grep "PHP Version 5.6."
 curl $MACHINE:8081 | grep "PHP Version 7.0."
 curl $MACHINE:8082 | grep "PHP Version 7.1."
 curl $MACHINE:8083 | grep "PHP Version 7.2."
@@ -43,7 +41,6 @@ curl $MACHINE:8086 | grep "PHP Version 7.4."
 dd if=/dev/zero of=tmp.txt count=100000 bs=1024
 
 # Though the file is uploaded, the response message is still the default phpinfo page
-curl --form upload=@tmp.txt $MACHINE:8080 | grep "PHP Version 5.6." > /dev/null
 curl --form upload=@tmp.txt $MACHINE:8081 | grep "PHP Version 7.0." > /dev/null
 curl --form upload=@tmp.txt $MACHINE:8082 | grep "PHP Version 7.1." > /dev/null
 curl --form upload=@tmp.txt $MACHINE:8083 | grep "PHP Version 7.2." > /dev/null
@@ -55,8 +52,6 @@ curl --form upload=@tmp.txt $MACHINE:8086 | grep "PHP Version 7.4." > /dev/null
 # In order to work around this we need to increment $i.
 i=0
 
-echo "Running Runtime Test for 5.6"
-GOSSPATH=goss GOSS_FILES_PATH=runtime-tests/newrelic/56/ ./dgoss run -e REPLACE_NEWRELIC_APP="abcefg" -e REPLACE_NEWRELIC_LICENSE="hijklmno" -e NEWRELIC_TRACING_ENABLED="true" -e NEWRELIC_LOGLEVEL="verbosedebug" -e NEWRELIC_SPECIAL="debug_autorum" dockerphp_56 || ((i++))
 echo "Running Runtime Test for 7.0"
 GOSS_PATH=goss GOSS_FILES_PATH=runtime-tests/newrelic/70/ ./dgoss run -e REPLACE_NEWRELIC_APP="abcdefg" -e REPLACE_NEWRELIC_LICENSE="hijklmno" -e NEWRELIC_TRACING_ENABLED="true" -e NEWRELIC_LOGLEVEL="verbosedebug" -e NEWRELIC_SPECIAL="debug_autorum" dockerphp_70 || ((i++))
 echo "Running Runtime Test for 7.1"
