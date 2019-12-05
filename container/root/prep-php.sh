@@ -45,10 +45,10 @@ sed -i "s/^;rlimit_files =.*/rlimit_files = 40000/" $CONF_FPMPOOL
 # - Set max core size rlimit for the master process.
 sed -i "s/^;rlimit_core =.*/rlimit_core = unlimited/" $CONF_FPMPOOL
 
-# Enable NewRelic via Ubuntu symlinks, but disable in file. Cross-variant startup script uncomments with env vars.
-sed -i 's/extension\s\?=/;extension =/' $CONF_PHPMODS/newrelic.ini && \
-
 # - Allow NewRelic to be partially configured by environment variables, set sane defaults
+
+# Enable NewRelic via Ubuntu symlinks, but disable in file. Cross-variant startup script uncomments with env vars.
+sed -i 's/extension\s\?=/;extension =/' $CONF_PHPMODS/newrelic.ini
 sed -i "s/newrelic.appname = .*/newrelic.appname = \"\${REPLACE_NEWRELIC_APP}\"/" $CONF_PHPMODS/newrelic.ini
 sed -i "s/newrelic.license = .*/newrelic.license = \"\${REPLACE_NEWRELIC_LICENSE}\"/" $CONF_PHPMODS/newrelic.ini
 sed -i "s/newrelic.logfile = .*/newrelic.logfile = \"\/dev\/stdout\"/" $CONF_PHPMODS/newrelic.ini
@@ -60,5 +60,9 @@ sed -i "s/;newrelic.daemon.loglevel = .*/newrelic.daemon.loglevel = \"warning\"/
 sed -i "s/listen [0-9]*;/listen ${CONTAINER_PORT};/" $CONF_NGINX_SITE
 
 # - Required for php-fpm to place .sock file into, fails otherwise
-mkdir /var/run/php/ && \
+mkdir -p /var/run/php/
+mkdir -p /var/run/lock/
+mkdir -p /var/log/newrelic/
+mkdir -p /run/php/
+
 chown -R $NOT_ROOT_USER:$NOT_ROOT_USER /var/run/php /var/run/lock /var/log/newrelic

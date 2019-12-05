@@ -1,5 +1,5 @@
-FROM behance/docker-nginx:8.5-alpine
-MAINTAINER Bryan Latten <latten@adobe.com>
+FROM behance/docker-nginx:8.7-alpine
+LABEL maintainers="Behance Team <dev-behance@adobe.com>"
 
 # Set TERM to suppress warning messages.
 ENV CONF_PHPFPM=/etc/php7/php-fpm.conf \
@@ -97,7 +97,7 @@ RUN NEWRELIC_MUSL_PATH=$(curl -s https://download.newrelic.com/php_agent/release
     cd $NEWRELIC_DIRECTORY && \
     echo "\n" | ./newrelic-install install && \
     chown root:root $NEWRELIC_DIRECTORY/agent/x64/newrelic-20160303.so && \
-    mv $NEWRELIC_DIRECTORY/agent/x64/newrelic-20160303.so /usr/lib/php7/modules/newrelic.so && \
+    mv $NEWRELIC_DIRECTORY/agent/x64/newrelic-20170718.so /usr/lib/php7/modules/newrelic.so && \
     rm -rf $NEWRELIC_DIRECTORY/agent/x64 && \
     # Fix permissions on extracted folder \
     chown -R $NOT_ROOT_USER:$NOT_ROOT_USER * && \
@@ -138,7 +138,6 @@ COPY ./container/root /
 RUN cp /etc/php/7.0/mods-available/* $CONF_PHPMODS && \
     rm $CONF_PHPMODS/00_opcache.ini && \
     # - Run standard set of tweaks to ensure runs performant, reliably, and consistent between variants
-    touch /var/run/lock && \
     chown $NOT_ROOT_USER:$NOT_ROOT_USER /var/log/php7 && \
     ln -s /usr/sbin/php-fpm7 /usr/sbin/php-fpm && \
     /bin/bash -e prep-php.sh
