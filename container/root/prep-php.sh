@@ -63,5 +63,6 @@ sed -i "s/listen [0-9]*;/listen ${CONTAINER_PORT};/" $CONF_NGINX_SITE
 mkdir -p /var/run/php/
 mkdir -p /var/run/lock/
 mkdir -p /var/log/newrelic/
+mkdir -p /run/php/
 
 chown -R $NOT_ROOT_USER:$NOT_ROOT_USER /var/run/php /var/run/lock /var/log/newrelic
