@@ -46,27 +46,22 @@ sed -i "s/^;rlimit_files =.*/rlimit_files = 40000/" $CONF_FPMPOOL
 sed -i "s/^;rlimit_core =.*/rlimit_core = unlimited/" $CONF_FPMPOOL
 
 # - Allow NewRelic to be partially configured by environment variables, set sane defaults
-if [ -f $CONF_PHPMODS/newrelic.ini ]; then
-  # Enable NewRelic via Ubuntu symlinks, but disable in file. Cross-variant startup script uncomments with env vars.
-  sed -i 's/extension\s\?=/;extension =/' $CONF_PHPMODS/newrelic.ini
-  sed -i "s/newrelic.appname = .*/newrelic.appname = \"\${REPLACE_NEWRELIC_APP}\"/" $CONF_PHPMODS/newrelic.ini
-  sed -i "s/newrelic.license = .*/newrelic.license = \"\${REPLACE_NEWRELIC_LICENSE}\"/" $CONF_PHPMODS/newrelic.ini
-  sed -i "s/newrelic.logfile = .*/newrelic.logfile = \"\/dev\/stdout\"/" $CONF_PHPMODS/newrelic.ini
-  sed -i "s/newrelic.daemon.logfile = .*/newrelic.daemon.logfile = \"\/dev\/stdout\"/" $CONF_PHPMODS/newrelic.ini
-  sed -i "s/;newrelic.loglevel = .*/newrelic.loglevel = \"warning\"/" $CONF_PHPMODS/newrelic.ini
-  sed -i "s/;newrelic.daemon.loglevel = .*/newrelic.daemon.loglevel = \"warning\"/" $CONF_PHPMODS/newrelic.ini
-fi
+
+# Enable NewRelic via Ubuntu symlinks, but disable in file. Cross-variant startup script uncomments with env vars.
+sed -i 's/extension\s\?=/;extension =/' $CONF_PHPMODS/newrelic.ini
+sed -i "s/newrelic.appname = .*/newrelic.appname = \"\${REPLACE_NEWRELIC_APP}\"/" $CONF_PHPMODS/newrelic.ini
+sed -i "s/newrelic.license = .*/newrelic.license = \"\${REPLACE_NEWRELIC_LICENSE}\"/" $CONF_PHPMODS/newrelic.ini
+sed -i "s/newrelic.logfile = .*/newrelic.logfile = \"\/dev\/stdout\"/" $CONF_PHPMODS/newrelic.ini
+sed -i "s/newrelic.daemon.logfile = .*/newrelic.daemon.logfile = \"\/dev\/stdout\"/" $CONF_PHPMODS/newrelic.ini
+sed -i "s/;newrelic.loglevel = .*/newrelic.loglevel = \"warning\"/" $CONF_PHPMODS/newrelic.ini
+sed -i "s/;newrelic.daemon.loglevel = .*/newrelic.daemon.loglevel = \"warning\"/" $CONF_PHPMODS/newrelic.ini
 
 # Set nginx to listen on defined port \
 sed -i "s/listen [0-9]*;/listen ${CONTAINER_PORT};/" $CONF_NGINX_SITE
 
 # - Required for php-fpm to place .sock file into, fails otherwise
-mkdir /var/run/php/
-NEWRELIC_DIR=/var/log/newrelic
+mkdir -p /var/run/php/
+mkdir -p /var/run/lock/
+mkdir -p /var/log/newrelic/
 
-# Keep/create folder, even if it was not prepopulated
-if [ ! -d "$NEWRELIC_DIR" ]; then
-  mkdir $NEWRELIC_DIR
-fi
-
-chown -Rfv $NOT_ROOT_USER:$NOT_ROOT_USER /var/run/php /var/run/lock /var/log/newrelic
+chown -R $NOT_ROOT_USER:$NOT_ROOT_USER /var/run/php /var/run/lock /var/log/newrelic

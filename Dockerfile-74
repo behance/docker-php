@@ -51,12 +51,6 @@ RUN /bin/bash -e /security_updates.sh && \
     && \
     /bin/bash /clean.sh
 
-# TODO: fix these broken packages
-# php-xdebug \
-# newrelic-php5 \
-# newrelic-php5-common \
-# newrelic-daemon \
-
 # Add PHP and support packages
 COPY container/root/usr/local/bin/pecl-install /usr/local/bin
 RUN apt-get update -q && \
@@ -98,6 +92,9 @@ RUN apt-get update -q && \
         php7.4-xdebug \
         php7.4-xml \
         php7.4-zip \
+        newrelic-php5 \
+        newrelic-php5-common \
+        newrelic-daemon \
         # Temporary tweaks to support 7.4-beta
         libmemcached-dev \
         pkg-config \
@@ -145,7 +142,7 @@ RUN cp /etc/php/7.0/mods-available/* $CONF_PHPMODS && \
     # Override default ini values for both CLI + FPM \
     phpenmod overrides && \
     # Enable NewRelic via Ubuntu symlinks, but disable in file. Cross-variant startup script uncomments with env vars.
-    # phpenmod newrelic && \
+    phpenmod newrelic && \
     # Run standard set of tweaks to ensure runs performant, reliably, and consistent between variants
     /bin/bash -e /prep-php.sh && \
     # New 7.3+ specific configuration
