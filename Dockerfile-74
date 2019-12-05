@@ -128,6 +128,10 @@ RUN apt-get update -q && \
     # Remove dev packages that were only in place just to compile extensions
     apt-get remove --purge -yq \
         php7.4-dev \
+        build-essential \
+        cpp \
+        cpp-7 \
+        gcc \
     && \
     /bin/bash /clean.sh
 
