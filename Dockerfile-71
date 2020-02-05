@@ -51,7 +51,8 @@ RUN /bin/bash -e /security_updates.sh && \
     && \
     /bin/bash /clean.sh
 
-# Add PHP and support packages \
+# Add PHP and support packages
+COPY container/root/usr/local/bin/pecl-install /usr/local/bin
 RUN apt-get update -q && \
     # Ensure PHP 5.5 + 5.6 + 7.0 don't accidentally get added by PPA
     apt-mark hold \
@@ -67,6 +68,9 @@ RUN apt-get update -q && \
             php7.3-cli \
             php7.3-common \
             php7.3-json \
+            php7.4-cli \
+            php7.4-common \
+            php7.4-json \
     && \
     apt-get -yqq install \
         php7.1 \
@@ -103,11 +107,14 @@ RUN apt-get update -q && \
     rm -rf /usr/lib/php/20131226 && \
     rm -rf /usr/lib/php/20151012 && \
     rm -rf /usr/lib/php/20170718 && \
+    rm -rf /usr/lib/php/20180731 && \
+    rm -rf /usr/lib/php/20190902 && \
     curl -sS https://getcomposer.org/installer | php && \
     mv composer.phar /usr/local/bin/composer && \
-    # Install new PHP 7.1-stable version of Redis
-    pecl install redis-4.2.0 && \
-    echo "extension=redis.so" > $CONF_PHPMODS/redis.ini && \
+    # Install new stable versions of non-packaged extensions
+    pecl-install \
+        redis \
+    && \
     # Remove dev packages that were only in place just to compile extensions
     apt-get remove --purge -yq \
         php7.1-dev \

@@ -114,7 +114,7 @@ RUN apt-get update -q && \
     rm -rf /usr/lib/php/7.3 && \
     curl -sS https://getcomposer.org/installer | php && \
     mv composer.phar /usr/local/bin/composer && \
-    # Install new stable versions of non-packages extensions
+    # Install new stable versions of non-packaged extensions
     pecl-install \
         apcu \
         igbinary \
