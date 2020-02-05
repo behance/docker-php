@@ -97,7 +97,7 @@ RUN NEWRELIC_MUSL_PATH=$(curl -s https://download.newrelic.com/php_agent/release
     cd $NEWRELIC_DIRECTORY && \
     echo "\n" | ./newrelic-install install && \
     chown root:root $NEWRELIC_DIRECTORY/agent/x64/newrelic-20160303.so && \
-    mv $NEWRELIC_DIRECTORY/agent/x64/newrelic-20170718.so /usr/lib/php7/modules/newrelic.so && \
+    mv $NEWRELIC_DIRECTORY/agent/x64/newrelic-20180731.so /usr/lib/php7/modules/newrelic.so && \
     rm -rf $NEWRELIC_DIRECTORY/agent/x64 && \
     # Fix permissions on extracted folder \
     chown -R $NOT_ROOT_USER:$NOT_ROOT_USER * && \
@@ -117,15 +117,15 @@ RUN apk update && \
         autoconf file g++ gcc libc-dev make pkgconf re2c php7-dev php7-pear \
     && \
     sed -i 's/^exec $PHP -C -n/exec $PHP -C/g' $(which pecl) && \
-    pecl install igbinary-3.0.1 && \
+    pecl install igbinary && \
     echo "extension=igbinary.so" > $CONF_PHPMODS/igbinary.ini && \
-    pecl install yaml-2.0.4 && \
+    pecl install yaml && \
     echo ";extension=yaml.so" > $CONF_PHPMODS/yaml.ini && \
-    pecl install redis-4.2.0 && \
+    pecl install redis && \
     echo ";extension=redis.so" > $CONF_PHPMODS/redis.ini && \
-    pecl install msgpack-2.0.3 && \
+    pecl install msgpack && \
     echo "extension=msgpack.so" > $CONF_PHPMODS/msgpack.ini && \
-    pecl install memcached-3.1.3 && \
+    pecl install memcached && \
     echo "extension=memcached.so" > $CONF_PHPMODS/memcached.ini && \
     rm -rf /usr/share/php7 && \
     apk del .phpize_deps && \
@@ -142,5 +142,5 @@ RUN cp /etc/php/7.0/mods-available/* $CONF_PHPMODS && \
     ln -s /usr/sbin/php-fpm7 /usr/sbin/php-fpm && \
     /bin/bash -e prep-php.sh
 
-RUN goss -g /tests/php-fpm/7.2-alpine.goss.yaml validate && \
+RUN goss -g /tests/php-fpm/7.3-alpine.goss.yaml validate && \
     /aufs_hack.sh
