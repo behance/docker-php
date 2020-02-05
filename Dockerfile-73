@@ -74,7 +74,7 @@ RUN apt-get update -q && \
     && \
     apt-get -yqq install \
         php7.3 \
-        # php7.3-apcu \
+        php7.3-apcu \
         php7.3-bcmath \
         php7.3-bz2 \
         php7.3-curl \
@@ -113,7 +113,6 @@ RUN apt-get update -q && \
     mv composer.phar /usr/local/bin/composer && \
     # Install new stable versions of non-packaged extensions
     pecl-install \
-        apcu \
         redis \
     && \
     # Remove dev packages that were only in place just to compile extensions

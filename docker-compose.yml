@@ -40,9 +40,9 @@
    - ./container/root/app:/app
    - ./container/root/tests/php-fpm/base.goss.yaml:/tests/php-fpm/base.goss.yaml
    - ./container/root/tests/php-fpm/7.1.goss.yaml:/tests/php-fpm/7.1.goss.yaml
-72-alpine:
+73-alpine:
   build: .
-  dockerfile: Dockerfile-72-alpine
+  dockerfile: Dockerfile-73-alpine
   ports:
    - '8083:8080'
   environment:
@@ -60,7 +60,7 @@
   volumes:
    - ./container/root/app:/app
    - ./container/root/tests/php-fpm/base.goss.yaml:/tests/php-fpm/base.goss.yaml
-   - ./container/root/tests/php-fpm/7.2-alpine.goss.yaml:/tests/php-fpm/7.2-alpine.goss.yaml
+   - ./container/root/tests/php-fpm/7.3-alpine.goss.yaml:/tests/php-fpm/7.3-alpine.goss.yaml
 '72':
   build: .
   dockerfile: Dockerfile-72

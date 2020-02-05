@@ -22,7 +22,7 @@ fi
 docker-compose build 70
 docker-compose build 71
 docker-compose build 72
-docker-compose build 72-alpine
+docker-compose build 73-alpine
 docker-compose build 73
 docker-compose build 74
 
@@ -33,7 +33,7 @@ docker-compose ps
 curl $MACHINE:8081 | grep "PHP Version 7.0."
 curl $MACHINE:8082 | grep "PHP Version 7.1."
 curl $MACHINE:8083 | grep "PHP Version 7.2."
-curl $MACHINE:8084 | grep "PHP Version 7.2."
+curl $MACHINE:8084 | grep "PHP Version 7.3."
 curl $MACHINE:8085 | grep "PHP Version 7.3."
 curl $MACHINE:8086 | grep "PHP Version 7.4."
 
@@ -44,7 +44,7 @@ dd if=/dev/zero of=tmp.txt count=100000 bs=1024
 curl --form upload=@tmp.txt $MACHINE:8081 | grep "PHP Version 7.0." > /dev/null
 curl --form upload=@tmp.txt $MACHINE:8082 | grep "PHP Version 7.1." > /dev/null
 curl --form upload=@tmp.txt $MACHINE:8083 | grep "PHP Version 7.2." > /dev/null
-curl --form upload=@tmp.txt $MACHINE:8084 | grep "PHP Version 7.2." > /dev/null
+curl --form upload=@tmp.txt $MACHINE:8084 | grep "PHP Version 7.3." > /dev/null
 curl --form upload=@tmp.txt $MACHINE:8085 | grep "PHP Version 7.3." > /dev/null
 curl --form upload=@tmp.txt $MACHINE:8086 | grep "PHP Version 7.4." > /dev/null
 
@@ -58,8 +58,8 @@ echo "Running Runtime Test for 7.1"
 GOSS_PATH=goss GOSS_FILES_PATH=runtime-tests/newrelic/71/ ./dgoss run -e REPLACE_NEWRELIC_APP="abcdefg" -e REPLACE_NEWRELIC_LICENSE="hijklmno" -e NEWRELIC_TRACING_ENABLED="true" -e NEWRELIC_LOGLEVEL="verbosedebug" -e NEWRELIC_SPECIAL="debug_autorum" dockerphp_71 || ((i++))
 echo "Running Runtime Test for 7.2"
 GOSS_PATH=goss GOSS_FILES_PATH=runtime-tests/newrelic/72/ ./dgoss run -e REPLACE_NEWRELIC_APP="abcdefg" -e REPLACE_NEWRELIC_LICENSE="hijklmno" -e NEWRELIC_TRACING_ENABLED="true" -e NEWRELIC_LOGLEVEL="verbosedebug" -e NEWRELIC_SPECIAL="debug_autorum" dockerphp_72 || ((i++))
-echo "Running Runtime Test for 7.2-alpine"
-GOSS_PATH=goss GOSS_FILES_PATH=runtime-tests/newrelic/72-alpine/ ./dgoss run -e REPLACE_NEWRELIC_APP="abcdefg" -e REPLACE_NEWRELIC_LICENSE="hijklmno" -e NEWRELIC_TRACING_ENABLED="true" -e NEWRELIC_LOGLEVEL="verbosedebug" -e NEWRELIC_SPECIAL="debug_autorum" dockerphp_72-alpine || ((i++))
+echo "Running Runtime Test for 7.3-alpine"
+GOSS_PATH=goss GOSS_FILES_PATH=runtime-tests/newrelic/73-alpine/ ./dgoss run -e REPLACE_NEWRELIC_APP="abcdefg" -e REPLACE_NEWRELIC_LICENSE="hijklmno" -e NEWRELIC_TRACING_ENABLED="true" -e NEWRELIC_LOGLEVEL="verbosedebug" -e NEWRELIC_SPECIAL="debug_autorum" dockerphp_72-alpine || ((i++))
 echo "Running Runtime Test for 7.3"
 GOSS_PATH=goss GOSS_FILES_PATH=runtime-tests/newrelic/73/ ./dgoss run -e REPLACE_NEWRELIC_APP="abcdefg" -e REPLACE_NEWRELIC_LICENSE="hijklmno" -e NEWRELIC_TRACING_ENABLED="true" -e NEWRELIC_LOGLEVEL="verbosedebug" -e NEWRELIC_SPECIAL="debug_autorum" dockerphp_73 || ((i++))
 echo "Running Runtime Test for 7.4"

@@ -16,8 +16,9 @@ Available on [Docker Hub](https://hub.docker.com/r/behance/docker-php/).
 - `docker run behance/docker-php:7.0 "php" "-v"`
 - `docker run behance/docker-php:7.1 "php" "-v"`
 - `docker run behance/docker-php:7.2 "php" "-v"`
-- `docker run behance/docker-php:7.2-alpine "php" "-v"`
+- `docker run behance/docker-php:7.3-alpine "php" "-v"`
 - `docker run behance/docker-php:7.3" "php" "-v"`
+- `docker run behance/docker-php:7.4" "php" "-v"`
 
 Adding code to runtime, see [here](https://github.com/behance/docker-php#expectations).
 PHP tuning and configuration, see [here](https://github.com/behance/docker-php#downstream-configuration).
@@ -26,9 +27,9 @@ Adding startup logic, [basic](https://github.com/behance/docker-base#startuprunt
 
 #### Container tag scheme: `PHP_MAJOR.PHP_MINOR(-Major.Minor.Patch)(-variant)`
 
-- `PHP_MAJOR.PHP_MINOR`, required. Engine versions of PHP. ex. `docker-php:7.1`
-- `(Major.Minor.Patch)`, optional. Semantically versioned container provisioning code. ex. `docker-php:7.1-12.4.0`.
-- `(-variant)`, optional. Alpine variants are slim versions of the container. ex. `docker-php:7.1-alpine`.
+- `PHP_MAJOR.PHP_MINOR`, required. Engine versions of PHP. ex. `docker-php:7.4`
+- `(Major.Minor.Patch)`, optional. Semantically versioned container provisioning code. ex. `docker-php:7.3-13.4.0`.
+- `(-variant)`, optional. Alpine variants are slim versions of the container. ex. `docker-php:7.3-alpine`.
 
 ### Includes
 ---
@@ -43,8 +44,7 @@ Adding startup logic, [basic](https://github.com/behance/docker-base#startuprunt
 For extension customization, including enabling and disabling defaults, see [here](https://github.com/behance/docker-php#downstream-configuration)
 
 `^`  - not available on `-alpine` variant
-`*`  - not available on `7.2`
-`**` - not available on `7.3`
+`*`  - not available on `7.2+`
 `~`  - disabled by default
 
   - apcu
@@ -63,7 +63,7 @@ For extension customization, including enabling and disabling defaults, see [her
   - intl
   - json
   - mbstring
-  - mcrypt *,**
+  - mcrypt *
   - memcache ^
   - memcached
   - msgpack
@@ -87,7 +87,7 @@ For extension customization, including enabling and disabling defaults, see [her
   - sysvsem
   - sysvshm
   - tokenizer
-  - xdebug ~,*,**
+  - xdebug ~,*
   - xml
   - xmlreader
   - xmlwriter

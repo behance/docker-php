@@ -107,7 +107,6 @@ RUN apt-get update -q && \
     rm -rf /usr/lib/php/20131226 && \
     rm -rf /usr/lib/php/20151012 && \
     rm -rf /usr/lib/php/20160303 && \
-    rm -rf /usr/lib/php/20170718 && \
     rm -rf /usr/lib/php/20180731 && \
     rm -rf /usr/lib/php/20190902 && \
     curl -sS https://getcomposer.org/installer | php && \
