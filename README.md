@@ -102,10 +102,10 @@ For extension customization, including enabling and disabling defaults, see [her
 
 Sample `Dockerfile`
 ```
-FROM behance/docker-php:7.1
+FROM behance/docker-php:7.4
 
 # (optional, recommended) Verify everything is in order from the parent
-RUN goss -g /tests/php-fpm/7.1.goss.yaml validate && /aufs_hack.sh
+RUN goss -g /tests/php-fpm/7.4.goss.yaml validate && /aufs_hack.sh
 
 # Layer local code into runtime
 COPY ./ /app/

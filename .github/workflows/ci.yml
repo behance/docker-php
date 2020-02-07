@@ -1,0 +1,31 @@
+on:
+  push:
+  pull_request:
+
+name: CI
+
+jobs:
+  build_job:
+    runs-on: ubuntu-18.04
+    name: Build
+    strategy:
+      matrix:
+        php_version:
+          - 7.0
+          - 7.1
+          - 7.2
+          - 7.3
+          - 7.4
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v2
+    - name: Setup Docker
+      uses: docker-practice/actions-setup-docker@master
+    - name: Build container
+      run: docker build -t ${{ matrix.php_version }} -f Dockerfile-${{ matrix.php_version }}
+    - name: Run container
+      run: docker run -p 8080:8080 ${{ matrix.php_version }} -d
+    - name: Wait for container to boot
+      run: sleep 5
+    - name: Run live port tests
+      run: curl localhost:8080 | grep "PHP Version ${{ matrix.php_version }}."
