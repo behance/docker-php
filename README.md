@@ -208,14 +208,15 @@ PHP_FPM_LOG_BUFFERING | PHP_FPM_LOG_BUFFERING=no | yes | Experimental, PHP 7.3-o
 
 ### Testing
 ---
-- Requires `docker` and `docker-compose`
+- Requires `docker`, `docker-compose`, and `dgoss`
 
-To test locally, run `bash -e ./test.sh {docker-machine}` where `docker-machine` is the IP of the connected docker engine.
+To test locally, run `PHP_VARIANT=7.4 ./test.sh {docker engine IP}`.
+
 This will:
-- Build all variants and engine versions.
-- [Goss](https://goss.rocks) runs at the end of each container build, confirming package, config, and extension installation.
-- Run each built container, check the default output from its live service.
-- Perform a large file upload
+- Build a single container `PHP_VARIANT` (7.0, 7.1, 7.2, 7.3, 7.3-alpine, 7.4)
+- Leverages [Goss](https://goss.rocks) to confirm package, config, and extension installation
+- Validates a large file upload
+- Boots container with specific NewRelic configuration overrides
 
-These same tests get run automatically, per pull request, via Travis CI
+The test matrix is run automatically per pull request on Travis CI.
 

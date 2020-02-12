@@ -8,10 +8,12 @@ set -o pipefail
 # - Build each variant
 # - Assert major, minor language versions from default phpinfon page
 # - Create 98MB file for upload (compose sets upload limit to 100MB)
-# - TODO: create goss tests command probe while containers are up
+# - Run goss tests command probe while containers are up
 #-----------------------------------------------------------------------
 
 MACHINE=$1
+CONTAINER_PORT=8080
+PREFIX="==>"
 
 if [ -z "$1" ]; then
     printf "Basic integration script for docker-php and its variants\n\n"
@@ -19,53 +21,71 @@ if [ -z "$1" ]; then
     exit 1;
 fi
 
-docker-compose build 70
-docker-compose build 71
-docker-compose build 72
-docker-compose build 73-alpine
-docker-compose build 73
-docker-compose build 74
+if [ ! $PHP_VARIANT ]; then
+  echo "Missing PHP_VARIANT environment variable"
+  exit 1
+fi
 
-docker-compose up -d
+# Distinguish between naming types
+VARIANT_NAME=$PHP_VARIANT
+DOCKERFILE_NAME="Dockerfile-${PHP_VARIANT}"
+
+# Removes suffix for -alpine variant if it has one
+PHP_VERSION=${PHP_VARIANT%"-alpine"}
+DATE=`date '+%H-%M-%S'`
+DOCKER_TAG="${PHP_VERSION}-${DATE}"
+DOCKER_NAME="${VARIANT_NAME}-${DATE}"
+
+# ==> Cleanup routine
+# CI environments are ephemeral, but  local
+# environments are not
+function finish {
+  echo "${PREFIX} Cleaning up ephemeral resources, safe to ignore any failures"
+  # Stop the container if it is running
+  docker kill $DOCKER_NAME 2>&1 > /dev/null
+
+  # Remove the tag if it exists
+  docker rmi -f $DOCKER_TAG 2>&1 > /dev/null
+}
+
+trap finish EXIT
+
+
+echo "${PREFIX} Building out variant ${VARIANT_NAME}"
+echo "${PREFIX} PHP Version: ${PHP_VERSION}"
+echo "${PREFIX} Dockerfile: ${DOCKERFILE_NAME}, using temporary tag ${DOCKER_TAG}"
+
+printf "${PREFIX} Building the container\n"
+docker build -t $DOCKER_TAG -f $DOCKERFILE_NAME .
+
+printf "${PREFIX} Running container in background\n"
+docker run \
+  --name=$DOCKER_NAME \
+  --env-file=./.test.env \
+  -p "${CONTAINER_PORT}:${CONTAINER_PORT}" \
+  -d \
+  -t "${DOCKER_TAG}:latest"
+
+printf "${PREFIX} Waiting for container to boot\n"
 sleep 5
-docker-compose ps
 
-curl $MACHINE:8081 | grep "PHP Version 7.0."
-curl $MACHINE:8082 | grep "PHP Version 7.1."
-curl $MACHINE:8083 | grep "PHP Version 7.2."
-curl $MACHINE:8084 | grep "PHP Version 7.3."
-curl $MACHINE:8085 | grep "PHP Version 7.3."
-curl $MACHINE:8086 | grep "PHP Version 7.4."
+echo "${PREFIX} Check default response, including PHP version identification"
+curl "${MACHINE}:${CONTAINER_PORT}" | grep "PHP Version ${PHP_VERSION}."
 
-# Create a junk file that will test container uploading capability
+echo "${PREFIX} Create a random file to upload"
 dd if=/dev/zero of=tmp.txt count=100000 bs=1024
 
-# Though the file is uploaded, the response message is still the default phpinfo page
-curl --form upload=@tmp.txt $MACHINE:8081 | grep "PHP Version 7.0." > /dev/null
-curl --form upload=@tmp.txt $MACHINE:8082 | grep "PHP Version 7.1." > /dev/null
-curl --form upload=@tmp.txt $MACHINE:8083 | grep "PHP Version 7.2." > /dev/null
-curl --form upload=@tmp.txt $MACHINE:8084 | grep "PHP Version 7.3." > /dev/null
-curl --form upload=@tmp.txt $MACHINE:8085 | grep "PHP Version 7.3." > /dev/null
-curl --form upload=@tmp.txt $MACHINE:8086 | grep "PHP Version 7.4." > /dev/null
+echo "${PREFIX} Send uploaded file"
+curl --form upload=@tmp.txt "${MACHINE}:${CONTAINER_PORT}" \
+  | grep "PHP Version ${PHP_VERSION}." > /dev/null
 
-# Error exit codes in dgoss do not bubble up to the runner.
-# In order to work around this we need to increment $i.
-i=0
-
-echo "Running Runtime Test for 7.0"
-GOSS_PATH=goss GOSS_FILES_PATH=runtime-tests/newrelic/70/ ./dgoss run -e REPLACE_NEWRELIC_APP="abcdefg" -e REPLACE_NEWRELIC_LICENSE="hijklmno" -e NEWRELIC_TRACING_ENABLED="true" -e NEWRELIC_LOGLEVEL="verbosedebug" -e NEWRELIC_SPECIAL="debug_autorum" dockerphp_70 || ((i++))
-echo "Running Runtime Test for 7.1"
-GOSS_PATH=goss GOSS_FILES_PATH=runtime-tests/newrelic/71/ ./dgoss run -e REPLACE_NEWRELIC_APP="abcdefg" -e REPLACE_NEWRELIC_LICENSE="hijklmno" -e NEWRELIC_TRACING_ENABLED="true" -e NEWRELIC_LOGLEVEL="verbosedebug" -e NEWRELIC_SPECIAL="debug_autorum" dockerphp_71 || ((i++))
-echo "Running Runtime Test for 7.2"
-GOSS_PATH=goss GOSS_FILES_PATH=runtime-tests/newrelic/72/ ./dgoss run -e REPLACE_NEWRELIC_APP="abcdefg" -e REPLACE_NEWRELIC_LICENSE="hijklmno" -e NEWRELIC_TRACING_ENABLED="true" -e NEWRELIC_LOGLEVEL="verbosedebug" -e NEWRELIC_SPECIAL="debug_autorum" dockerphp_72 || ((i++))
-echo "Running Runtime Test for 7.3-alpine"
-GOSS_PATH=goss GOSS_FILES_PATH=runtime-tests/newrelic/73-alpine/ ./dgoss run -e REPLACE_NEWRELIC_APP="abcdefg" -e REPLACE_NEWRELIC_LICENSE="hijklmno" -e NEWRELIC_TRACING_ENABLED="true" -e NEWRELIC_LOGLEVEL="verbosedebug" -e NEWRELIC_SPECIAL="debug_autorum" dockerphp_72-alpine || ((i++))
-echo "Running Runtime Test for 7.3"
-GOSS_PATH=goss GOSS_FILES_PATH=runtime-tests/newrelic/73/ ./dgoss run -e REPLACE_NEWRELIC_APP="abcdefg" -e REPLACE_NEWRELIC_LICENSE="hijklmno" -e NEWRELIC_TRACING_ENABLED="true" -e NEWRELIC_LOGLEVEL="verbosedebug" -e NEWRELIC_SPECIAL="debug_autorum" dockerphp_73 || ((i++))
-echo "Running Runtime Test for 7.4"
-GOSS_PATH=goss GOSS_FILES_PATH=runtime-tests/newrelic/74/ ./dgoss run -e REPLACE_NEWRELIC_APP="abcdefg" -e REPLACE_NEWRELIC_LICENSE="hijklmno" -e NEWRELIC_TRACING_ENABLED="true" -e NEWRELIC_LOGLEVEL="verbosedebug" -e NEWRELIC_SPECIAL="debug_autorum" dockerphp_74 || ((i++))
-
-# Cleanup
-rm tmp.txt
-
-exit $i
+echo "${PREFIX} Perform runtime tests"
+GOSS_PATH=goss \
+GOSS_FILES_PATH="runtime-tests/newrelic/${PHP_VARIANT}/" \
+./dgoss run \
+  -e REPLACE_NEWRELIC_APP="abcdefg" \
+  -e REPLACE_NEWRELIC_LICENSE="hijklmno" \
+  -e NEWRELIC_TRACING_ENABLED="true" \
+  -e NEWRELIC_LOGLEVEL="verbosedebug" \
+  -e NEWRELIC_SPECIAL="debug_autorum" \
+  "${DOCKER_TAG}:latest"
