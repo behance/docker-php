@@ -16,8 +16,9 @@ Available on [Docker Hub](https://hub.docker.com/r/behance/docker-php/).
 - `docker run behance/docker-php:7.0 "php" "-v"`
 - `docker run behance/docker-php:7.1 "php" "-v"`
 - `docker run behance/docker-php:7.2 "php" "-v"`
-- `docker run behance/docker-php:7.2-alpine "php" "-v"`
+- `docker run behance/docker-php:7.3-alpine "php" "-v"`
 - `docker run behance/docker-php:7.3" "php" "-v"`
+- `docker run behance/docker-php:7.4" "php" "-v"`
 
 Adding code to runtime, see [here](https://github.com/behance/docker-php#expectations).
 PHP tuning and configuration, see [here](https://github.com/behance/docker-php#downstream-configuration).
@@ -26,9 +27,9 @@ Adding startup logic, [basic](https://github.com/behance/docker-base#startuprunt
 
 #### Container tag scheme: `PHP_MAJOR.PHP_MINOR(-Major.Minor.Patch)(-variant)`
 
-- `PHP_MAJOR.PHP_MINOR`, required. Engine versions of PHP. ex. `docker-php:7.1`
-- `(Major.Minor.Patch)`, optional. Semantically versioned container provisioning code. ex. `docker-php:7.1-12.4.0`.
-- `(-variant)`, optional. Alpine variants are slim versions of the container. ex. `docker-php:7.1-alpine`.
+- `PHP_MAJOR.PHP_MINOR`, required. Engine versions of PHP. ex. `docker-php:7.4`
+- `(Major.Minor.Patch)`, optional. Semantically versioned container provisioning code. ex. `docker-php:7.3-13.4.0`.
+- `(-variant)`, optional. Alpine variants are slim versions of the container. ex. `docker-php:7.3-alpine`.
 
 ### Includes
 ---
@@ -43,8 +44,7 @@ Adding startup logic, [basic](https://github.com/behance/docker-base#startuprunt
 For extension customization, including enabling and disabling defaults, see [here](https://github.com/behance/docker-php#downstream-configuration)
 
 `^`  - not available on `-alpine` variant
-`*`  - not available on `7.2`
-`**` - not available on `7.3`
+`*`  - not available on `7.2+`
 `~`  - disabled by default
 
   - apcu
@@ -63,7 +63,7 @@ For extension customization, including enabling and disabling defaults, see [her
   - intl
   - json
   - mbstring
-  - mcrypt *,**
+  - mcrypt *
   - memcache ^
   - memcached
   - msgpack
@@ -87,7 +87,7 @@ For extension customization, including enabling and disabling defaults, see [her
   - sysvsem
   - sysvshm
   - tokenizer
-  - xdebug ~,*,**
+  - xdebug ~,*
   - xml
   - xmlreader
   - xmlwriter
@@ -102,10 +102,10 @@ For extension customization, including enabling and disabling defaults, see [her
 
 Sample `Dockerfile`
 ```
-FROM behance/docker-php:7.1
+FROM behance/docker-php:7.4
 
 # (optional, recommended) Verify everything is in order from the parent
-RUN goss -g /tests/php-fpm/7.1.goss.yaml validate && /aufs_hack.sh
+RUN goss -g /tests/php-fpm/7.4.goss.yaml validate && /aufs_hack.sh
 
 # Layer local code into runtime
 COPY ./ /app/
@@ -208,14 +208,15 @@ PHP_FPM_LOG_BUFFERING | PHP_FPM_LOG_BUFFERING=no | yes | Experimental, PHP 7.3-o
 
 ### Testing
 ---
-- Requires `docker` and `docker-compose`
+- Requires `docker`, `docker-compose`, and `dgoss`
 
-To test locally, run `bash -e ./test.sh {docker-machine}` where `docker-machine` is the IP of the connected docker engine.
+To test locally, run `PHP_VARIANT=7.4 ./test.sh {docker engine IP}`.
+
 This will:
-- Build all variants and engine versions.
-- [Goss](https://goss.rocks) runs at the end of each container build, confirming package, config, and extension installation.
-- Run each built container, check the default output from its live service.
-- Perform a large file upload
+- Build a single container `PHP_VARIANT` (7.0, 7.1, 7.2, 7.3, 7.3-alpine, 7.4)
+- Leverages [Goss](https://goss.rocks) to confirm package, config, and extension installation
+- Validates a large file upload
+- Boots container with specific NewRelic configuration overrides
 
-These same tests get run automatically, per pull request, via Travis CI
+The test matrix is run automatically per pull request on Travis CI.
 
