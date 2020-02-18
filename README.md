@@ -208,7 +208,7 @@ PHP_FPM_LOG_BUFFERING | PHP_FPM_LOG_BUFFERING=no | yes | Experimental, PHP 7.3-o
 
 ### Testing
 ---
-- Requires `docker`, `docker-compose`, and `dgoss`
+- Requires `bash`, `docker`, `docker-compose`, and `dgoss`
 
 To test locally, run `PHP_VARIANT=7.4 ./test.sh {docker engine IP}`.
 
