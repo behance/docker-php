@@ -2,7 +2,7 @@
 [![Docker Pulls](https://img.shields.io/docker/pulls/bryanlatten/docker-php.svg?maxAge=2592000)]()
 
 docker-php
-==========
+===========
 
 Provides a pre-wired, configurable PHP + Nginx setup across multiple runtime versions.
 
