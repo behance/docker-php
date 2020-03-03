@@ -78,7 +78,6 @@ RUN apt-get update -q && \
         php7.0-bcmath \
         php7.0-bz2 \
         php7.0-curl \
-        php7.0-dev \
         php7.0-fpm \
         php7.0-gd \
         php7.0-igbinary \
@@ -86,20 +85,23 @@ RUN apt-get update -q && \
         php7.0-json \
         php7.0-mbstring \
         php7.0-mcrypt \
-        php7.0-pgsql \
         php7.0-memcache \
         php7.0-memcached \
-        php7.0-mysql \
+        php7.0-pgsql \
+        php7.0-redis \
         php7.0-xdebug \
-        php7.0-yaml \
         php7.0-xml \
+        php7.0-yaml \
         php7.0-zip \
         newrelic-php5 \
         newrelic-php5-common \
         newrelic-daemon \
+        # Order of operations issue is preventing this from being installed in alphabetical order
+        php7.0-mysql \
     && \
     phpdismod pdo_pgsql && \
     phpdismod pgsql && \
+    phpdismod redis && \
     phpdismod yaml && \
     phpdismod xdebug && \
     # Remove extra extensions installed via packages for other versions of PHP, leaving the active engine folder
@@ -109,15 +111,11 @@ RUN apt-get update -q && \
     rm -rf /usr/lib/php/20170718 && \
     rm -rf /usr/lib/php/20180731 && \
     rm -rf /usr/lib/php/20190902 && \
+    # Remove unused agents for other PHP versions
+    cd /usr/lib/newrelic-php5/agent/x64 && ls | grep -v newrelic-20151012.so | xargs rm && \
+    cd / && \
     curl -sS https://getcomposer.org/installer | php && \
     mv composer.phar /usr/local/bin/composer && \
-    # Install new PHP7-stable version of Redis \
-    pecl install redis && \
-    echo "extension=redis.so" > $CONF_PHPMODS/redis.ini && \
-    # Remove dev packages that were only in place just to compile extensions
-    apt-get remove --purge -yq \
-        php7.0-dev \
-    && \
     /bin/bash /clean.sh
 
 # Overlay the root filesystem from this repo

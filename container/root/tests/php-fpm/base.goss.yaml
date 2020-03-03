@@ -146,8 +146,8 @@ command:
   php -n -d extension=pdo.so -d extension=pdo_pgsql.so -m | grep pdo_pgsql:
     exit-status: 0
     stderr: ['!/./']
-  # On some variants, session is not loaded as part of the core, and must be loaded at this time
-  php -n -d extension=session.so -d extension=json.so -d extension=redis.so -m | grep redis:
+  # On some variants session, json, and igbinary are interwound - only create additive extension directives
+  php extension=redis.so -m | grep redis:
     exit-status: 0
     # On session-default installs, re-loading session causes a warning, ignore
     # stderr: ['!/./']
