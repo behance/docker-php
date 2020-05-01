@@ -1,4 +1,4 @@
-FROM behance/docker-nginx:8.7
+FROM behance/docker-nginx:8.8
 LABEL maintainers="Behance Team <dev-behance@adobe.com>"
 
 # Set TERM to suppress warning messages.
@@ -23,6 +23,7 @@ ENV CONF_PHPFPM=/etc/php/7.1/fpm/php-fpm.conf \
     PHP_OPCACHE_MEMORY_CONSUMPTION=128 \
     PHP_OPCACHE_INTERNED_STRINGS_BUFFER=16 \
     PHP_OPCACHE_MAX_WASTED_PERCENTAGE=5 \
+    PHP_ENGINE_VERSION=20160303 \
     CFG_APP_DEBUG=1
 
 # - Update security packages, only
@@ -56,6 +57,11 @@ COPY container/root/usr/local/bin/pecl-install /usr/local/bin
 RUN apt-get update -q && \
     # Ensure PHP 5.5 + 5.6 + 7.0 don't accidentally get added by PPA
     apt-mark hold \
+            manpages \
+            manpages-dev \
+            apache2 \
+            apache2-bin \
+            libapache2-mod-php7.1 \
             php5.6-cli \
             php5.6-common \
             php5.6-json \
@@ -80,17 +86,13 @@ RUN apt-get update -q && \
         php7.1-curl \
         php7.1-fpm \
         php7.1-gd \
-        php7.1-igbinary \
         php7.1-intl \
         php7.1-json \
         php7.1-mbstring \
         php7.1-memcache \
-        php7.1-memcached \
-        php7.1-msgpack \
         php7.1-mcrypt \
         php7.1-mysql \
         php7.1-pgsql \
-        php7.1-redis \
         php7.1-xdebug \
         php7.1-xml \
         php7.1-yaml \
@@ -99,21 +101,40 @@ RUN apt-get update -q && \
         newrelic-php5 \
         newrelic-php5-common \
         newrelic-daemon \
+        # below required to compile non-packaged extensions
+        php7.1-dev \
+        pkg-config \
+        libmemcached-dev \
+        pkg-config \
+        zlib1g-dev \
     && \
+    pecl-install \
+        igbinary \
+        memcached \
+        msgpack \
+        redis \
+    && \
+    apt-get remove --purge -yq \
+        php7.1-dev \
+        pkg-config \
+        build-essential \
+        cpp \
+        cpp-7 \
+        gcc \
+    && \
+    /bin/bash /clean.sh \
+    && \
+    phpenmod memcached && \
     phpdismod pdo_pgsql && \
     phpdismod pgsql && \
     phpdismod redis && \
     phpdismod yaml && \
     phpdismod xdebug && \
     # Remove extra extensions installed via packages for other versions of PHP, leaving the active engine folder
-    rm -rf /usr/lib/php/20121212 && \
-    rm -rf /usr/lib/php/20131226 && \
-    rm -rf /usr/lib/php/20151012 && \
-    rm -rf /usr/lib/php/20170718 && \
-    rm -rf /usr/lib/php/20180731 && \
-    rm -rf /usr/lib/php/20190902 && \
+    cd /usr/lib/php && \
+    ls -d */ | grep '[0-9]\{8\}' | grep -v ${PHP_ENGINE_VERSION} | xargs rm -rf && \
     # Remove unused agents for other PHP versions
-    cd /usr/lib/newrelic-php5/agent/x64 && ls | grep -v newrelic-20160303.so | xargs rm && \
+    cd /usr/lib/newrelic-php5/agent/x64 && ls | grep -v newrelic-${PHP_ENGINE_VERSION}.so | xargs rm && \
     cd / && \
     curl -sS https://getcomposer.org/installer | php && \
     mv composer.phar /usr/local/bin/composer && \
