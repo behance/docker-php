@@ -109,6 +109,10 @@ command:
     exit-status: 0
   php -m | grep -i zlib:
     exit-status: 0
+  php -m | grep -i msgpack:
+    exit-status: 0
+  php -m | grep -i igbinary:
+    exit-status: 0
 
   # Test that extra extensions are disabled by default
   php -m | grep newrelic:
