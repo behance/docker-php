@@ -125,6 +125,8 @@ RUN apt-get update -q && \
     /bin/bash /clean.sh \
     && \
     phpenmod memcached && \
+    phpenmod igbinary && \
+    phpenmod msgpack && \
     phpdismod pdo_pgsql && \
     phpdismod pgsql && \
     phpdismod redis && \
