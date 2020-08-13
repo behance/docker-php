@@ -79,7 +79,14 @@ echo "${PREFIX} Send uploaded file"
 curl --form upload=@tmp.txt "${MACHINE}:${CONTAINER_PORT}" \
   | grep "PHP Version ${PHP_VERSION}." > /dev/null
 
-echo "${PREFIX} Perform runtime tests"
+echo "${PREFIX} Perform startup tests"
+GOSS_PATH=goss \
+GOSS_SLEEP=5 \
+GOSS_FILES_PATH="runtime-tests/startup/${PHP_VARIANT}/" \
+./dgoss run \
+  "${DOCKER_TAG}:latest"
+
+echo "${PREFIX} Perform NewRelic runtime tests"
 GOSS_PATH=goss \
 GOSS_FILES_PATH="runtime-tests/newrelic/${PHP_VARIANT}/" \
 ./dgoss run \

@@ -1,0 +1,6 @@
+file:
+  /goss/docker_output.log:
+    exists: true
+    filetype: file # file, symlink, directory
+    contains:  # Check file content for these patterns
+      - '/legacy filtered stdout/'
