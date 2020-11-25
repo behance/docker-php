@@ -1,4 +1,4 @@
-FROM behance/docker-nginx:8.8
+FROM behance/docker-nginx:8.9
 LABEL maintainers="Behance Team <dev-behance@adobe.com>"
 
 # Set TERM to suppress warning messages.
@@ -23,6 +23,7 @@ ENV CONF_PHPFPM=/etc/php/7.1/fpm/php-fpm.conf \
     PHP_OPCACHE_MEMORY_CONSUMPTION=128 \
     PHP_OPCACHE_INTERNED_STRINGS_BUFFER=16 \
     PHP_OPCACHE_MAX_WASTED_PERCENTAGE=5 \
+    PHP_OPCACHE_ENABLE_CLI=1 \
     PHP_ENGINE_VERSION=20160303 \
     CFG_APP_DEBUG=1
 

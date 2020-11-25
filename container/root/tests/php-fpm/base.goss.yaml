@@ -198,3 +198,10 @@ file:
     exists: true
     contains:
       - '/^error_log = \/dev\/stdout/'
+  {{ .Env.CONF_PHPMODS }}/opcache.ini:
+    exists: true
+    contains:
+      - '/^opcache.file_cache=\${PHP_OPCACHE_FILE_CACHE}/'
+      - '/^opcache.enable_cli=\${PHP_OPCACHE_ENABLE_CLI}/'
+      - '/^opcache.preload_user=\${NOT_ROOT_USER}/'
+      - '/^opcache.preload=\${PHP_OPCACHE_PRELOAD}/'

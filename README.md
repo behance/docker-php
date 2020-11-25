@@ -203,8 +203,11 @@ PHP_FPM_MIN_SPARE_SERVERS | PHP_FPM_MIN_SPARE_SERVERS=10 | 5 | [docs](http://php
 PHP_OPCACHE_MEMORY_CONSUMPTION | PHP_OPCACHE_MEMORY_CONSUMPTION=512 | 128 | [docs](http://php.net/manual/en/opcache.configuration.php#ini.opcache.memory-consumption)
 PHP_OPCACHE_MAX_WASTED_PERCENTAGE | PHP_OPCACHE_MAX_WASTED_PERCENTAGE=10 | 5 | [docs](http://php.net/manual/en/opcache.configuration.php#ini.opcache.max-wasted-percentage)
 PHP_OPCACHE_INTERNED_STRINGS_BUFFER | PHP_OPCACHE_INTERNED_STRINGS_BUFFER=64 | 16 | [docs](http://php.net/manual/en/opcache.configuration.php#ini.opcache.interned-strings-buffer)
-PHP_FPM_LOG_LIMIT | PHP_FPM_LOG_LIMIT=4096 | 1024 | PHP 7.3-only, allows configurable stdout message max length [docs](https://www.php.net/manual/en/install.fpm.configuration.php)
-PHP_FPM_LOG_BUFFERING | PHP_FPM_LOG_BUFFERING=no | yes | Experimental, PHP 7.3-only [docs](https://www.php.net/manual/en/install.fpm.configuration.php)
+PHP_OPCACHE_FILE_CACHE | PHP_OPCACHE_FILE_CACHE=/tmp | - | [docs](https://www.php.net/manual/en/opcache.configuration.php#ini.opcache.file-cache)
+PHP_OPCACHE_ENABLE_CLI | PHP_OPCACHE_ENABLE_CLI=0 | 1 | [docs](https://www.php.net/manual/en/opcache.configuration.php#ini.opcache.enable-cli)
+PHP_OPCACHE_PRELOAD | PHP_OPCACHE_PRELOAD=/etc/php/preload.php | - | [docs](https://www.php.net/manual/en/opcache.configuration.php#ini.opcache.preload)
+PHP_FPM_LOG_LIMIT | PHP_FPM_LOG_LIMIT=4096 | 1024 | PHP 7.3+ only, allows configurable stdout message max length [docs](https://www.php.net/manual/en/install.fpm.configuration.php)
+PHP_FPM_LOG_BUFFERING | PHP_FPM_LOG_BUFFERING=no | yes | PHP 7.3+ only [docs](https://www.php.net/manual/en/install.fpm.configuration.php)
 
 ### Testing
 ---
