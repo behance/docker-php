@@ -1,4 +1,4 @@
-[![Build Status](https://travis-ci.org/behance/docker-php.svg?branch=master)](https://travis-ci.org/behance/docker-php)
+[![Build Status](https://travis-ci.com/behance/docker-php.svg?branch=master)](https://travis-ci.org/behance/docker-php)
 [![Docker Pulls](https://img.shields.io/docker/pulls/bryanlatten/docker-php.svg?maxAge=2592000)]()
 
 docker-php
