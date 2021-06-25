@@ -1,4 +1,4 @@
-[![Build Status](https://travis-ci.org/behance/docker-php.svg?branch=master)](https://travis-ci.org/behance/docker-php)
+[![Build Status](https://travis-ci.com/behance/docker-php.svg?branch=master)](https://travis-ci.org/behance/docker-php)
 [![Docker Pulls](https://img.shields.io/docker/pulls/bryanlatten/docker-php.svg?maxAge=2592000)]()
 
 docker-php
@@ -12,13 +12,13 @@ Available on [Docker Hub](https://hub.docker.com/r/behance/docker-php/).
 
 ### Quick-start
 
-- `docker run behance/docker-php:5.6 "php" "-v"`
 - `docker run behance/docker-php:7.0 "php" "-v"`
 - `docker run behance/docker-php:7.1 "php" "-v"`
 - `docker run behance/docker-php:7.2 "php" "-v"`
 - `docker run behance/docker-php:7.3-alpine "php" "-v"`
 - `docker run behance/docker-php:7.3" "php" "-v"`
 - `docker run behance/docker-php:7.4" "php" "-v"`
+- `docker run behance/docker-php:8.0" "php" "-v"`
 
 Adding code to runtime, see [here](https://github.com/behance/docker-php#expectations).
 PHP tuning and configuration, see [here](https://github.com/behance/docker-php#downstream-configuration).
@@ -27,8 +27,8 @@ Adding startup logic, [basic](https://github.com/behance/docker-base#startuprunt
 
 #### Container tag scheme: `PHP_MAJOR.PHP_MINOR(-Major.Minor.Patch)(-variant)`
 
-- `PHP_MAJOR.PHP_MINOR`, required. Engine versions of PHP. ex. `docker-php:7.4`
-- `(Major.Minor.Patch)`, optional. Semantically versioned container provisioning code. ex. `docker-php:7.3-13.4.0`.
+- `PHP_MAJOR.PHP_MINOR`, required. Engine versions of PHP. ex. `docker-php:8.0`
+- `(Major.Minor.Patch)`, optional. Semantically versioned container provisioning code. ex. `docker-php:7.4-13.4.0`.
 - `(-variant)`, optional. Alpine variants are slim versions of the container. ex. `docker-php:7.3-alpine`.
 
 ### Includes
@@ -102,10 +102,10 @@ For extension customization, including enabling and disabling defaults, see [her
 
 Sample `Dockerfile`
 ```
-FROM behance/docker-php:7.4
+FROM behance/docker-php:8.0
 
 # (optional, recommended) Verify everything is in order from the parent
-RUN goss -g /tests/php-fpm/7.4.goss.yaml validate && /aufs_hack.sh
+RUN goss -g /tests/php-fpm/8.0.goss.yaml validate && /aufs_hack.sh
 
 # Layer local code into runtime
 COPY ./ /app/
@@ -213,10 +213,10 @@ PHP_FPM_LOG_BUFFERING | PHP_FPM_LOG_BUFFERING=no | yes | PHP 7.3+ only [docs](ht
 ---
 - Requires `bash`, `docker`, `docker-compose`, and `dgoss`
 
-To test locally, run `PHP_VARIANT=7.4 ./test.sh {docker engine IP}`.
+To test locally, run `PHP_VARIANT=8.0 ./test.sh {docker engine IP}`.
 
 This will:
-- Build a single container `PHP_VARIANT` (7.0, 7.1, 7.2, 7.3, 7.3-alpine, 7.4)
+- Build a single container `PHP_VARIANT` (7.0, 7.1, 7.2, 7.3, 7.3-alpine, 7.4, 8.0)
 - Leverages [Goss](https://goss.rocks) to confirm package, config, and extension installation
 - Validates a large file upload
 - Boots container with specific NewRelic configuration overrides
