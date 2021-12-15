@@ -1,13 +1,10 @@
 sudo: required
 
 env:
-  - PHP_VARIANT=7.0
-  - PHP_VARIANT=7.1
-  - PHP_VARIANT=7.2
-  - PHP_VARIANT=7.3
-  - PHP_VARIANT=7.3-alpine
+  - PHP_VARIANT=7.4-alpine
   - PHP_VARIANT=7.4
   - PHP_VARIANT=8.0
+  - PHP_VARIANT=8.1
 
 services:
   - docker

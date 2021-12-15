@@ -1,4 +1,4 @@
-FROM behance/docker-nginx:8.10-alpine
+FROM behance/docker-nginx:9.0-alpine
 LABEL maintainers="Behance Team <dev-behance@adobe.com>"
 
 # Set TERM to suppress warning messages.
@@ -78,10 +78,11 @@ RUN apk update && \
       php7-xmlwriter \
       php7-xsl \
       php7-zip \
-      php7-zlib \
-    && \
+      php7-zlib
+
+RUN \
     # Disable xdebug by default \
-    sed -i 's/zend_extension\s\?=/;zend_extension =/' $CONF_PHPMODS/xdebug.ini && \
+    sed -i 's/zend_extension\s\?=/;zend_extension =/' $CONF_PHPMODS/50_xdebug.ini && \
     # Disable postgres by default \
     sed -i 's/extension/;extension/' $CONF_PHPMODS/01_pdo_pgsql.ini && \
     sed -i 's/extension/;extension/' $CONF_PHPMODS/00_pgsql.ini && \
@@ -144,5 +145,5 @@ RUN cp /etc/php/7.0/mods-available/* $CONF_PHPMODS && \
     ln -s /usr/sbin/php-fpm7 /usr/sbin/php-fpm && \
     /bin/bash -e prep-php.sh
 
-RUN goss -g /tests/php-fpm/7.3-alpine.goss.yaml validate && \
+RUN goss -g /tests/php-fpm/7.4-alpine.goss.yaml validate && \
     /aufs_hack.sh

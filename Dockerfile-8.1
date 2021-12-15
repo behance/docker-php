@@ -1,11 +1,11 @@
-FROM behance/docker-nginx:8.10
+FROM behance/docker-nginx:9.0
 LABEL maintainers="Behance Team <dev-behance@adobe.com>"
 
 # Set TERM to suppress warning messages.
-ENV CONF_PHPFPM=/etc/php/7.2/fpm/php-fpm.conf \
-    CONF_PHPMODS=/etc/php/7.2/mods-available \
-    CONF_FPMPOOL=/etc/php/7.2/fpm/pool.d/www.conf \
-    CONF_FPMOVERRIDES=/etc/php/7.2/fpm/conf.d/overrides.user.ini \
+ENV CONF_PHPFPM=/etc/php/8.1/fpm/php-fpm.conf \
+    CONF_PHPMODS=/etc/php/8.1/mods-available \
+    CONF_FPMPOOL=/etc/php/8.1/fpm/pool.d/www.conf \
+    CONF_FPMOVERRIDES=/etc/php/8.1/fpm/conf.d/overrides.user.ini \
     APP_ROOT=/app \
     SERVER_WORKER_CONNECTIONS=3072 \
     SERVER_CLIENT_BODY_BUFFER_SIZE=128k \
@@ -24,7 +24,7 @@ ENV CONF_PHPFPM=/etc/php/7.2/fpm/php-fpm.conf \
     PHP_OPCACHE_INTERNED_STRINGS_BUFFER=16 \
     PHP_OPCACHE_MAX_WASTED_PERCENTAGE=5 \
     PHP_OPCACHE_ENABLE_CLI=1 \
-    PHP_ENGINE_VERSION=20170718 \
+    PHP_ENGINE_VERSION=20200930 \
     CFG_APP_DEBUG=1
 
 # - Update security packages, only
@@ -56,13 +56,13 @@ RUN /bin/bash -e /security_updates.sh && \
 # Add PHP and support packages
 COPY container/root/usr/local/bin/pecl-install /usr/local/bin
 RUN apt-get update -q && \
-    # Ensure PHP 5.5 + 5.6 + 7.1 don't accidentally get added by PPA
+    # Ensure old versions of PHP don't accidentally get added by PPA maintainers
     apt-mark hold \
             manpages \
             manpages-dev \
             apache2 \
             apache2-bin \
-            libapache2-mod-php7.2 \
+            libapache2-mod-php7.4 \
             php5.6-cli \
             php5.6-common \
             php5.6-json \
@@ -72,54 +72,38 @@ RUN apt-get update -q && \
             php7.1-cli \
             php7.1-common \
             php7.1-json \
+            php7.2-cli \
+            php7.2-common \
+            php7.2-json \
             php7.3-cli \
             php7.3-common \
             php7.3-json \
             php7.4-cli \
             php7.4-common \
-            php7.4-json \
-    && \
-    apt-get -yqq install \
-        php7.2 \
-        php7.2-apcu \
-        php7.2-bcmath \
-        php7.2-bz2 \
-        php7.2-curl \
-        php7.2-fpm \
-        php7.2-gd \
-        php7.2-intl \
-        php7.2-json \
-        php7.2-mbstring \
-        php7.2-memcache \
-        php7.2-mysql \
-        php7.2-pgsql \
-        php7.2-xdebug \
-        php7.2-xml \
-        php7.2-yaml \
-        php7.2-zip \
+            php7.4-json
+
+RUN apt-get -yqq install \
+        php8.1 \
+        php8.1-apcu \
+        php8.1-bcmath \
+        php8.1-bz2 \
+        php8.1-curl \
+        php8.1-fpm \
+        php8.1-gd \
+        php8.1-intl \
+        php8.1-mbstring \
+        php8.1-memcache \
+        php8.1-memcached \
+        php8.1-mysql \
+        php8.1-pgsql \
+        php8.1-redis \
+        php8.1-xdebug \
+        php8.1-xml \
+        php8.1-yaml \
+        php8.1-zip \
         newrelic-php5 \
         newrelic-php5-common \
         newrelic-daemon \
-        # below required to compile non-packaged extensions
-        php7.2-dev \
-        pkg-config \
-        libmemcached-dev \
-        pkg-config \
-        zlib1g-dev \
-    && \
-    pecl-install \
-        igbinary \
-        memcached \
-        msgpack \
-        redis \
-    && \
-    apt-get remove --purge -yq \
-        php7.2-dev \
-        pkg-config \
-        build-essential \
-        cpp \
-        cpp-7 \
-        gcc \
     && \
     /bin/bash /clean.sh \
     && \
@@ -134,6 +118,8 @@ RUN apt-get update -q && \
     # Remove extra extensions installed via packages for other versions of PHP, leaving the active engine folder
     cd /usr/lib/php && \
     ls -d */ | grep '[0-9]\{8\}' | grep -v ${PHP_ENGINE_VERSION} | xargs rm -rf && \
+    rm -rf /usr/lib/php/7.4 && \
+    rm -rf /usr/lib/php/8.0 && \
     # Remove unused agents for other PHP versions
     cd /usr/lib/newrelic-php5/agent/x64 && ls | grep -v newrelic-${PHP_ENGINE_VERSION}.so | xargs rm && \
     cd / && \
@@ -144,17 +130,22 @@ RUN apt-get update -q && \
 # Overlay the root filesystem from this repo
 COPY ./container/root /
 
-# - Make additional hacks to migrate files/config from 7.0 --> 7.2 folder
+# - Make additional hacks to migrate files/config from 7.0 --> 8.1 folder
 RUN cp /etc/php/7.0/mods-available/* $CONF_PHPMODS && \
     cp /etc/php/7.0/fpm/conf.d/overrides.user.ini $CONF_FPMOVERRIDES && \
     # Hack: share startup scripts between variant versions by symlinking \
-    ln -s /usr/sbin/php-fpm7.2 /usr/sbin/php-fpm && \
+    ln -s /usr/sbin/php-fpm8.1 /usr/sbin/php-fpm && \
     # Override default ini values for both CLI + FPM \
     phpenmod overrides && \
     # Enable NewRelic via Ubuntu symlinks, but disable in file. Cross-variant startup script uncomments with env vars.
     phpenmod newrelic && \
-    # - Run standard set of tweaks to ensure runs performant, reliably, and consistent between variants
-    /bin/bash -e /prep-php.sh
+    # Run standard set of tweaks to ensure runs performant, reliably, and consistent between variants
+    /bin/bash -e /prep-php.sh && \
+    # New 7.3+ specific configuration
+    sed -i "s/;decorate_workers_output.*/decorate_workers_output = no/" $CONF_FPMPOOL
 
-RUN goss -g /tests/php-fpm/7.2.goss.yaml validate && \
+# HACK: workaround for https://github.com/aelsabbahy/goss/issues/392
+# Run the child and parent test configs separately instead of leveraging inheritance
+RUN goss -g /tests/php-fpm/8.1.goss.yaml validate && \
+    goss -g /tests/php-fpm/base.goss.yaml validate && \
     /aufs_hack.sh
