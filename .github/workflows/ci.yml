@@ -1,0 +1,102 @@
+name: ci
+
+on:
+  pull_request:
+    branches: [ master ]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        props:
+        - Dockerfile: Dockerfile-7.4
+        - Dockerfile: Dockerfile-7.4-alpine
+        - Dockerfile: Dockerfile-8.0
+        - Dockerfile: Dockerfile-8.1
+        platform:
+        - linux/amd64
+        - linux/arm64
+    env:
+      TEST_MATCH: Welcome to nginx!
+    steps:
+      -
+        name: Checkout
+        uses: actions/checkout@v2
+      -
+        name: Detect host configuration
+        run: |
+          # NOTE: Docker host configuration determines the networking target for integration testing
+          v=$(mount | grep "/run/docker.sock")
+          TARGET_HOST=
+
+          if [ -n "$v" ]; then
+            echo "Injected docker socket detected"
+            TARGET_HOST="host.docker.internal"
+          elif [ -S /var/run/docker.sock ]; then
+            TARGET_HOST="localhost"
+          else
+            echo "No Docker socket detected, fail"
+            exit 1
+          fi
+          echo "TARGET_HOST=${TARGET_HOST}" >> $GITHUB_ENV
+      -
+        # Build and execute in multiple configurations: vanilla, with env overrides, with TLS enabled
+        name: Build and test
+        run: |
+          # NOTE: docker qemu and buildx setup actions create a black hole for build cache layers, avoid unless pushing externally
+          # Setup multi-arch platforms, noop if already installed for builder
+          docker run --privileged --rm tonistiigi/binfmt --install arm64,amd64
+
+          TARGET_PLATFORM=${{ matrix.platform }}
+          TARGET_DOCKERFILE=${{ matrix.props.Dockerfile }}
+
+          # Since containers may or may not be against the same docker engine, create a matrix-unique tag name for outputs
+          TAG_NAME="docker-php-${TARGET_DOCKERFILE}-${TARGET_PLATFORM}"
+          # Formats as lowercase
+          TAG_NAME=$(echo $TAG_NAME | tr '[:upper:]' '[:lower:]')
+          # Removes slashes
+          TAG_NAME=$(echo $TAG_NAME | sed 's/\///')
+
+          echo $TAG_NAME
+
+          docker buildx build --platform $TARGET_PLATFORM --iidfile $TAG_NAME -t $TAG_NAME -f $TARGET_DOCKERFILE .
+
+          # NOTE: multi-arch builds may not be accessible by docker tag, instead target by ID
+          BUILD_SHA=$(cat ./$TAG_NAME)
+
+          # Remove sha256: from tag identifier
+          BUILD_SHA=$(echo $BUILD_SHA | sed 's/sha256\://')
+
+          # Generate self-signed certificates
+          mkdir -p certs
+          openssl genrsa -out ./certs/ca.key 2048
+          openssl req -new -key ./certs/ca.key -out ./certs/ca.csr -subj '/CN=localhost'
+          openssl x509 -req -days 365 -in ./certs/ca.csr -signkey ./certs/ca.key -out ./certs/ca.crt
+
+          # Run various configurations of containers
+          CONTAINER_VANILLA=$(docker run --platform $TARGET_PLATFORM --rm -p 8080 -d $BUILD_SHA)
+          CONTAINER_ENV_FILE=$(docker run --platform $TARGET_PLATFORM --rm -p 8080 -d --env-file ./.test.env $BUILD_SHA)
+          CONTAINER_HTTPS=$(docker run --platform $TARGET_PLATFORM --rm -p 8080 -d -e SERVER_ENABLE_HTTPS=true -v $(pwd)/certs:/etc/nginx/certs:ro $BUILD_SHA)
+
+          # Retrieve dynamically-allocated host port
+          VANILLA_PORT=$(docker inspect --format '{{ (index (index .NetworkSettings.Ports "8080/tcp") 0).HostPort }}' $CONTAINER_VANILLA)
+          ENV_FILE_PORT=$(docker inspect --format '{{ (index (index .NetworkSettings.Ports "8080/tcp") 0).HostPort }}' $CONTAINER_ENV_FILE)
+          HTTPS_PORT=$(docker inspect --format '{{ (index (index .NetworkSettings.Ports "8080/tcp") 0).HostPort }}' $CONTAINER_HTTPS)
+
+          # Wait for containers to boot (in background)
+          sleep 5
+
+          TARGET_HOST=${{ env.TARGET_HOST }}
+          echo "HOSTING ${TARGET_HOST}"
+
+          # Check for nginx test page response
+          curl ${TARGET_HOST}:${VANILLA_PORT} | grep "${{ env.TEST_MATCH }}"
+          curl ${TARGET_HOST}:${ENV_FILE_PORT} | grep "${{ env.TEST_MATCH }}"
+          curl -k https://${TARGET_HOST}:${HTTPS_PORT} | grep "${{ env.TEST_MATCH }}"
+
+          # Cleanup
+          docker kill $CONTAINER_VANILLA
+          docker kill $CONTAINER_ENV_FILE
+          docker kill $CONTAINER_HTTPS
+          docker rmi $BUILD_SHA

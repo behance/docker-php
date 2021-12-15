@@ -1,0 +1,69 @@
+name: publish
+
+on:
+  push:
+    tags:
+    - '*'
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    env:
+      IMAGE_BASE: behance/docker-php
+    strategy:
+      matrix:
+        props:
+        # Variant distributions all have semantic versions + PHP version + suffix (ex. 3.2.1-alpine)
+        - Dockerfile: Dockerfile-7.4
+          suffix: 7.4
+        - Dockerfile: Dockerfile-7.4-alpine
+          suffix: 7.4-alpine
+        - Dockerfile: Dockerfile-8.0
+          suffix: 8.0
+        - Dockerfile: Dockerfile-8.1
+          suffix: 8.1
+    steps:
+      -
+        name: Checkout
+        uses: actions/checkout@v2
+      -
+        name: Add tag suffix
+        if: matrix.props.suffix
+        run: |
+          echo TAG_SUFFIX="-${{ matrix.props.suffix }}" >> $GITHUB_ENV
+      -
+        name: Docker meta
+        id: meta
+        if: github.event_name != 'pull_request'
+        uses: docker/metadata-action@v3
+        with:
+          images: ${{ env.IMAGE_BASE }}
+          tags: |
+            type=semver,pattern={{major}}.{{minor}}.{{patch}}
+            type=semver,pattern={{major}}.{{minor}}
+            type=semver,pattern={{major}}
+          flavor: |
+            latest=auto
+            suffix=${{ env.TAG_SUFFIX }}
+      -
+        name: Set up QEMU
+        uses: docker/setup-qemu-action@v1
+      -
+        name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v1
+      -
+        name: Login to DockerHub
+        if: github.event_name != 'pull_request'
+        uses: docker/login-action@v1
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+      -
+        name: Build + push
+        uses: docker/build-push-action@v2
+        with:
+          context: .
+          platforms: linux/amd64,linux/arm64
+          file: ${{ matrix.props.Dockerfile }}
+          tags: ${{ steps.meta.outputs.tags }}
+          push: ${{ github.event_name != 'pull_request' }}
