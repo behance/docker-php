@@ -179,6 +179,7 @@ file:
       - '/^request_terminate_timeout = \${PHP_FPM_MAX_EXECUTION_TIME}/'
       - '/^rlimit_files = 40000/'
       - '/^rlimit_core = unlimited/'
+      - '/^decorate_workers_output = no/'
   {{ .Env.CONF_PHPMODS }}/newrelic.ini:
     exists: true
     contains:
