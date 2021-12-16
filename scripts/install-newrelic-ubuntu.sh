@@ -28,21 +28,9 @@ cd /root
 git clone https://github.com/newrelic/newrelic-php-agent
 cd newrelic-php-agent
 
-# Assumes apt cache is available, build-essential and phpXX-dev packages are already installed
-apt-get install -yqq \
-  libssl-dev \
-  libpcre3-dev \
-  golang
-
 make all
 
 mkdir -p /var/log/newrelic
 chmod 777 /var/log/newrelic
 cp agent/scripts/newrelic.ini.template "${CONF_PHPMODS}"/newrelic.ini
 cp bin/daemon /usr/bin/newrelic-daemon
-
-# Cleanup script-specific packages
-apt-get remove --purge -yq \
-  libssl-dev \
-  libpcre3-dev \
-  golang
