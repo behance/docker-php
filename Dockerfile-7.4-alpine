@@ -27,6 +27,14 @@ ENV CONF_PHPFPM=/etc/php7/php-fpm.conf \
     PHP_ENGINE_VERSION=20180731 \
     CFG_APP_DEBUG=1
 
+COPY ./scripts /scripts
+
+# - Update packages
+# - Add PHP and support packages
+# - Install NewRelic
+# - Compile extensions
+# - Enable/disable default extensions
+# - Cleanup
 RUN apk update && \
     apk add --no-cache \
       git \
@@ -78,43 +86,12 @@ RUN apk update && \
       php7-xmlwriter \
       php7-xsl \
       php7-zip \
-      php7-zlib
-
-RUN \
-    # Disable xdebug by default \
-    sed -i 's/zend_extension\s\?=/;zend_extension =/' $CONF_PHPMODS/50_xdebug.ini && \
-    # Disable postgres by default \
-    sed -i 's/extension/;extension/' $CONF_PHPMODS/01_pdo_pgsql.ini && \
-    sed -i 's/extension/;extension/' $CONF_PHPMODS/00_pgsql.ini && \
-    /bin/bash -e /clean.sh
-
-# Locate and install latest Alpine-compatible NewRelic, seed with variables to be replaced
-# Requires PHP to already be installed
-RUN NEWRELIC_MUSL_PATH=$(curl -s https://download.newrelic.com/php_agent/release/ | grep 'linux-musl.tar.gz' | cut -d '"' -f2) && \
-    NEWRELIC_PATH="https://download.newrelic.com${NEWRELIC_MUSL_PATH}" && \
-    curl -L ${NEWRELIC_PATH} -o ./root/newrelic-musl.tar.gz && \
-    cd /root && \
-    gzip -dc newrelic-musl.tar.gz | tar xf - && \
-    rm newrelic-musl.tar.gz && \
-    NEWRELIC_DIRECTORY=/root/$(basename $(find . -maxdepth 1 -type d -name newrelic\*)) && \
-    cd $NEWRELIC_DIRECTORY && \
-    echo "\n" | ./newrelic-install install && \
-    chown root:root $NEWRELIC_DIRECTORY/agent/x64/newrelic-${PHP_ENGINE_VERSION}.so && \
-    mv $NEWRELIC_DIRECTORY/agent/x64/newrelic-${PHP_ENGINE_VERSION}.so /usr/lib/php7/modules/newrelic.so && \
-    rm -rf $NEWRELIC_DIRECTORY/agent/x64 && \
-    # Fix permissions on extracted folder \
-    chown -R $NOT_ROOT_USER:$NOT_ROOT_USER * && \
-    /bin/bash -e /clean.sh
-
-RUN curl -sS https://getcomposer.org/installer | php && \
-    mv composer.phar /usr/local/bin/composer
-
-RUN apk update && \
-    apk add --no-cache \
-        yaml-dev \
-        zlib-dev \
-        libmemcached-dev \
-        cyrus-sasl-dev \
+      php7-zlib \
+      # below required to compile non-packaged extensions
+      yaml-dev \
+      zlib-dev \
+      libmemcached-dev \
+      cyrus-sasl-dev \
     && \
     apk add --no-cache --virtual .phpize_deps \
         autoconf file g++ gcc libc-dev make pkgconf re2c php7-dev php7-pear \
@@ -130,8 +107,17 @@ RUN apk update && \
     echo "extension=msgpack.so" > $CONF_PHPMODS/msgpack.ini && \
     pecl install memcached && \
     echo "extension=memcached.so" > $CONF_PHPMODS/memcached.ini && \
-    rm -rf /usr/share/php7 && \
+    # Disable xdebug by default \
+    sed -i 's/zend_extension\s\?=/;zend_extension =/' $CONF_PHPMODS/50_xdebug.ini && \
+    # Disable postgres by default \
+    sed -i 's/extension/;extension/' $CONF_PHPMODS/01_pdo_pgsql.ini && \
+    sed -i 's/extension/;extension/' $CONF_PHPMODS/00_pgsql.ini \
+    && \
+    /bin/bash -e /scripts/install-newrelic-alpine.sh && \
+    curl -sS https://getcomposer.org/installer | php && \
+    mv composer.phar /usr/local/bin/composer && \
     apk del .phpize_deps && \
+    # rm -rf /usr/share/php7 && \
     /bin/bash -e /clean.sh
 
 # Overlay the root filesystem from this repo
@@ -143,7 +129,10 @@ RUN cp /etc/php/7.0/mods-available/* $CONF_PHPMODS && \
     # - Run standard set of tweaks to ensure runs performant, reliably, and consistent between variants
     chown $NOT_ROOT_USER:$NOT_ROOT_USER /var/log/php7 && \
     ln -s /usr/sbin/php-fpm7 /usr/sbin/php-fpm && \
-    /bin/bash -e prep-php.sh
+    /bin/bash -e /scripts/prep-php.sh
 
+# HACK: workaround for https://github.com/aelsabbahy/goss/issues/392
+# Run the child and parent test configs separately instead of leveraging inheritance
 RUN goss -g /tests/php-fpm/7.4-alpine.goss.yaml validate && \
+    goss -g /tests/php-fpm/base.goss.yaml validate && \
     /aufs_hack.sh

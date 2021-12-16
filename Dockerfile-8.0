@@ -27,7 +27,14 @@ ENV CONF_PHPFPM=/etc/php/8.0/fpm/php-fpm.conf \
     PHP_ENGINE_VERSION=20200930 \
     CFG_APP_DEBUG=1
 
-# - Update security packages, only
+COPY ./scripts/ /scripts/
+
+# - Update security packages
+# - Add PHP and support packages
+# - Install NewRelic
+# - Compile extensions
+# - Enable/disable default extensions
+# - Cleanup
 RUN /bin/bash -e /security_updates.sh && \
     apt-get install -yqq --no-install-recommends \
         gpg-agent \
@@ -39,50 +46,16 @@ RUN /bin/bash -e /security_updates.sh && \
     && \
     locale-gen en_US.UTF-8 && export LANG=en_US.UTF-8 && \
     add-apt-repository ppa:ondrej/php -y && \
-    echo 'deb http://apt.newrelic.com/debian/ newrelic non-free' | tee /etc/apt/sources.list.d/newrelic.list && \
-    wget -O- https://download.newrelic.com/548C16BF.gpg | apt-key add - && \
-    # Prevent newrelic install from prompting for input \
-    echo newrelic-php5 newrelic-php5/application-name string "REPLACE_NEWRELIC_APP" | debconf-set-selections && \
-    echo newrelic-php5 newrelic-php5/license-key string "REPLACE_NEWRELIC_LICENSE" | debconf-set-selections && \
-    # Perform cleanup \
-    apt-get remove --purge -yq \
-        patch \
-        software-properties-common \
-        locales \
-        wget \
-    && \
-    /bin/bash /clean.sh
-
-# Add PHP and support packages
-COPY container/root/usr/local/bin/pecl-install /usr/local/bin
-RUN apt-get update -q && \
+    apt-get update -q && \
     # Ensure old versions of PHP don't accidentally get added by PPA maintainers
     apt-mark hold \
-            manpages \
-            manpages-dev \
-            apache2 \
-            apache2-bin \
-            libapache2-mod-php7.4 \
-            php5.6-cli \
-            php5.6-common \
-            php5.6-json \
-            php7.0-cli \
-            php7.0-common \
-            php7.0-json \
-            php7.1-cli \
-            php7.1-common \
-            php7.1-json \
-            php7.2-cli \
-            php7.2-common \
-            php7.2-json \
-            php7.3-cli \
-            php7.3-common \
-            php7.3-json \
-            php7.4-cli \
-            php7.4-common \
-            php7.4-json
-
-RUN apt-get -yqq install \
+        manpages \
+        manpages-dev \
+        apache2 \
+        apache2-bin \
+        libapache2-mod-php8.0 \
+    && \
+    apt-get -yqq install \
         php8.0 \
         php8.0-apcu \
         php8.0-bcmath \
@@ -101,30 +74,39 @@ RUN apt-get -yqq install \
         php8.0-xml \
         php8.0-yaml \
         php8.0-zip \
-        newrelic-php5 \
-        newrelic-php5-common \
-        newrelic-daemon \
+    && \
+    /bin/bash -e /scripts/install-newrelic-ubuntu.sh && \
+    phpenmod \
+        memcached \
+        igbinary \
+        msgpack \
+    && \
+    phpdismod \
+        pdo_pgsql \
+        pgsql \
+        redis \
+        yaml \
+        xdebug \
+    && \
+    curl -sS https://getcomposer.org/installer | php && \
+    mv composer.phar /usr/local/bin/composer && \
+    apt-get remove --purge -yq \
+        build-essential \
+        cpp \
+        cpp-7 \
+        gcc \
+        locales \
+        patch \
+        php7.4-dev \
+        pkg-config \
+        software-properties-common \
+        wget \
     && \
     /bin/bash /clean.sh \
-    && \
-    phpenmod memcached && \
-    phpenmod igbinary && \
-    phpenmod msgpack && \
-    phpdismod pdo_pgsql && \
-    phpdismod pgsql && \
-    phpdismod redis && \
-    phpdismod yaml && \
-    phpdismod xdebug && \
     # Remove extra extensions installed via packages for other versions of PHP, leaving the active engine folder
     cd /usr/lib/php && \
     ls -d */ | grep '[0-9]\{8\}' | grep -v ${PHP_ENGINE_VERSION} | xargs rm -rf && \
-    rm -rf /usr/lib/php/7.4 && \
-    # Remove unused agents for other PHP versions
-    cd /usr/lib/newrelic-php5/agent/x64 && ls | grep -v newrelic-${PHP_ENGINE_VERSION}.so | xargs rm && \
-    cd / && \
-    curl -sS https://getcomposer.org/installer | php && \
-    mv composer.phar /usr/local/bin/composer && \
-    /bin/bash /clean.sh
+    cd /
 
 # Overlay the root filesystem from this repo
 COPY ./container/root /
@@ -139,9 +121,7 @@ RUN cp /etc/php/7.0/mods-available/* $CONF_PHPMODS && \
     # Enable NewRelic via Ubuntu symlinks, but disable in file. Cross-variant startup script uncomments with env vars.
     phpenmod newrelic && \
     # Run standard set of tweaks to ensure runs performant, reliably, and consistent between variants
-    /bin/bash -e /prep-php.sh && \
-    # New 7.3+ specific configuration
-    sed -i "s/;decorate_workers_output.*/decorate_workers_output = no/" $CONF_FPMPOOL
+    /bin/bash -e /scripts/prep-php.sh
 
 # HACK: workaround for https://github.com/aelsabbahy/goss/issues/392
 # Run the child and parent test configs separately instead of leveraging inheritance
