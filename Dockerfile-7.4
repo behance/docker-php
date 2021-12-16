@@ -78,6 +78,9 @@ RUN /bin/bash -e /security_updates.sh && \
         pkg-config \
         libmemcached-dev \
         zlib1g-dev \
+        libssl-dev \
+        libpcre3-dev \
+        golang \
     && \
     /bin/bash -e /scripts/install-newrelic-ubuntu.sh && \
     /scripts/pecl-install.sh \
@@ -105,6 +108,9 @@ RUN /bin/bash -e /security_updates.sh && \
         cpp \
         cpp-7 \
         gcc \
+        golang \
+        libpcre3-dev \
+        libssl-dev \
         locales \
         patch \
         php7.4-dev \

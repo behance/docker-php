@@ -74,6 +74,14 @@ RUN /bin/bash -e /security_updates.sh && \
         php8.0-xml \
         php8.0-yaml \
         php8.0-zip \
+        # below required to compile non-packaged extensions
+        php8.0-dev \
+        pkg-config \
+        libmemcached-dev \
+        zlib1g-dev \
+        libssl-dev \
+        libpcre3-dev \
+        golang \
     && \
     /bin/bash -e /scripts/install-newrelic-ubuntu.sh && \
     phpenmod \
@@ -95,9 +103,12 @@ RUN /bin/bash -e /security_updates.sh && \
         cpp \
         cpp-7 \
         gcc \
+        golang \
+        libpcre3-dev \
+        libssl-dev \
         locales \
         patch \
-        php7.4-dev \
+        php8.0-dev \
         pkg-config \
         software-properties-common \
         wget \
