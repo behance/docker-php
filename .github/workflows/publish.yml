@@ -14,14 +14,24 @@ jobs:
       matrix:
         props:
         # Variant distributions all have semantic versions + PHP version + suffix (ex. 3.2.1-alpine)
+        props:
         - Dockerfile: Dockerfile-7.4
-          suffix: 7.4
+          version: 7.4
+          prefix: 7.4
         - Dockerfile: Dockerfile-7.4-alpine
-          suffix: 7.4-alpine
+          version: 7.4
+          prefix: 7.4
+          suffix: alpine
         - Dockerfile: Dockerfile-8.0
-          suffix: 8.0
-        - Dockerfile: Dockerfile-8.1
-          suffix: 8.1
+          version: 8.0
+          prefix: 8.0
+        platform:
+        - linux/amd64
+        # - linux/arm64
+        exclude:
+          - props:
+              Dockerfile: Dockerfile-7.4-alpine
+          - platform: linux/arm64
     steps:
       -
         name: Checkout
@@ -30,6 +40,7 @@ jobs:
         name: Add tag suffix
         if: matrix.props.suffix
         run: |
+          echo TAG_PREFIX="${{ matrix.props.prefix }}-" >> $GITHUB_ENV
           echo TAG_SUFFIX="-${{ matrix.props.suffix }}" >> $GITHUB_ENV
       -
         name: Docker meta
@@ -44,6 +55,7 @@ jobs:
             type=semver,pattern={{major}}
           flavor: |
             latest=auto
+            prefix=${{ env.TAG_PREFIX }}
             suffix=${{ env.TAG_SUFFIX }}
       -
         name: Set up QEMU
