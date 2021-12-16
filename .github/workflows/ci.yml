@@ -9,13 +9,10 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        props:
-        - Dockerfile: Dockerfile-7.4
-          version: 7.4
-        - Dockerfile: Dockerfile-7.4-alpine
-          version: 7.4
-        - Dockerfile: Dockerfile-8.0
-          version: 8.0
+        variant:
+          - 7.4
+          - 7.4-alpine
+          - 8.0
         platform:
         - linux/amd64
         # - linux/arm64
@@ -55,40 +52,5 @@ jobs:
           docker run --privileged --rm tonistiigi/binfmt --install arm64,amd64
 
           TARGET_PLATFORM=${{ matrix.platform }}
-          TARGET_DOCKERFILE=${{ matrix.props.Dockerfile }}
-
-          # Since containers may or may not be against the same docker engine, create a matrix-unique tag name for outputs
-          TAG_NAME="docker-php-${TARGET_DOCKERFILE}-${TARGET_PLATFORM}"
-          # Formats as lowercase
-          TAG_NAME=$(echo $TAG_NAME | tr '[:upper:]' '[:lower:]')
-          # Removes slashes
-          TAG_NAME=$(echo $TAG_NAME | sed 's/\///')
-
-          echo $TAG_NAME
-
-          docker buildx build --platform $TARGET_PLATFORM --iidfile $TAG_NAME -t $TAG_NAME -f $TARGET_DOCKERFILE .
-
-          # NOTE: multi-arch builds may not be accessible by docker tag, instead target by ID
-          BUILD_SHA=$(cat ./$TAG_NAME)
-
-          # Remove sha256: from tag identifier
-          BUILD_SHA=$(echo $BUILD_SHA | sed 's/sha256\://')
-
-          # Run various configurations of containers
-          CONTAINER_VANILLA=$(docker run --platform $TARGET_PLATFORM --rm -p 8080 -d $BUILD_SHA)
-
-          # Retrieve dynamically-allocated host port
-          VANILLA_PORT=$(docker inspect --format '{{ (index (index .NetworkSettings.Ports "8080/tcp") 0).HostPort }}' $CONTAINER_VANILLA)
-
-          # Wait for containers to boot (in background)
-          sleep 5
-
-          TARGET_HOST=${{ env.TARGET_HOST }}
-          echo "HOSTING ${TARGET_HOST}"
-
-          # Check for nginx test page response
-          curl ${TARGET_HOST}:${VANILLA_PORT} | grep "${{ env.TEST_MATCH }}"
-
-          # Cleanup
-          docker kill $CONTAINER_VANILLA
-          docker rmi $BUILD_SHA
+          PHP_VARIANT=${{ matrix.variant }}
+          PLATFORM=${TARGET_PLATFORM} PHP_VARIANT=${PHP_VARIANT} ./test.sh $TARGET_HOST
