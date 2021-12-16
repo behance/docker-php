@@ -26,6 +26,7 @@ fi
 echo "[newrelic] arm64 detected, compiling from source"
 cd /root
 git clone https://github.com/newrelic/newrelic-php-agent
+cd newrelic-php-agent
 
 # Assumes apt cache is available, build-essential and phpXX-dev packages are already installed
 apt-get install -yqq \
