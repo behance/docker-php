@@ -7,7 +7,6 @@ env:
     - PHP_VARIANT=7.4-alpine
     - PHP_VARIANT=7.4
     - PHP_VARIANT=8.0
-    - PHP_VARIANT=8.1
 
 services:
   - docker
