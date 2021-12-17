@@ -72,6 +72,7 @@ function finish {
 
   # Remove the tag if it exists
   docker rmi -f $BUILD_SHA 2>&1 > /dev/null
+  rm ./$TAG_NAME
 }
 
 trap finish EXIT
@@ -93,12 +94,12 @@ echo "${PREFIX} Perform startup tests"
 GOSS_PATH=goss \
 GOSS_SLEEP=5 \
 GOSS_FILES_PATH="runtime-tests/startup/${PHP_VARIANT}/" \
-dgoss run --rm $BUILD_SHA
+"${GOSS_INSTALL_PATH}dgoss" run --rm $BUILD_SHA
 
 echo "${PREFIX} Perform NewRelic runtime tests"
 GOSS_PATH=goss \
 GOSS_FILES_PATH="runtime-tests/newrelic/${PHP_VARIANT}/" \
-dgoss run \
+"${GOSS_INSTALL_PATH}dgoss" run \
   -e REPLACE_NEWRELIC_APP="abcdefg" \
   -e REPLACE_NEWRELIC_LICENSE="hijklmno" \
   -e NEWRELIC_TRACING_ENABLED="true" \
