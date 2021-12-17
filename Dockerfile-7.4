@@ -83,6 +83,7 @@ RUN /bin/bash -e /security_updates.sh && \
         golang \
     && \
     /bin/bash -e /scripts/install-newrelic-ubuntu.sh && \
+    /bin/bash -e /scripts/install-composer.sh && \
     /scripts/pecl-install.sh \
         igbinary \
         memcached \
@@ -101,8 +102,6 @@ RUN /bin/bash -e /security_updates.sh && \
         yaml \
         xdebug \
     && \
-    curl -sS https://getcomposer.org/installer | php && \
-    mv composer.phar /usr/local/bin/composer && \
     apt-get remove --purge -yq \
         build-essential \
         cpp \

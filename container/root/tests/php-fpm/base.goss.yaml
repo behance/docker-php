@@ -158,7 +158,12 @@ command:
   php -n -d zend_extension=xdebug.so --ri xdebug:
     exit-status: 0
     stderr: ['!/./']
-
+  composer about:
+    exit-status: 0
+    stdout: ['/Composer - Dependency Manager for PHP/']
+  newrelic-daemon -v:
+    exit-status: 0
+    stdout: ['/New Relic daemon/']
 file:
   {{ .Env.CONF_FPMPOOL }}:
     exists: true

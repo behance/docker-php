@@ -114,8 +114,7 @@ RUN apk update && \
     sed -i 's/extension/;extension/' $CONF_PHPMODS/00_pgsql.ini \
     && \
     /bin/bash -e /scripts/install-newrelic-alpine.sh && \
-    curl -sS https://getcomposer.org/installer | php && \
-    mv composer.phar /usr/local/bin/composer && \
+    /bin/bash -e /scripts/install-composer.sh && \
     apk del .phpize_deps && \
     # rm -rf /usr/share/php7 && \
     /bin/bash -e /clean.sh
