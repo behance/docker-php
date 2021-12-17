@@ -29,8 +29,12 @@ git clone https://github.com/newrelic/newrelic-php-agent
 cd newrelic-php-agent
 
 make all
+make agent-install
+mv bin/daemon /usr/bin/newrelic-daemon
 
 mkdir -p /var/log/newrelic
 chmod 777 /var/log/newrelic
 cp agent/scripts/newrelic.ini.template "${CONF_PHPMODS}"/newrelic.ini
-cp bin/daemon /usr/bin/newrelic-daemon
+
+# Delete compilation directory, no longer needed
+rm -rf /root/newrelic-php-agent

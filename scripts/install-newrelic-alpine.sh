@@ -22,7 +22,7 @@ if [[ "$ARCH" == "x64" ]]; then
   exit 0
 fi
 
-echo "[newrelic] arm64 detected, compiling from source"
+echo "[newrelic] arm64 detected, compiling from source: NOT CURRENTLY WORKING"
 cd /root
 git clone https://github.com/newrelic/newrelic-php-agent
 cd newrelic-php-agent
@@ -39,11 +39,15 @@ apk add --no-cache --virtual .newrelic_deps \
   make
 
 make all
+make agent-install
+mv bin/daemon /usr/bin/newrelic-daemon
 
 mkdir -p /var/log/newrelic
 chmod 777 /var/log/newrelic
 cp agent/scripts/newrelic.ini.template "${CONF_PHPMODS}"/newrelic.ini
-cp -a bin/daemon /usr/bin/newrelic-daemon
 
 # Cleanup script-specific packages
 apk del .newrelic_deps
+
+# Delete compilation directory, no longer needed
+rm -rf /root/newrelic-php-agent
