@@ -158,7 +158,12 @@ command:
   php -n -d zend_extension=xdebug.so --ri xdebug:
     exit-status: 0
     stderr: ['!/./']
-
+  composer about:
+    exit-status: 0
+    stdout: ['/Composer - Dependency Manager for PHP/']
+  newrelic-daemon -v:
+    exit-status: 0
+    stdout: ['/New Relic daemon/']
 file:
   {{ .Env.CONF_FPMPOOL }}:
     exists: true
@@ -179,6 +184,7 @@ file:
       - '/^request_terminate_timeout = \${PHP_FPM_MAX_EXECUTION_TIME}/'
       - '/^rlimit_files = 40000/'
       - '/^rlimit_core = unlimited/'
+      - '/^decorate_workers_output = no/'
   {{ .Env.CONF_PHPMODS }}/newrelic.ini:
     exists: true
     contains:

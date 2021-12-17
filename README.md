@@ -12,11 +12,7 @@ Available on [Docker Hub](https://hub.docker.com/r/behance/docker-php/).
 
 ### Quick-start
 
-- `docker run behance/docker-php:7.0 "php" "-v"`
-- `docker run behance/docker-php:7.1 "php" "-v"`
-- `docker run behance/docker-php:7.2 "php" "-v"`
-- `docker run behance/docker-php:7.3-alpine "php" "-v"`
-- `docker run behance/docker-php:7.3" "php" "-v"`
+- `docker run behance/docker-php:7.4-alpine "php" "-v"`
 - `docker run behance/docker-php:7.4" "php" "-v"`
 - `docker run behance/docker-php:8.0" "php" "-v"`
 
@@ -29,7 +25,7 @@ Adding startup logic, [basic](https://github.com/behance/docker-base#startuprunt
 
 - `PHP_MAJOR.PHP_MINOR`, required. Engine versions of PHP. ex. `docker-php:8.0`
 - `(Major.Minor.Patch)`, optional. Semantically versioned container provisioning code. ex. `docker-php:7.4-13.4.0`.
-- `(-variant)`, optional. Alpine variants are slim versions of the container. ex. `docker-php:7.3-alpine`.
+- `(-variant)`, optional. Alpine variants are slim versions of the container. ex. `docker-php:7.4-alpine`.
 
 ### Includes
 ---
@@ -44,7 +40,6 @@ Adding startup logic, [basic](https://github.com/behance/docker-base#startuprunt
 For extension customization, including enabling and disabling defaults, see [here](https://github.com/behance/docker-php#downstream-configuration)
 
 `^`  - not available on `-alpine` variant
-`*`  - not available on `7.2+`
 `~`  - disabled by default
 
   - apcu
@@ -63,7 +58,6 @@ For extension customization, including enabling and disabling defaults, see [her
   - intl
   - json
   - mbstring
-  - mcrypt *
   - memcache ^
   - memcached
   - msgpack
@@ -87,7 +81,7 @@ For extension customization, including enabling and disabling defaults, see [her
   - sysvsem
   - sysvshm
   - tokenizer
-  - xdebug ~,*
+  - xdebug ~
   - xml
   - xmlreader
   - xmlwriter
@@ -211,15 +205,36 @@ PHP_FPM_LOG_BUFFERING | PHP_FPM_LOG_BUFFERING=no | yes | PHP 7.3+ only [docs](ht
 
 ### Testing
 ---
-- Requires `bash`, `docker`, `docker-compose`, and `dgoss`
+- Requires `bash`, `docker`, and `dgoss` ([link](https://github.com/aelsabbahy/goss/blob/master/extras/dgoss/README.md))
 
 To test locally, run `PHP_VARIANT=8.0 ./test.sh {docker engine IP}`.
 
 This will:
-- Build a single container `PHP_VARIANT` (7.0, 7.1, 7.2, 7.3, 7.3-alpine, 7.4, 8.0)
+- Build a single container `PHP_VARIANT` (ex. 7.4-alpine, 7.4, 8.0)
 - Leverages [Goss](https://goss.rocks) to confirm package, config, and extension installation
 - Validates a large file upload
 - Boots container with specific NewRelic configuration overrides
 
-The test matrix is run automatically per pull request on Travis CI.
+### Release Management
 
+Github actions provide the machinery for testing (ci.yaml) and producing tags distributed through Docker Hub (publish.yaml). Testing will confirm that `nginx` is able to serve content in various configurations, but also that it can terminate TLS with self-signed certificates. Once a tested and approved PR is merged, simply cutting a new semantically-versioned tag will generate the a matrix of tagged builds. See Container tag scheme above.
+
+Platform support is available for multiple architectures:
+- `linux/amd64`: Ubuntu and Alpine variants
+- `linux/arm64`: Ubuntu variants-only
+
+To add new variant based on a new Dockerfile, add an entry to `matrix.props` within `./github/workflows` YAML files.
+
+### Github Actions: Simulation
+
+docker-nginx uses Github Actions for CI/CD. Simulated workflows can be achieved locally with `act`. All commands must be executes from repository root.
+
+Pre-reqs: tested on Mac
+1. [Docker Desktop](https://www.docker.com/products/docker-desktop)
+1. [act](https://github.com/nektos/act)
+
+Pull request simulation: executes successfully, but only on ARM devices (ex. Apple M1). ARM emulation through QEMU on X64 machines does not implement the full kernel functionality required by nginx at this time.
+- `act pull_request`
+
+Publish simulation: executes, but fails (intentionally) without credentials
+- `act`

@@ -1,0 +1,56 @@
+name: ci
+
+on:
+  pull_request:
+    branches: [ master ]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        variant:
+          - 7.4
+          - 7.4-alpine
+          - 8.0
+        platform:
+        - linux/amd64
+        # - linux/arm64
+        exclude:
+          - props:
+              Dockerfile: Dockerfile-7.4-alpine
+          - platform: linux/arm64
+    env:
+      TEST_MATCH: PHP Version ${{ matrix.props.version }}
+    steps:
+      -
+        name: Checkout
+        uses: actions/checkout@v2
+      -
+        name: Detect host configuration
+        run: |
+          # NOTE: Docker host configuration determines the networking target for integration testing
+          v=$(mount | grep "/run/docker.sock")
+          TARGET_HOST=
+
+          if [ -n "$v" ]; then
+            echo "Injected docker socket detected"
+            TARGET_HOST="host.docker.internal"
+          elif [ -S /var/run/docker.sock ]; then
+            TARGET_HOST="localhost"
+          else
+            echo "No Docker socket detected, fail"
+            exit 1
+          fi
+          echo "TARGET_HOST=${TARGET_HOST}" >> $GITHUB_ENV
+      -
+        # Build and execute in multiple configurations: vanilla, with env overrides, with TLS enabled
+        name: Build and test
+        run: |
+          # NOTE: docker qemu and buildx setup actions create a black hole for build cache layers, avoid unless pushing externally
+          # Setup multi-arch platforms, noop if already installed for builder
+          docker run --privileged --rm tonistiigi/binfmt --install arm64,amd64
+
+          TARGET_PLATFORM=${{ matrix.platform }}
+          PHP_VARIANT=${{ matrix.variant }}
+          PLATFORM=${TARGET_PLATFORM} PHP_VARIANT=${PHP_VARIANT} ./test.sh $TARGET_HOST

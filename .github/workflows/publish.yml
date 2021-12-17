@@ -1,0 +1,72 @@
+name: publish
+
+on:
+  push:
+    tags:
+    - '*'
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    env:
+      IMAGE_BASE: behance/docker-php
+    strategy:
+      matrix:
+        # Variant distributions all have semantic versions + PHP version + suffix (ex. 3.2.1-alpine)
+        props:
+        - Dockerfile: Dockerfile-7.4-alpine
+          version: "7.4"
+          suffix: alpine
+          platforms: linux/amd64
+        - Dockerfile: Dockerfile-7.4
+          version: "7.4"
+          platforms: linux/amd64,linux/arm64
+        - Dockerfile: Dockerfile-8.0
+          version: "8.0"
+          platforms: linux/amd64,linux/arm64
+    steps:
+      -
+        name: Checkout
+        uses: actions/checkout@v2
+      -
+        name: Add tag suffix if one exists
+        if: matrix.props.suffix
+        run: |
+          echo TAG_SUFFIX="-${{ matrix.props.suffix }}" >> $GITHUB_ENV
+      -
+        name: Docker meta
+        id: meta
+        if: github.event_name != 'pull_request'
+        uses: docker/metadata-action@v3
+        with:
+          images: ${{ env.IMAGE_BASE }}
+          tags: |
+            type=raw,priority=100,value=${{ matrix.props.version }}
+            type=semver,priority=200,prefix=${{ matrix.props.version }}-,pattern={{major}}
+            type=semver,priority=300,prefix=${{ matrix.props.version }}-,pattern={{major}}.{{minor}}
+            type=semver,priority=400,prefix=${{ matrix.props.version }}-,pattern={{major}}.{{minor}}.{{patch}}
+          flavor: |
+            latest=auto
+            suffix=${{ env.TAG_SUFFIX }}
+      -
+        name: Set up QEMU
+        uses: docker/setup-qemu-action@v1
+      -
+        name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v1
+      -
+        name: Login to DockerHub
+        if: github.event_name != 'pull_request'
+        uses: docker/login-action@v1
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+      -
+        name: Build + push
+        uses: docker/build-push-action@v2
+        with:
+          context: .
+          platforms: ${{ matrix.props.platforms }}
+          file: ${{ matrix.props.Dockerfile }}
+          tags: ${{ steps.meta.outputs.tags }}
+          push: ${{ github.event_name != 'pull_request' }}

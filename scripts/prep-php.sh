@@ -45,6 +45,9 @@ sed -i "s/^;rlimit_files =.*/rlimit_files = 40000/" $CONF_FPMPOOL
 # - Set max core size rlimit for the master process.
 sed -i "s/^;rlimit_core =.*/rlimit_core = unlimited/" $CONF_FPMPOOL
 
+# - When logging to stdout, don't wrap the message in any way
+sed -i "s/;decorate_workers_output.*/decorate_workers_output = no/" $CONF_FPMPOOL
+
 # - Allow NewRelic to be partially configured by environment variables, set sane defaults
 
 # Enable NewRelic via Ubuntu symlinks, but disable in file. Cross-variant startup script uncomments with env vars.
