@@ -12,35 +12,26 @@ jobs:
       IMAGE_BASE: behance/docker-php
     strategy:
       matrix:
-        props:
         # Variant distributions all have semantic versions + PHP version + suffix (ex. 3.2.1-alpine)
         props:
-        - Dockerfile: Dockerfile-7.4
-          version: 7.4
-          prefix: 7.4
         - Dockerfile: Dockerfile-7.4-alpine
-          version: 7.4
-          prefix: 7.4
+          version: "7.4"
           suffix: alpine
+          platforms: linux/amd64
+        - Dockerfile: Dockerfile-7.4
+          version: "7.4"
+          platforms: linux/amd64,linux/arm64
         - Dockerfile: Dockerfile-8.0
-          version: 8.0
-          prefix: 8.0
-        platform:
-        - linux/amd64
-        # - linux/arm64
-        exclude:
-          - props:
-              Dockerfile: Dockerfile-7.4-alpine
-          - platform: linux/arm64
+          version: "8.0"
+          platforms: linux/amd64,linux/arm64
     steps:
       -
         name: Checkout
         uses: actions/checkout@v2
       -
-        name: Add tag suffix
+        name: Add tag suffix if one exists
         if: matrix.props.suffix
         run: |
-          echo TAG_PREFIX="${{ matrix.props.prefix }}-" >> $GITHUB_ENV
           echo TAG_SUFFIX="-${{ matrix.props.suffix }}" >> $GITHUB_ENV
       -
         name: Docker meta
@@ -50,12 +41,12 @@ jobs:
         with:
           images: ${{ env.IMAGE_BASE }}
           tags: |
-            type=semver,pattern={{major}}.{{minor}}.{{patch}}
-            type=semver,pattern={{major}}.{{minor}}
-            type=semver,pattern={{major}}
+            type=raw,priority=100,value=${{ matrix.props.version }}
+            type=semver,priority=200,prefix=${{ matrix.props.version }}-,pattern={{major}}
+            type=semver,priority=300,prefix=${{ matrix.props.version }}-,pattern={{major}}.{{minor}}
+            type=semver,priority=400,prefix=${{ matrix.props.version }}-,pattern={{major}}.{{minor}}.{{patch}}
           flavor: |
             latest=auto
-            prefix=${{ env.TAG_PREFIX }}
             suffix=${{ env.TAG_SUFFIX }}
       -
         name: Set up QEMU
@@ -75,7 +66,7 @@ jobs:
         uses: docker/build-push-action@v2
         with:
           context: .
-          platforms: linux/amd64,linux/arm64
+          platforms: ${{ matrix.props.platforms }}
           file: ${{ matrix.props.Dockerfile }}
           tags: ${{ steps.meta.outputs.tags }}
           push: ${{ github.event_name != 'pull_request' }}
