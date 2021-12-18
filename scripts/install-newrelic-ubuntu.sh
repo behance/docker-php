@@ -38,3 +38,4 @@ cp agent/scripts/newrelic.ini.template "${CONF_PHPMODS}"/newrelic.ini
 
 # Delete compilation directory, no longer needed
 rm -rf /root/newrelic-php-agent
+rm -rf /root/.cache/go-build
