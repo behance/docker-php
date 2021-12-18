@@ -15,10 +15,9 @@ jobs:
           - 8.0
         platform:
         - linux/amd64
-        # - linux/arm64
+        - linux/arm64
         exclude:
-          - props:
-              Dockerfile: Dockerfile-7.4-alpine
+          - variant: 7.4-alpine
           - platform: linux/arm64
     env:
       TEST_MATCH: PHP Version ${{ matrix.props.version }}

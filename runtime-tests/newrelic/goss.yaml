@@ -1,5 +1,5 @@
 file:
-  /etc/php/8.0/mods-available/newrelic.ini:
+  {{ .Env.CONF_PHPMODS }}/newrelic.ini:
     exists: true
     mode: "0644"
     filetype: file # file, symlink, directory
