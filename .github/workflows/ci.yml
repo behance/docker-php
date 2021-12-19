@@ -10,9 +10,9 @@ jobs:
     strategy:
       matrix:
         variant:
-          - 7.4
-          - 7.4-alpine
-          - 8.0
+          - "7.4"
+          - "7.4-alpine"
+          - "8.0"
         platform:
         - linux/amd64
         - linux/arm64
@@ -20,7 +20,7 @@ jobs:
           - variant: 7.4-alpine
           - platform: linux/arm64
     env:
-      TEST_MATCH: PHP Version ${{ matrix.props.version }}
+      TEST_MATCH: PHP Version ${{ matrix.variant }}
     steps:
       -
         name: Checkout
@@ -28,20 +28,14 @@ jobs:
       -
         name: Detect host configuration
         run: |
-          # NOTE: Docker host configuration determines the networking target for integration testing
-          v=$(mount | grep "/run/docker.sock")
           TARGET_HOST=
-
-          if [[ -n "$v" ]]; then
-            echo "Injected docker socket detected"
+          if [[ -n "$ACT" ]]; then
+            echo "Local execution detected"
             TARGET_HOST="host.docker.internal"
-          elif [[ -S /var/run/docker.sock ]]; then
-            echo "Local docker socket detected"
-            TARGET_HOST="localhost"
           else
-            echo "No docker socket detected, falling back"
             TARGET_HOST="localhost"
-          fi
+          fi;
+
           echo "TARGET_HOST=${TARGET_HOST}" >> $GITHUB_ENV
       -
         # Build and execute in multiple configurations: vanilla, with env overrides, with TLS enabled

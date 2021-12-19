@@ -46,8 +46,9 @@ mkdir -p /var/log/newrelic
 chmod 777 /var/log/newrelic
 cp agent/scripts/newrelic.ini.template "${CONF_PHPMODS}"/newrelic.ini
 
+# Delete compilation directories, no longer needed
+go clean --cache
+rm -rf /root/newrelic-php-agent
+
 # Cleanup script-specific packages
 apk del .newrelic_deps
-
-# Delete compilation directory, no longer needed
-rm -rf /root/newrelic-php-agent
