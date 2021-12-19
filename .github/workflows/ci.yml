@@ -32,14 +32,15 @@ jobs:
           v=$(mount | grep "/run/docker.sock")
           TARGET_HOST=
 
-          if [ -n "$v" ]; then
+          if [[ -n "$v" ]]; then
             echo "Injected docker socket detected"
             TARGET_HOST="host.docker.internal"
-          elif [ -S /var/run/docker.sock ]; then
+          elif [[ -S /var/run/docker.sock ]]; then
+            echo "Local docker socket detected"
             TARGET_HOST="localhost"
           else
-            echo "No Docker socket detected, fail"
-            exit 1
+            echo "No docker socket detected, falling back"
+            TARGET_HOST="localhost"
           fi
           echo "TARGET_HOST=${TARGET_HOST}" >> $GITHUB_ENV
       -
