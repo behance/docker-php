@@ -1,4 +1,4 @@
-FROM behance/docker-nginx:9.0
+FROM behance/docker-nginx:9.0 as output
 LABEL maintainers="Behance Team <dev-behance@adobe.com>"
 
 # Set TERM to suppress warning messages.
@@ -133,8 +133,13 @@ RUN cp /etc/php/7.0/mods-available/* $CONF_PHPMODS && \
     # Run standard set of tweaks to ensure runs performant, reliably, and consistent between variants
     /bin/bash -e /scripts/prep-php.sh
 
+# TESTING PHASE: using multi-stage to isolate any possible side effects
+FROM output as testenvironment
+
 # HACK: workaround for https://github.com/aelsabbahy/goss/issues/392
 # Run the child and parent test configs separately instead of leveraging inheritance
 RUN goss -g /tests/php-fpm/8.0.goss.yaml validate && \
-    goss -g /tests/php-fpm/base.goss.yaml validate && \
-    /aufs_hack.sh
+    goss -g /tests/php-fpm/base.goss.yaml validate
+
+# Output the final image
+FROM output
