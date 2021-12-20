@@ -9,3 +9,10 @@ file:
       - '/^newrelic.loglevel = \"verbosedebug\"/'
       - '/^newrelic.daemon.loglevel = \"verbosedebug\"/'
       - '/^newrelic.special=debug_autorum/'
+  /goss/docker_output.log:
+    exists: true
+    filetype: file # file, symlink, directory
+    contains:  # Check file content for these patterns
+      - '/enabling APM metrics/'
+      - '/adding in newrelic.special/'
+      - '/enabling tracing/'

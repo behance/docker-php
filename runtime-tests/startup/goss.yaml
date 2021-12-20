@@ -4,3 +4,5 @@ file:
     filetype: file # file, symlink, directory
     contains:  # Check file content for these patterns
       - '/launching...$/'
+      - '/fpm is running/'
+      - '/ready to handle connections/'

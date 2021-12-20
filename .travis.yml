@@ -2,7 +2,8 @@ sudo: required
 
 env:
   global:
-    - GOSS_INSTALL_PATH="./"
+    - GOSS_PATH="./goss"
+    - DGOSS_PATH="./dgoss"
   jobs:
     - PHP_VARIANT=7.4-alpine
     - PHP_VARIANT=7.4
