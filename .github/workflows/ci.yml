@@ -10,38 +10,39 @@ jobs:
     strategy:
       matrix:
         variant:
-          - 7.4
-          - 7.4-alpine
-          - 8.0
+          - "7.4"
+          - "7.4-alpine"
+          - "8.0"
         platform:
         - linux/amd64
-        # - linux/arm64
+        - linux/arm64
         exclude:
-          - props:
-              Dockerfile: Dockerfile-7.4-alpine
+          # TODO: enable with compile cache
           - platform: linux/arm64
     env:
-      TEST_MATCH: PHP Version ${{ matrix.props.version }}
+      TEST_MATCH: PHP Version ${{ matrix.variant }}
     steps:
       -
         name: Checkout
         uses: actions/checkout@v2
       -
+        name: Install goss
+        run: |
+          curl -L https://github.com/aelsabbahy/goss/releases/download/v0.3.9/goss-linux-amd64 -o /usr/local/bin/goss
+          curl -L https://raw.githubusercontent.com/aelsabbahy/goss/master/extras/dgoss/dgoss -o /usr/local/bin/dgoss
+          chmod +rx /usr/local/bin/goss
+          chmod +rx /usr/local/bin/dgoss
+      -
         name: Detect host configuration
         run: |
-          # NOTE: Docker host configuration determines the networking target for integration testing
-          v=$(mount | grep "/run/docker.sock")
           TARGET_HOST=
-
-          if [ -n "$v" ]; then
-            echo "Injected docker socket detected"
+          if [[ -n "$ACT" ]]; then
+            echo "Local execution detected"
             TARGET_HOST="host.docker.internal"
-          elif [ -S /var/run/docker.sock ]; then
-            TARGET_HOST="localhost"
           else
-            echo "No Docker socket detected, fail"
-            exit 1
-          fi
+            TARGET_HOST="localhost"
+          fi;
+
           echo "TARGET_HOST=${TARGET_HOST}" >> $GITHUB_ENV
       -
         # Build and execute in multiple configurations: vanilla, with env overrides, with TLS enabled
