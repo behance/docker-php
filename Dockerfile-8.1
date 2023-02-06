@@ -1,0 +1,145 @@
+FROM behance/docker-nginx:10.2.0 as output
+LABEL maintainers="Behance Team <dev-behance@adobe.com>"
+
+# Set TERM to suppress warning messages.
+ENV CONF_PHPFPM=/etc/php/8.1/fpm/php-fpm.conf \
+    CONF_PHPMODS=/etc/php/8.1/mods-available \
+    CONF_FPMPOOL=/etc/php/8.1/fpm/pool.d/www.conf \
+    CONF_FPMOVERRIDES=/etc/php/8.1/fpm/conf.d/overrides.user.ini \
+    APP_ROOT=/app \
+    SERVER_WORKER_CONNECTIONS=3072 \
+    SERVER_CLIENT_BODY_BUFFER_SIZE=128k \
+    SERVER_CLIENT_HEADER_BUFFER_SIZE=1k \
+    SERVER_CLIENT_BODY_BUFFER_SIZE=128k \
+    SERVER_LARGE_CLIENT_HEADER_BUFFERS="4 256k" \
+    PHP_FPM_MAX_CHILDREN=4096 \
+    PHP_FPM_START_SERVERS=20 \
+    PHP_FPM_MAX_REQUESTS=1024 \
+    PHP_FPM_MIN_SPARE_SERVERS=5 \
+    PHP_FPM_MAX_SPARE_SERVERS=128 \
+    PHP_FPM_MEMORY_LIMIT=256M \
+    PHP_FPM_MAX_EXECUTION_TIME=60 \
+    PHP_FPM_UPLOAD_MAX_FILESIZE=1M \
+    PHP_OPCACHE_MEMORY_CONSUMPTION=128 \
+    PHP_OPCACHE_INTERNED_STRINGS_BUFFER=16 \
+    PHP_OPCACHE_MAX_WASTED_PERCENTAGE=5 \
+    PHP_OPCACHE_ENABLE_CLI=1 \
+    PHP_ENGINE_VERSION=20200930 \
+    CFG_APP_DEBUG=1
+
+COPY ./scripts/ /scripts/
+
+# - Update security packages
+# - Add PHP and support packages
+# - Install NewRelic
+# - Compile extensions
+# - Enable/disable default extensions
+# - Cleanup
+RUN /bin/bash -e /security_updates.sh && \
+    apt-get install -yqq --no-install-recommends \
+        gpg-agent \
+        git \
+        curl \
+        wget \
+        software-properties-common \
+        locales \
+    && \
+    locale-gen en_US.UTF-8 && export LANG=en_US.UTF-8 && \
+    add-apt-repository ppa:ondrej/php -y && \
+    apt-get update -q && \
+    # Ensure old versions of PHP don't accidentally get added by PPA maintainers
+    apt-mark hold \
+        manpages \
+        manpages-dev \
+        apache2 \
+        apache2-bin \
+        libapache2-mod-php8.1 \
+    && \
+    apt-get -yqq install \
+        php8.1 \
+        php8.1-apcu \
+        php8.1-bcmath \
+        php8.1-bz2 \
+        php8.1-curl \
+        php8.1-fpm \
+        php8.1-gd \
+        php8.1-intl \
+        php8.1-mbstring \
+        php8.1-memcache \
+        php8.1-memcached \
+        php8.1-mysql \
+        php8.1-pgsql \
+        php8.1-redis \
+        php8.1-xdebug \
+        php8.1-xml \
+        php8.1-yaml \
+        php8.1-zip \
+        # below required to compile non-packaged extensions
+        php8.1-dev \
+        pkg-config \
+        libmemcached-dev \
+        zlib1g-dev \
+        libssl-dev \
+        libpcre3-dev \
+        golang \
+    && \
+    /bin/bash -e /scripts/install-newrelic-ubuntu.sh && \
+    /bin/bash -e /scripts/install-composer.sh && \
+    phpenmod \
+        memcached \
+        igbinary \
+        msgpack \
+    && \
+    phpdismod \
+        pdo_pgsql \
+        pgsql \
+        redis \
+        yaml \
+        xdebug \
+    && \
+    apt-get remove --purge -yq \
+        build-essential \
+        cpp \
+        cpp-7 \
+        gcc \
+        golang \
+        libpcre3-dev \
+        libssl-dev \
+        locales \
+        patch \
+        php8.1-dev \
+        pkg-config \
+        software-properties-common \
+        wget \
+    && \
+    /bin/bash /clean.sh \
+    # Remove extra extensions installed via packages for other versions of PHP, leaving the active engine folder
+    cd /usr/lib/php && \
+    ls -d */ | grep '[0-9]\{8\}' | grep -v ${PHP_ENGINE_VERSION} | xargs rm -rf && \
+    cd /
+
+# Overlay the root filesystem from this repo
+COPY ./container/root /
+
+# - Make additional hacks to migrate files/config from 7.0 --> 8.1 folder
+RUN cp /etc/php/7.0/mods-available/* $CONF_PHPMODS && \
+    cp /etc/php/7.0/fpm/conf.d/overrides.user.ini $CONF_FPMOVERRIDES && \
+    # Hack: share startup scripts between variant versions by symlinking \
+    ln -s /usr/sbin/php-fpm8.1 /usr/sbin/php-fpm && \
+    # Override default ini values for both CLI + FPM \
+    phpenmod overrides && \
+    # Enable NewRelic via Ubuntu symlinks, but disable in file. Cross-variant startup script uncomments with env vars.
+    phpenmod newrelic && \
+    # Run standard set of tweaks to ensure runs performant, reliably, and consistent between variants
+    /bin/bash -e /scripts/prep-php.sh
+
+# TESTING PHASE: using multi-stage to isolate any possible side effects
+FROM output as testenvironment
+
+# HACK: workaround for https://github.com/aelsabbahy/goss/issues/392
+# Run the child and parent test configs separately instead of leveraging inheritance
+RUN goss -g /tests/php-fpm/8.1.goss.yaml validate && \
+    goss -g /tests/php-fpm/base.goss.yaml validate
+
+# Output the final image
+FROM output
