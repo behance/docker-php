@@ -198,7 +198,7 @@ file:
       - '!/^newrelic.transaction_tracer.enabled = true/'
       - '!/^newrelic.distributed_tracing_enabled = true/'
       - '/^;newrelic.transaction_tracer.enabled = true/'
-      - '/^;newrelic.distributed_tracing_enabled = false/'
+      - '/^;newrelic.distributed_tracing_enabled = true/'
       - '!/^newrelic.special=debug_autorum/'
   {{ .Env.CONF_PHPFPM }}:
     exists: true
