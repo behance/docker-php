@@ -27,6 +27,9 @@ jobs:
         - Dockerfile: Dockerfile-8.1
           version: "8.1"
           platforms: linux/amd64,linux/arm64
+        - Dockerfile: Dockerfile-8.2
+          version: "8.2"
+          platforms: linux/amd64,linux/arm64
     steps:
       -
         name: Checkout
